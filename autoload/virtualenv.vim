@@ -43,7 +43,7 @@ function! virtualenv#force_activate(target)
 
     call s:set_python_major_version_from(a:target)
 
-    call s:execute_python_command('virtualenv_activate()')
+    call s:execute_python_command('virtualenv_activate("'.script.'")')
 
     if g:virtualenv_cdvirtualenv_on_activate
         execute 'cd' a:target

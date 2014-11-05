@@ -1,6 +1,5 @@
 import sys
 import os
-import vim
 
 
 if sys.version_info.major == 3:
@@ -9,7 +8,7 @@ if sys.version_info.major == 3:
             exec(compile(f.read(), filename, 'exec'), globals, locals)
 
 
-def virtualenv_activate():
+def virtualenv_activate(activate_this):
     global __virtualenv_saved_sys_path
     global __virtualenv_saved_os_path
     global __virtualenv_saved_os_pythonpath
@@ -17,7 +16,6 @@ def virtualenv_activate():
     __virtualenv_saved_os_path = os.environ.get('PATH', '')
     __virtualenv_saved_os_pythonpath = os.environ.get('PYTHONPATH', '')
 
-    activate_this = vim.eval('l:script')
     execfile(activate_this, dict(__file__=activate_this))
 
     # sys.path is replaced in activate_this.py, update PYTHONPATH accordingly
