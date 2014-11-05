@@ -1,69 +1,82 @@
-function! virtualenv#activate(name) "{{{1
-    let name = a:name
-    if len(name) == 0  "Figure out the name based on current file
-        if isdirectory($VIRTUAL_ENV)
-            let name = fnamemodify($VIRTUAL_ENV, ':t')
-        elseif isdirectory($PROJECT_HOME)
-            let fn = expand('%:p')
-            let pat = '^'.$PROJECT_HOME.'/'
+function! virtualenv#activate(...)
+    if (a:0 > 0)
+        let name = a:1
+        if empty(name)
+            call s:Error('empty virtualenv name')
+            return 1
+        endif
+    else
+        if !isdirectory($VIRTUAL_ENV)
+            " try to determine virtualenv from the current file path
+            let fn = expand('%:p:h')
+            let pat = '^'.g:virtualenv_directory.'/'
             if fn =~ pat
-                let name = fnamemodify(substitute(fn, pat, '', ''), ':h')
+                let name = split(substitute(fn, pat, '', ''), '/')[0]
+            else
+                call s:Warning('unable to determine virtualenv
+                            \ from the current file path')
+                return 1
             endif
+        else
+            " if $VIRTUAL_ENV is set, then we are inside an active virtualenv
+            call s:Warning('active virtualenv detected,
+                        \ it cannot be deactivated via this plugin')
+            call s:set_python_major_version_from($VIRTUAL_ENV)
+            let g:virtualenv_name = fnamemodify($VIRTUAL_ENV, ':t')
+            return
         endif
     endif
-    if len(name) == 0  "Couldn't figure it out, so DIE
+
+    call virtualenv#deactivate()
+
+    call virtualenv#force_activate(g:virtualenv_directory.'/'.name)
+endfunction
+
+function! virtualenv#force_activate(target)
+    let s:virtualenv_return_dir = getcwd()
+
+    let script = a:target.'/bin/activate_this.py'
+    if !filereadable(script)
+        call s:Error('"'.script.'" is not found or is not readable')
+        return 1
+    endif
+
+    call s:set_python_major_version_from(a:target)
+
+    call s:execute_python_command('virtualenv_activate()')
+
+    if g:virtualenv_cdvirtualenv_on_activate
+        execute 'cd' a:target
+    endif
+
+    let $VIRTUAL_ENV = a:target
+    let g:virtualenv_name = fnamemodify(a:target, ':t')
+endfunction
+
+function! virtualenv#deactivate()
+    if empty($VIRTUAL_ENV) || !exists('s:python_major_version')
         return
     endif
-    let bin = g:virtualenv_directory.'/'.name.'/bin'
-    let script = bin.'/activate_this.py'
-    if !filereadable(script)
-        return 0
-    endif
-    call virtualenv#deactivate()
-    let g:virtualenv_path = $PATH
 
-    " Prepend bin to PATH, but only if it's not there already
-    " (activate_this does this also, https://github.com/pypa/virtualenv/issues/14)
-    if $PATH[:len(bin)] != bin.':'
-        let $PATH = bin.':'.$PATH
-    endif
+    call s:execute_python_command('virtualenv_deactivate()')
 
-    python << EOF
-import vim, os, sys
-activate_this = vim.eval('l:script')
-prev_sys_path = list(sys.path)
-execfile(activate_this, dict(__file__=activate_this))
-prev_pythonpath = os.environ.setdefault('PYTHONPATH', '')
-os.environ['PYTHONPATH'] += ':' + os.getcwd() + ':' + ':'.join(sys.path)
-EOF
-    let g:virtualenv_name = name
-endfunction
-
-function! virtualenv#deactivate() "{{{1
-    python << EOF
-import vim, sys
-try:
-    sys.path[:] = prev_sys_path
-    del(prev_sys_path)
-    os.environ['PYTHONPATH'] = prev_pythonpath
-    del(prev_pythonpath)
-except:
-    pass
-EOF
-    if exists('g:virtualenv_path')
-        let $PATH = g:virtualenv_path
-    endif
     unlet! g:virtualenv_name
-    unlet! g:virtualenv_path
+    let $VIRTUAL_ENV = ''
+    unlet! s:python_major_version
+
+    if g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir')
+        execute 'cd' s:virtualenv_return_dir
+        unlet s:virtualenv_return_dir
+    endif
 endfunction
 
-function! virtualenv#list() "{{{1
+function! virtualenv#list()
     for name in virtualenv#names('')
         echo name
     endfor
 endfunction
 
-function! virtualenv#statusline() "{{{1
+function! virtualenv#statusline()
     if exists('g:virtualenv_name')
         return substitute(g:virtualenv_stl_format, '\C%n', g:virtualenv_name, 'g')
     else
@@ -71,9 +84,9 @@ function! virtualenv#statusline() "{{{1
     endif
 endfunction
 
-function! virtualenv#names(prefix) "{{{1
+function! virtualenv#names(prefix)
     let venvs = []
-    for dir in split(glob(g:virtualenv_directory.'/'.a:prefix.'*'), '\n')
+    for dir in glob(g:virtualenv_directory.'/'.a:prefix.'*', 0, 1)
         if !isdirectory(dir)
             continue
         endif
@@ -84,4 +97,42 @@ function! virtualenv#names(prefix) "{{{1
         call add(venvs, fnamemodify(dir, ':t'))
     endfor
     return venvs
+endfunction
+
+
+function! s:Error(message)
+    echohl ErrorMsg | echo 'vim-virtualenv: '.a:message | echohl None
+endfunction
+
+function! s:Warning(message)
+    echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
+endfunction
+
+
+function! s:is_python_available(version)
+    if !exists('s:is_python'.a:version.'_available')
+        try
+            let command = (a:version == 2) ? 'pyfile' : 'py3file'
+            execute command fnameescape(g:virtualenv_python_script)
+            execute 'let s:is_python'.a:version.'_available = 1'
+        catch
+            execute 'let s:is_python'.a:version.'_available = 0'
+        endtry
+    endif
+    execute 'return s:is_python'.a:version.'_available'
+endfunction
+
+function! s:set_python_major_version_from(target)
+    let python_path = globpath(a:target.'/lib', 'python?.?', 0, 1)[0]
+    let python_major_version = python_path[-3:][0]
+    if !(s:is_python_available(python_major_version))
+        call s:Error('"'.a:target.'" requires python'.python_major_version.' support')
+        return 1
+    endif
+    let s:python_major_version = l:python_major_version
+endfunction
+
+function! s:execute_python_command(command)
+    let interpreter = (s:python_major_version == 2) ? 'python' : 'python3'
+    execute interpreter a:command
 endfunction
