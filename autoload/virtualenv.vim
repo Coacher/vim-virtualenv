@@ -15,7 +15,7 @@ function! virtualenv#activate(...)
             else
                 call s:Warning('unable to determine virtualenv
                             \ from the current file path')
-                return 1
+                return
             endif
         else
             " if $VIRTUAL_ENV is set, then we are inside an active virtualenv
@@ -32,13 +32,18 @@ function! virtualenv#activate(...)
 endfunction
 
 function! virtualenv#force_activate(target)
-    let s:virtualenv_return_dir = getcwd()
+    if !isdirectory(a:target)
+        call s:Error('"'.a:target.'" is not a directory')
+        return 1
+    endif
 
     let script = a:target.'/bin/activate_this.py'
     if !filereadable(script)
         call s:Error('"'.script.'" is not found or is not readable')
         return 1
     endif
+
+    let s:virtualenv_return_dir = getcwd()
 
     call s:set_python_major_version_from(a:target)
 
@@ -118,7 +123,7 @@ endfunction
 function! s:is_python_available(version)
     if !exists('s:is_python'.a:version.'_available')
         try
-            let command = (a:version == 2) ? 'pyfile' : 'py3file'
+            let command = (a:version == 3) ? 'py3file' : 'pyfile'
             execute command fnameescape(g:virtualenv_python_script)
             execute 'let s:is_python'.a:version.'_available = 1'
         catch
@@ -139,6 +144,6 @@ function! s:set_python_major_version_from(target)
 endfunction
 
 function! s:execute_python_command(command)
-    let interpreter = (s:python_major_version == 2) ? 'python' : 'python3'
+    let interpreter = (s:python_major_version == 3) ? 'python3' : 'python'
     execute interpreter a:command
 endfunction
