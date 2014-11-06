@@ -21,7 +21,6 @@ function! virtualenv#activate(...)
             " if $VIRTUAL_ENV is set, then we are inside an active virtualenv
             call s:Warning('active virtualenv detected,
                         \ it cannot be deactivated via this plugin')
-            call s:set_python_major_version_from($VIRTUAL_ENV)
             let g:virtualenv_name = fnamemodify($VIRTUAL_ENV, ':t')
             return
         endif
@@ -54,7 +53,7 @@ function! virtualenv#force_activate(target)
 endfunction
 
 function! virtualenv#deactivate()
-    if empty($VIRTUAL_ENV) || !exists('s:python_major_version')
+    if empty($VIRTUAL_ENV) || !virtualenv#is_armed()
         return
     endif
 
@@ -97,6 +96,13 @@ function! virtualenv#names(prefix)
         call add(venvs, fnamemodify(dir, ':t'))
     endfor
     return venvs
+endfunction
+
+function! virtualenv#is_armed()
+    redir => output
+        silent call s:execute_python_command('virtualenv_is_armed()')
+    redir END
+    return (output =~ 'armed')
 endfunction
 
 

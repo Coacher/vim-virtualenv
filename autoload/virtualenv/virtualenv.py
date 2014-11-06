@@ -8,6 +8,14 @@ if sys.version_info.major == 3:
             exec(compile(f.read(), filename, 'exec'), globals, locals)
 
 
+def virtualenv_is_armed():
+    if (
+            ('__virtualenv_saved_sys_path' in globals()) and
+            ('__virtualenv_saved_os_path' in globals()) and
+            ('__virtualenv_saved_os_pythonpath' in globals())
+    ):
+        print('armed')
+
 def virtualenv_activate(activate_this):
     global __virtualenv_saved_sys_path
     global __virtualenv_saved_os_path
