@@ -1,45 +1,54 @@
 virtualenv.vim
 ==============
 
-When using :python or :!python, it will only have access to the environment outside of any virtualenvs. If you're working with packages that are only installed in a virtualenv, they will not be available to Vim.
+By default, `:python` and `:!python` (as well as `:python3` and `:!python3`)
+commands have access only to system-wide Python environment.
 
-*__Until now!__* The virtualenv.vim plugin will modify python's sys.path and the $PATH environment variable so that anything done with :python or :!python will behave like you would expect for the chosen virtualenv.
+virtualenv.vim plugin changes Python's `sys.path` and `$PATH` environment
+variable so that they refer to the chosen virtualenv.
 
-If compiled with python support, Vim will have a :python command, but this will be tied to whatever version is the default on your system. If this is the version of python that you use, or you're using a Linux distribution with a sensible package manager (like Debian or Ubuntu), you likely will not have to do anything more than install the plugin. If not, then you will likely have to recompile vim with your version of python.
+However, `:python` and `:python3` commands will be still tied to, respectively,
+Python 2 and Python 3 versions that Vim was compiled against.
 
 Usage examples
 ==============
+
+List all available virtualenvs
+
+    :VirtualEnvList
 
 Deactivate the current virtualenv
 
     :VirtualEnvDeactivate
 
-List all virtualenvs
-
-    :VirtualEnvList
-
 Activate the 'spam' virtualenv
 
     :VirtualEnvActivate spam
 
-If you're sure which one to activate, you could always use tab completion
+You can always use `<Tab>` completion
 
-    :VirtualEnvActivate <tab>
+    :VirtualEnvActivate <Tab>
 
-![tab-completion](http://i.imgur.com/1ZGrM.png "Tab Completion")
+You can also show the current virtualenv name in the statusline via included function.
 
-If the shell that started vim had $VIRTUAL\_ENV set, omitting the name will
-imply usage of this value.
-
-If you're a virtualenvwrapper user and have $PROJECT\_HOME set, omitting the
-name will try to guess which virtualenv to activate based on the current
-filename.
-
-You can even show the current virtualenv in the statusline with the included function
-
-![statusline](http://i.imgur.com/oxE70.png "Statusline")
-
-For more detailed help
+For more detailed help see
 
     :help virtualenv
 
+Changes in this fork
+====================
+
+* Add Python3 support. Environments for `:python` and `:python3` commands
+    are updated separately depending on virtualenv's Python major version.
+
+* Remove $PROJECT\_HOME processing.
+    Reason: is virtualenv already active when $PROJECT\_HOME is set?
+    If it is set and virtualenv is active, then there is nothing to do.
+    If it is set and virtualenv is not active, then simply adjust g:virtualenv_directory.
+
+* Do not re-activate/deactivate virtualenv if $VIRTUAL\_ENV is present.
+    Reason: virtualenv is already active when $VIRTUAL\_ENV is set,
+    therefore we cannot neither deactivate, nor re-activate it properly.
+
+* Add option to automatically `cd` into virtualenv on activation and
+    return back on deactivation.
