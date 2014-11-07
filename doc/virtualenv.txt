@@ -73,6 +73,11 @@ g:virtualenv_stl_format                     *g:virtualenv_stl_format*
     Example:
         let g:virtualenv_stl_format = '[%n]'
 <
+g:virtualenv_debug                          *g:virtualenv_debug*
+    This variable controls whether virtualenv.vim prints warning messages.
+
+    Default value is 0.
+
 ==============================================================================
 ABOUT                                       *virtualenv-about*
 

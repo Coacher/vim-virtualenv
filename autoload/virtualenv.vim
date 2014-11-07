@@ -116,7 +116,9 @@ function! s:Error(message)
 endfunction
 
 function! s:Warning(message)
-    echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
+    if g:virtualenv_debug
+        echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
+    endif
 endfunction
 
 
