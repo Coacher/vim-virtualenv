@@ -40,8 +40,8 @@ g:virtualenv_directory                      *g:virtualenv_directory*
 
     If $WORKON_HOME environment variable is set, it is used as default value.
     Otherwise, default value is '~/.virtualenvs'.
->
-    Example:
+
+    Example: >
         let g:virtualenv_directory = '/path/to/virtualenvs'
 <
 g:virtualenv_auto_activate                  *g:virtualenv_auto_activate*
@@ -69,8 +69,8 @@ g:virtualenv_stl_format                     *g:virtualenv_stl_format*
     output. Any '%n' flag will be replaced with the current virtualenv name.
 
     Default value is '%n'.
->
-    Example:
+
+    Example: >
         let g:virtualenv_stl_format = '[%n]'
 <
 g:virtualenv_debug                          *g:virtualenv_debug*
