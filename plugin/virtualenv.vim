@@ -40,12 +40,8 @@ if !exists('g:virtualenv_directory')
     endif
 endif
 
-" strip trailing slashes from g:virtualenv_directory
-if g:virtualenv_directory[-1:] == '/'
-    let g:virtualenv_directory = fnamemodify(g:virtualenv_directory, ':p:h')
-else
-    let g:virtualenv_directory = fnamemodify(g:virtualenv_directory, ':p')
-endif
+" make g:virtualenv_directory an absolute path and strip trailing slashes
+let g:virtualenv_directory = fnamemodify(g:virtualenv_directory, ':p:h')
 
 if !exists('g:virtualenv_python_script')
   let g:virtualenv_python_script = expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py'
