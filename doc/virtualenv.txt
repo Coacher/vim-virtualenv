@@ -1,10 +1,10 @@
-*virtualenv.txt*            Basic Python virtual environments support for Vim
+*virtualenv.txt*            Basic Python virtual environments support for Vim.
 
 ==============================================================================
 INTRODUCTION                                *virtualenv* *virtualenv.vim*
 
 *virtualenv.vim* provides a simple way to activate and deactivate
-Python virtual environments from a Vim session.
+Python virtual environments from a Vim session. It requires |if_pyth|.
 
 ==============================================================================
 COMMANDS                                    *virtualenv-commands*
@@ -23,35 +23,52 @@ COMMANDS                                    *virtualenv-commands*
     the current filename.
 
 ==============================================================================
+STATUSLINE                                  *virtualenv-statusline*
+
+You can show the current virtualenv name in the 'statusline',
+or in any other place that you want to, by calling the virtualenv#statusline()
+function. The output is controlled by the |g:virtualenv_stl_format| variable.
+
+==============================================================================
 CONFIGURATION                               *virtualenv-configuration*
 
 g:virtualenv_loaded                         *g:virtualenv_loaded*
-    If this variable is set, virtualenv.vim is not loaded.
+    If this variable is set, virtualenv.vim is not loaded on Vim start.
 
 g:virtualenv_directory                      *g:virtualenv_directory*
-    This variable appoints the directory that contains virtualenvs.
-    If $WORKON_HOME variable is set, it is used as default value.
+    This variable appoints the directory that holds virtualenvs.
+
+    If $WORKON_HOME environment variable is set, it is used as default value.
     Otherwise, default value is '~/.virtualenvs'.
 >
     Example:
         let g:virtualenv_directory = '/path/to/virtualenvs'
 <
 g:virtualenv_auto_activate                  *g:virtualenv_auto_activate*
-    If this variable is set to '1', virtualenv.vim attempts to determine
+    This variable controls whether virtualenv.vim attempts to determine
     and activate the current virtualenv on start.
+
+    Default value is 1.
 
                                     *g:virtualenv_cdvirtualenv_on_activate*
 g:virtualenv_cdvirtualenv_on_activate
     This variable controls whether virtualenv.vim changes current
     directory to the virtualenv directory on activation.
 
+    Default value is 1.
+
                                         *g:virtualenv_return_on_deactivate*
 g:virtualenv_return_on_deactivate
     This variable controls whether virtualenv.vim restores current
     directory to its original value on virtualenv deactivation.
 
+    Default value is 1.
+
 g:virtualenv_stl_format                     *g:virtualenv_stl_format*
-    This variable sets format string for |virtualenv#statusline| function.
+    This variable sets the format string for virtualenv#statusline() function
+    output. Any '%n' flag will be replaced with the current virtualenv name.
+
+    Default value is '%n'.
 >
     Example:
         let g:virtualenv_stl_format = '[%n]'
@@ -66,7 +83,7 @@ Find the latest version of virtualenv.vim at:
 
 https://github.com/Coacher/vim-virtualenv
 
-Original version can be found here:
+Original version can be found at:
 
 https://github.com/jmcantrell/vim-virtualenv
 
@@ -76,4 +93,4 @@ LICENSE                                     *virtualenv-license*
 virtualenv.vim is released under Vim License.
 See |license|.
 
-vim:tw=78:et:ft=help:norl:
+vim:tw=78:sw=4:et:ft=help:norl:
