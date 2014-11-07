@@ -40,13 +40,14 @@ Changes in this fork
 ====================
 
 * Add Python3 support. Environments for `:python` and `:python3` commands
-    are updated separately depending on virtualenv's Python major version.
+    are updated separately depending on the Python major version
+    inside the target virtualenv.
 
 * Remove $PROJECT\_HOME handling from `virtualenv#activate()` function.
     Reason: unclear virtualenv state when $PROJECT\_HOME variable is set.
     If it is set and virtualenv is activated, then there is nothing to do.
     If it is set and virtualenv is not activated, then simply adjust
-    `g:virtualenv_directory` variable.
+    the `g:virtualenv_directory` variable.
 
 * Do not re-activate virtualenv when $VIRTUAL\_ENV variable is set.
     Reason: in this case virtualenv has already been activated,
