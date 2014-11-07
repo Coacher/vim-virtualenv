@@ -43,9 +43,11 @@ function! virtualenv#force_activate(target)
         return 1
     endif
 
-    let s:virtualenv_return_dir = getcwd()
+    if !(s:is_virtualenv_supported(a:target))
+        return 1
+    endif
 
-    call s:set_python_major_version_from(a:target)
+    let s:virtualenv_return_dir = getcwd()
 
     call s:execute_python_command('virtualenv_activate("'.script.'")')
 
@@ -66,7 +68,7 @@ function! virtualenv#deactivate()
 
     unlet! g:virtualenv_name
     let $VIRTUAL_ENV = ''
-    unlet! s:python_major_version
+    unlet! s:python_version
 
     if g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir')
         execute 'cd' s:virtualenv_return_dir
@@ -135,17 +137,25 @@ function! s:is_python_available(version)
     execute 'return s:is_python'.a:version.'_available'
 endfunction
 
-function! s:set_python_major_version_from(target)
-    let python_path = globpath(a:target.'/lib', 'python?.?', 0, 1)[0]
-    let python_major_version = python_path[-3:][0]
-    if !(s:is_python_available(python_major_version))
-        call s:Error('"'.a:target.'" requires python'.python_major_version.' support')
-        return 1
+function! s:is_virtualenv_supported(target)
+    let pythons = globpath(a:target.'/lib', 'python?.?', 0, 1)
+    if empty(pythons)
+        call s:Error('"'.a:target.'" appears to have no python installations')
+        return
     endif
-    let s:python_major_version = l:python_major_version
+    let python_major_version = pythons[0][-3:][0]
+    if !(s:is_python_available(python_major_version))
+        call s:Error('"'.a:target.'" requires
+                    \ python'.python_major_version.' support')
+        return
+    endif
+    let s:python_version = l:python_major_version
+    return 1
 endfunction
 
 function! s:execute_python_command(command)
-    let interpreter = (s:python_major_version == 3) ? 'python3' : 'python'
-    execute interpreter a:command
+    if exists('s:python_version')
+        let interpreter = (s:python_version == 3) ? 'python3' : 'python'
+        execute interpreter a:command
+    endif
 endfunction
