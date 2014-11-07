@@ -51,9 +51,12 @@ if !exists('g:virtualenv_python_script')
   let g:virtualenv_python_script = expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py'
 endif
 
-command! -bar VirtualEnvList :call virtualenv#list()
-command! -bar VirtualEnvDeactivate :call virtualenv#deactivate()
-command! -bar -nargs=? -complete=customlist,s:CompleteVirtualEnv VirtualEnvActivate :call virtualenv#activate(<q-args>)
+command! -nargs=0 -bar VirtualEnvList
+            \ call virtualenv#list()
+command! -nargs=? -bar -complete=customlist,s:CompleteVirtualEnv VirtualEnvActivate
+            \ call virtualenv#activate(<f-args>)
+command! -nargs=0 -bar VirtualEnvDeactivate
+            \ call virtualenv#deactivate()
 
 function! s:CompleteVirtualEnv(arg_lead, cmd_line, cursor_pos)
     return virtualenv#names(a:arg_lead)
