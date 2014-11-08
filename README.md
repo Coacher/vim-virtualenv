@@ -1,10 +1,10 @@
-virtualenv.vim
+vim-virtualenv
 ==============
 
 By default, `:python` and `:!python` (as well as `:python3` and `:!python3`)
 commands have access only to the system-wide Python environment.
 
-virtualenv.vim plugin changes Python `sys.path` and environment `$PATH`
+vim-virtualenv plugin changes Python `sys.path` and environment `$PATH`
 variables so that they refer to the chosen virtualenv.
 
 However, `:python` and `:python3` commands will be still tied to, respectively,
@@ -17,10 +17,6 @@ List all available virtualenvs
 
     :VirtualEnvList
 
-Deactivate the current virtualenv
-
-    :VirtualEnvDeactivate
-
 Activate the 'spam' virtualenv
 
     :VirtualEnvActivate spam
@@ -28,6 +24,10 @@ Activate the 'spam' virtualenv
 You can always use `<Tab>` completion
 
     :VirtualEnvActivate <Tab>
+
+Deactivate the current virtualenv
+
+    :VirtualEnvDeactivate
 
 You can show the current virtualenv name in the statusline
 via `virtualenv#statusline()` function.

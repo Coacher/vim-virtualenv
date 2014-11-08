@@ -1,9 +1,9 @@
 *virtualenv.txt*            Basic Python virtual environments support for Vim.
 
 ==============================================================================
-INTRODUCTION                                *virtualenv* *virtualenv.vim*
+INTRODUCTION                                *virtualenv* *vim-virtualenv*
 
-*virtualenv.vim* provides a simple way to activate and deactivate
+*vim-virtualenv* provides a simple way to activate and deactivate
 Python virtual environments from a Vim session. It requires |if_pyth|.
 
 ==============================================================================
@@ -12,15 +12,15 @@ COMMANDS                                    *virtualenv-commands*
 :VirtualEnvList                             *:VirtualEnvList*
     List all available virtualenvs.
 
-:VirtualEnvDeactivate                       *:VirtualEnvDeactivate*
-    Deactivate the current virtualenv.
-
 :VirtualEnvActivate [name]                  *:VirtualEnvActivate*
     Activate the "name" virtualenv.
     Name can be completed with <Tab> at the command line.
 
     If "name" is not specified, it will be guessed based on
     the current filename.
+
+:VirtualEnvDeactivate                       *:VirtualEnvDeactivate*
+    Deactivate the current virtualenv.
 
 ==============================================================================
 STATUSLINE                                  *virtualenv-statusline*
@@ -33,7 +33,7 @@ function. The output is controlled by the |g:virtualenv_stl_format| variable.
 CONFIGURATION                               *virtualenv-configuration*
 
 g:virtualenv_loaded                         *g:virtualenv_loaded*
-    If this variable is set, virtualenv.vim is not loaded on Vim start.
+    If this variable is set, vim-virtualenv is not loaded on Vim start.
 
 g:virtualenv_directory                      *g:virtualenv_directory*
     This variable appoints the directory that holds virtualenvs.
@@ -45,21 +45,21 @@ g:virtualenv_directory                      *g:virtualenv_directory*
         let g:virtualenv_directory = '/path/to/virtualenvs'
 <
 g:virtualenv_auto_activate                  *g:virtualenv_auto_activate*
-    This variable controls whether virtualenv.vim attempts to determine
+    This variable controls whether vim-virtualenv attempts to determine
     and activate the current virtualenv on start.
 
     Default value is 1.
 
                                     *g:virtualenv_cdvirtualenv_on_activate*
 g:virtualenv_cdvirtualenv_on_activate
-    This variable controls whether virtualenv.vim changes current
+    This variable controls whether vim-virtualenv changes current
     directory to the virtualenv directory on activation.
 
     Default value is 1.
 
                                         *g:virtualenv_return_on_deactivate*
 g:virtualenv_return_on_deactivate
-    This variable controls whether virtualenv.vim restores current
+    This variable controls whether vim-virtualenv restores current
     directory to its original value on virtualenv deactivation.
 
     Default value is 1.
@@ -74,7 +74,7 @@ g:virtualenv_stl_format                     *g:virtualenv_stl_format*
         let g:virtualenv_stl_format = '[%n]'
 <
 g:virtualenv_debug                          *g:virtualenv_debug*
-    This variable controls whether virtualenv.vim prints warning messages.
+    This variable controls whether vim-virtualenv prints warning messages.
 
     Default value is 0.
 
@@ -84,7 +84,7 @@ ABOUT                                       *virtualenv-about*
 Author:     Ilya Tumaykin <itumaykin(at)gmail(dot)com>
 Original author:    Jeremy Cantrell <jmcantrell@gmail.com>
 
-Find the latest version of virtualenv.vim at:
+Find the latest version of vim-virtualenv at:
 
 https://github.com/Coacher/vim-virtualenv
 
@@ -95,7 +95,7 @@ https://github.com/jmcantrell/vim-virtualenv
 ==============================================================================
 LICENSE                                     *virtualenv-license*
 
-virtualenv.vim is released under Vim License.
+vim-virtualenv is released under Vim License.
 See |license|.
 
 vim:tw=78:sw=4:et:ft=help:norl:
