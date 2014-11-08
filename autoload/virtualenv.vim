@@ -61,6 +61,7 @@ endfunction
 
 function! virtualenv#deactivate()
     if empty($VIRTUAL_ENV) || !virtualenv#is_armed()
+        call s:Warning('deactivation is not possible')
         return
     endif
 
