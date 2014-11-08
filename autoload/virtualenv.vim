@@ -21,7 +21,7 @@ function! virtualenv#activate(...)
             " if $VIRTUAL_ENV is set, then we are inside an active virtualenv
             call s:Warning('active virtualenv detected,
                         \ it cannot be deactivated via this plugin')
-            let g:virtualenv_name = fnamemodify($VIRTUAL_ENV, ':t')
+            let s:virtualenv_name = fnamemodify($VIRTUAL_ENV, ':t')
             return
         endif
     endif
@@ -56,7 +56,7 @@ function! virtualenv#force_activate(target)
     endif
 
     let $VIRTUAL_ENV = a:target
-    let g:virtualenv_name = fnamemodify(a:target, ':t')
+    let s:virtualenv_name = fnamemodify(a:target, ':t')
 endfunction
 
 function! virtualenv#deactivate()
@@ -66,7 +66,7 @@ function! virtualenv#deactivate()
 
     call s:execute_python_command('virtualenv_deactivate()')
 
-    unlet! g:virtualenv_name
+    unlet! s:virtualenv_name
     let $VIRTUAL_ENV = ''
     unlet! s:python_version
 
@@ -83,8 +83,8 @@ function! virtualenv#list()
 endfunction
 
 function! virtualenv#statusline()
-    if exists('g:virtualenv_name')
-        return substitute(g:virtualenv_stl_format, '\C%n', g:virtualenv_name, 'g')
+    if exists('s:virtualenv_name')
+        return substitute(g:virtualenv_stl_format, '\C%n', s:virtualenv_name, 'g')
     else
         return ''
     endif
