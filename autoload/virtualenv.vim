@@ -60,7 +60,7 @@ function! virtualenv#force_activate(target)
 endfunction
 
 function! virtualenv#deactivate()
-    if empty($VIRTUAL_ENV) || !virtualenv#is_armed()
+    if !exists('s:virtualenv_name') || !virtualenv#is_armed()
         call s:Warning('deactivation is not possible')
         return
     endif
