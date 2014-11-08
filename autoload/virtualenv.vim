@@ -28,7 +28,7 @@ function! virtualenv#activate(...)
 
     call virtualenv#deactivate()
 
-    call virtualenv#force_activate(g:virtualenv_directory.'/'.name)
+    return virtualenv#force_activate(g:virtualenv_directory.'/'.name)
 endfunction
 
 function! virtualenv#force_activate(target)
