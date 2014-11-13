@@ -8,10 +8,10 @@ function! virtualenv#activate(...)
     else
         if !isdirectory($VIRTUAL_ENV)
             " try to determine virtualenv from the current file path
-            let fn = expand('%:p:h')
+            let dir = expand('%:p:h')
             let pat = '^'.g:virtualenv_directory.'/'
-            if fn =~ pat
-                let name = split(substitute(fn, pat, '', ''), '/')[0]
+            if dir =~ pat
+                let name = split(substitute(dir, pat, '', ''), '/')[0]
             else
                 call s:Warning('unable to determine virtualenv
                             \ from the current file path')
@@ -28,7 +28,12 @@ function! virtualenv#activate(...)
 
     call virtualenv#deactivate()
 
-    return virtualenv#force_activate(g:virtualenv_directory.'/'.name)
+    for dir in [g:virtualenv_directory, expand('%:p:h'), getcwd()]
+        let target = fnamemodify(dir.'/'.name, ':p:h')
+        if isdirectory(target)
+            return virtualenv#force_activate(target)
+        endif
+    endfor
 endfunction
 
 function! virtualenv#force_activate(target)

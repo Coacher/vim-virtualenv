@@ -15,6 +15,7 @@ COMMANDS                                    *virtualenv-commands*
 :VirtualEnvActivate [name]                  *:VirtualEnvActivate*
     Activate the "name" virtualenv.
     Name can be completed with <Tab> at the command line.
+    Name can also be a path to the virtualenv directory.
 
     If "name" is not specified, it will be guessed based on
     the current filename.
