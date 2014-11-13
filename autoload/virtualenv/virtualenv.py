@@ -2,12 +2,6 @@ import sys
 import os
 
 
-if sys.version_info.major == 3:
-    def execfile(filename, globals = globals(), locals = locals()):
-        with open(filename) as f:
-            exec(compile(f.read(), filename, 'exec'), globals, locals)
-
-
 def virtualenv_is_armed():
     if (
             ('__virtualenv_saved_sys_path' in globals())
@@ -23,7 +17,9 @@ def virtualenv_activate(activate_this):
     __virtualenv_saved_sys_path = list(sys.path)
     __virtualenv_saved_os_path = os.environ.get('PATH', '')
 
-    execfile(activate_this, dict(__file__=activate_this))
+    with open(activate_this) as f:
+        exec(compile(f.read(), activate_this, 'exec'),
+             dict(__file__ = activate_this))
 
 
 def virtualenv_deactivate():
