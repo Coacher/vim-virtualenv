@@ -28,12 +28,16 @@ function! virtualenv#activate(...)
 
     call virtualenv#deactivate()
 
-    for dir in [g:virtualenv_directory, expand('%:p:h'), getcwd(), '']
+    let virtualenv_path = [g:virtualenv_directory, expand('%:p:h'), getcwd(), '']
+    for dir in virtualenv_path
         let target = fnamemodify(dir.'/'.name, ':p:h')
         if isdirectory(target)
             return virtualenv#force_activate(target)
         endif
     endfor
+
+    call s:Warning('virtualenv "'.name.'" was not found in '.string(virtualenv_path))
+    return 1
 endfunction
 
 function! virtualenv#force_activate(target)
