@@ -30,7 +30,7 @@ function! virtualenv#activate(...)
 
     let virtualenv_path = [g:virtualenv_directory, expand('%:p:h'), getcwd(), '']
     for dir in virtualenv_path
-        let target = fnamemodify(dir.'/'.name, ':p:h')
+        let target = fnamemodify(s:joinpath(dir, name), ':p')
         if isdirectory(target)
             return virtualenv#force_activate(target)
         endif
@@ -61,7 +61,7 @@ function! virtualenv#force_activate(target)
     call s:execute_python_command('virtualenv_activate("'.script.'")')
 
     if g:virtualenv_cdvirtualenv_on_activate
-        if (!s:issuperpath(s:virtualenv_return_dir, a:target)
+        if (!s:issubdir(s:virtualenv_return_dir, a:target)
             \ || g:virtualenv_force_cdvirtualenv_on_activate)
             execute 'cd' a:target
         endif
@@ -145,14 +145,33 @@ function! s:Warning(message)
 endfunction
 
 
-function! s:issuperpath(superpath, path)
-    let dir = fnamemodify(a:superpath, ':p:h').'/'
-    let pat = fnamemodify(a:path, ':p')
-    if !isdirectory(pat)
-        echo s:Error('issuperpath: path must be a directory')
-    endif
-    let pat = '^'.fnamemodify(pat, ':h').'/'
+function! s:issubdir(subdir, dir)
+    let dir = s:cleanpath(a:subdir)
+    let pat = '^'.s:cleanpath(a:dir).'/'
+
     return (dir =~ pat)
+endfunction
+
+function! s:joinpath(first, last)
+    let prefix = s:cleanpath(a:first)
+    let suffix = s:cleanpath(a:last)
+
+    return s:cleanpath(prefix.'/'.suffix)
+endfunction
+
+function! s:cleanpath(path)
+    let path = a:path
+    if !empty(path)
+        if path =~ '^\~'
+            let path = $HOME.'/'.path[1:]
+        endif
+        let path = simplify(path)
+        if path =~ '/$'
+            let path = path[:-2]
+        endif
+        return path
+    endif
+    return ''
 endfunction
 
 
