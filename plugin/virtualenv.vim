@@ -55,6 +55,8 @@ command! -nargs=0 -bar VirtualEnvList
             \ call virtualenv#list()
 command! -nargs=? -bar -complete=customlist,s:CompleteVirtualEnv VirtualEnvActivate
             \ call virtualenv#activate(<f-args>)
+command! -nargs=0 -bar VirtualEnvCdvirtualenv
+            \ call virtualenv#cdvirtualenv()
 command! -nargs=0 -bar VirtualEnvDeactivate
             \ call virtualenv#deactivate()
 

@@ -20,6 +20,9 @@ COMMANDS                                    *virtualenv-commands*
     If "name" is not specified, it will be guessed based on
     the current filename.
 
+:VirtualEnvCdvirtualenv                     *:VirtualEnvCdvirtualenv*
+    Change current directory to the current virtualenv directory.
+
 :VirtualEnvDeactivate                       *:VirtualEnvDeactivate*
     Deactivate the current virtualenv.
 

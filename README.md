@@ -25,6 +25,10 @@ You can always use `<Tab>` completion
 
     :VirtualEnvActivate <Tab>
 
+Change current directory to the current virtualenv directory
+
+    :VirtualEnvCdvirtualenv
+
 Deactivate the current virtualenv
 
     :VirtualEnvDeactivate
@@ -57,3 +61,5 @@ Changes in this fork
 
 * Add options to automatically `cd` into virtualenv directory on activation
     and return back on deactivation.
+
+* Add `VirtualEnvCdvirtualenv` command.

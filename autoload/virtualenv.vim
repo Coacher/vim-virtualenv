@@ -64,6 +64,7 @@ function! virtualenv#force_activate(target)
     endif
 
     let $VIRTUAL_ENV = a:target
+    let s:virtualenv_dir = a:target
     let s:virtualenv_name = fnamemodify(a:target, ':t')
 endfunction
 
@@ -76,12 +77,19 @@ function! virtualenv#deactivate()
     call s:execute_python_command('virtualenv_deactivate()')
 
     unlet! s:virtualenv_name
+    unlet! s:virtualenv_dir
     let $VIRTUAL_ENV = ''
     unlet! s:python_version
 
     if g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir')
         execute 'cd' s:virtualenv_return_dir
         unlet s:virtualenv_return_dir
+    endif
+endfunction
+
+function! virtualenv#cdvirtualenv()
+    if exists('s:virtualenv_dir')
+        execute 'cd' s:virtualenv_dir
     endif
 endfunction
 
