@@ -57,7 +57,10 @@ function! virtualenv#force_activate(target)
     call s:execute_python_command('virtualenv_activate("'.script.'")')
 
     if g:virtualenv_cdvirtualenv_on_activate
-        execute 'cd' a:target
+        if (!s:issuperpath(s:virtualenv_return_dir, a:target)
+            \ || g:virtualenv_force_cdvirtualenv_on_activate)
+            execute 'cd' a:target
+        endif
     endif
 
     let $VIRTUAL_ENV = a:target
@@ -127,6 +130,17 @@ function! s:Warning(message)
     if g:virtualenv_debug
         echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
     endif
+endfunction
+
+
+function! s:issuperpath(superpath, path)
+    let dir = fnamemodify(a:superpath, ':p:h').'/'
+    let pat = fnamemodify(a:path, ':p')
+    if !isdirectory(pat)
+        echo s:Error('issuperpath: path must be a directory')
+    endif
+    let pat = '^'.fnamemodify(pat, ':h').'/'
+    return (dir =~ pat)
 endfunction
 
 

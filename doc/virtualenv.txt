@@ -58,6 +58,14 @@ g:virtualenv_cdvirtualenv_on_activate
 
     Default value is 1.
 
+                                *g:virtualenv_force_cdvirtualenv_on_activate*
+g:virtualenv_force_cdvirtualenv_on_activate
+    This variable controls whether vim-virtualenv changes current
+    directory to the virtualenv directory on activation
+    even when the current directory is already inside the virtualenv.
+
+    Default value is 0.
+
                                         *g:virtualenv_return_on_deactivate*
 g:virtualenv_return_on_deactivate
     This variable controls whether vim-virtualenv restores current

@@ -20,6 +20,10 @@ if !exists('g:virtualenv_cdvirtualenv_on_activate')
     let g:virtualenv_cdvirtualenv_on_activate = 1
 endif
 
+if !exists('g:virtualenv_force_cdvirtualenv_on_activate')
+    let g:virtualenv_force_cdvirtualenv_on_activate = 0
+endif
+
 if !exists('g:virtualenv_return_on_deactivate')
     let g:virtualenv_return_on_deactivate = 1
 endif
