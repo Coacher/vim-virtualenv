@@ -97,8 +97,9 @@ function! virtualenv#cdvirtualenv()
     endif
 endfunction
 
-function! virtualenv#list()
-    for name in virtualenv#names(g:virtualenv_directory)
+function! virtualenv#list(...)
+    let directory = (a:0 > 0) ? (a:1) : g:virtualenv_directory
+    for name in virtualenv#names(directory)
         echo name
     endfor
 endfunction
