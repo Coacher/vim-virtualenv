@@ -60,8 +60,8 @@ command! -nargs=0 -bar VirtualEnvCdvirtualenv
 command! -nargs=0 -bar VirtualEnvDeactivate
             \ call virtualenv#deactivate()
 
-function! s:CompleteVirtualEnv(arg_lead, cmd_line, cursor_pos)
-    return virtualenv#names(g:virtualenv_directory, a:arg_lead)
+function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
+    return virtualenv#names(g:virtualenv_directory, a:arglead)
 endfunction
 
 if g:virtualenv_auto_activate

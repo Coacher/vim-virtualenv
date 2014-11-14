@@ -112,10 +112,10 @@ function! virtualenv#statusline()
     endif
 endfunction
 
-function! virtualenv#names(dir, ...)
-    let venvs = []
+function! virtualenv#names(directory, ...)
+    let virtualenvs = []
     let prefix = (a:0 > 0) ? (a:1) : ''
-    for dir in glob(s:cleanpath(a:dir).'/'.prefix.'*', 0, 1)
+    for dir in glob(s:cleanpath(a:directory).'/'.prefix.'*', 0, 1)
         if !isdirectory(dir)
             continue
         endif
@@ -123,9 +123,9 @@ function! virtualenv#names(dir, ...)
         if !filereadable(fn)
             continue
         endif
-        call add(venvs, fnamemodify(dir, ':t'))
+        call add(virtualenvs, fnamemodify(dir, ':t'))
     endfor
-    return venvs
+    return virtualenvs
 endfunction
 
 function! virtualenv#is_armed()
@@ -147,11 +147,11 @@ function! s:Warning(message)
 endfunction
 
 
-function! s:issubdir(subdir, dir)
-    let dir = s:cleanpath(a:subdir)
-    let pat = '^'.s:cleanpath(a:dir).'/'
+function! s:issubdir(subdirectory, directory)
+    let directory = s:cleanpath(a:subdirectory)
+    let pattern = '^'.s:cleanpath(a:directory).'/'
 
-    return (dir =~ pat)
+    return (directory =~ pattern)
 endfunction
 
 function! s:joinpath(first, last)
