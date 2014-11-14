@@ -13,23 +13,27 @@ Python 2 and Python 3 versions that Vim was compiled against.
 Usage examples
 ==============
 
-List all available virtualenvs
+List all available virtualenvs:
 
     :VirtualEnvList
 
-Activate the 'spam' virtualenv
+You can optionally specify the directory that holds virtualenvs:
+
+    :VirtualEnvList /foo/bar
+
+Activate the 'spam' virtualenv:
 
     :VirtualEnvActivate spam
 
-You can always use `<Tab>` completion
+You can also use `<Tab>` completion:
 
     :VirtualEnvActivate <Tab>
 
-Change current directory to the current virtualenv directory
+Change the current directory to the current virtualenv directory:
 
     :VirtualEnvCdvirtualenv
 
-Deactivate the current virtualenv
+Deactivate the current virtualenv:
 
     :VirtualEnvDeactivate
 
@@ -59,7 +63,9 @@ Changes in this fork
     values of `sys.path` and `$PATH` variables. If you know what you are doing,
     you can use `virtualenv#force_activate($VIRTUAL_ENV)`.
 
-* Add options to automatically `cd` into virtualenv directory on activation
+* Add options to automatically `cd` into the virtualenv directory on activation
     and return back on deactivation.
 
 * Add `VirtualEnvCdvirtualenv` command.
+
+* Add optional argument for `VirtualEnvList` command to specify the directory.

@@ -9,8 +9,9 @@ Python virtual environments from a Vim session. It requires |if_pyth|.
 ==============================================================================
 COMMANDS                                    *virtualenv-commands*
 
-:VirtualEnvList                             *:VirtualEnvList*
-    List all available virtualenvs.
+:VirtualEnvList [path]                      *:VirtualEnvList*
+    List all available virtualenvs inside the "path" directory.
+    If "path" is not specified, then |g:virtualenv_directory| value is used.
 
 :VirtualEnvActivate [name]                  *:VirtualEnvActivate*
     Activate the "name" virtualenv.
