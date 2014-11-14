@@ -98,7 +98,7 @@ function! virtualenv#cdvirtualenv()
 endfunction
 
 function! virtualenv#list()
-    for name in virtualenv#names('')
+    for name in virtualenv#names(g:virtualenv_directory)
         echo name
     endfor
 endfunction
@@ -111,9 +111,10 @@ function! virtualenv#statusline()
     endif
 endfunction
 
-function! virtualenv#names(prefix)
+function! virtualenv#names(dir, ...)
     let venvs = []
-    for dir in glob(g:virtualenv_directory.'/'.a:prefix.'*', 0, 1)
+    let prefix = (a:0 > 0) ? (a:1) : ''
+    for dir in glob(s:cleanpath(a:dir).'/'.prefix.'*', 0, 1)
         if !isdirectory(dir)
             continue
         endif
