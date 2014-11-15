@@ -30,7 +30,7 @@ function! virtualenv#activate(...)
 
     let virtualenv_path = [g:virtualenv_directory, getcwd(), '']
     for directory in virtualenv_path
-        let target = fnamemodify(s:joinpath(directory, name), ':p')
+        let target = s:cleanpath(fnamemodify(s:joinpath(directory, name), ':p'))
         if isdirectory(target)
             return virtualenv#force_activate(target)
         endif
