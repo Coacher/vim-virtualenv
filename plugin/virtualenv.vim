@@ -61,7 +61,20 @@ command! -nargs=0 -bar VirtualEnvDeactivate
             \ call virtualenv#deactivate()
 
 function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
-    return virtualenv#names(g:virtualenv_directory, a:arglead)
+    let prefix = fnamemodify(a:arglead, ':t')
+    let directory = fnamemodify(a:arglead, ':h')
+    if empty(directory)
+        let directory = g:virtualenv_directory
+    endif
+
+    let virtualenvs = virtualenv#names(directory, prefix)
+
+    if !empty(virtualenvs)
+        return virtualenvs
+    else
+        return map(globpath(directory, prefix.'*/', 0, 1),
+                    \'fnamemodify(v:val, ":h:t")."/"')
+    endif
 endfunction
 
 if g:virtualenv_auto_activate
