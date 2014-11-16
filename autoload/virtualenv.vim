@@ -115,16 +115,16 @@ endfunction
 
 function! virtualenv#names(directory, ...)
     let virtualenvs = []
-    let prefix = (a:0 > 0) ? (a:1) : ''
-    for dir in glob(s:cleanpath(a:directory).'/'.prefix.'*', 0, 1)
-        if !isdirectory(dir)
+    let pattern = (a:0 > 0) ? (a:1) : ''
+    for target in globpath(a:directory, pattern.'*', 0, 1)
+        if !isdirectory(target)
             continue
         endif
-        let fn = dir.'/bin/activate_this.py'
-        if !filereadable(fn)
+        let script = target.'/bin/activate_this.py'
+        if !filereadable(script)
             continue
         endif
-        call add(virtualenvs, fnamemodify(dir, ':t'))
+        call add(virtualenvs, fnamemodify(target, ':t'))
     endfor
     return virtualenvs
 endfunction
