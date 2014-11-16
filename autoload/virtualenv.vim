@@ -166,10 +166,12 @@ function! s:cleanpath(path)
     let path = a:path
     if !empty(path)
         if path =~ '^\~'
-            let path = $HOME.'/'.path[1:]
+            let user = split(path, '/')[0]
+            let home_directory = fnamemodify(user, ':p:h')
+            let path = substitute(path, '\'.user, home_directory, '')
         endif
         let path = simplify(path)
-        if path =~ '/$'
+        if path =~ '^\@!/$'
             let path = path[:-2]
         endif
         return path
