@@ -83,12 +83,13 @@ function! virtualenv#deactivate()
     unlet! s:virtualenv_name
     unlet! s:virtualenv_dir
     let $VIRTUAL_ENV = ''
-    unlet! s:python_version
 
     if g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir')
         execute 'cd' s:virtualenv_return_dir
-        unlet s:virtualenv_return_dir
     endif
+
+    unlet! s:virtualenv_return_dir
+    unlet! s:python_version
 endfunction
 
 function! virtualenv#cdvirtualenv()
