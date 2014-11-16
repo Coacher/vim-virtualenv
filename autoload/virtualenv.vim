@@ -156,10 +156,14 @@ function! s:issubdir(subdirectory, directory)
 endfunction
 
 function! s:joinpath(first, last)
-    let prefix = s:cleanpath(a:first)
-    let suffix = s:cleanpath(a:last)
+    if !empty(a:first)
+        let prefix = s:cleanpath(a:first)
+        let suffix = s:cleanpath(a:last)
 
-    return s:cleanpath(prefix.'/'.suffix)
+        return s:cleanpath(prefix.'/'.suffix)
+    else
+        return s:cleanpath(a:last)
+    endif
 endfunction
 
 function! s:cleanpath(path)
