@@ -46,7 +46,7 @@ function! virtualenv#force_activate(target)
         return 1
     endif
 
-    let script = a:target.'/bin/activate_this.py'
+    let script = s:joinpath(a:target, 'bin/activate_this.py')
     if !filereadable(script)
         call s:Error('"'.script.'" is not found or is not readable')
         return 1
@@ -121,7 +121,7 @@ function! virtualenv#find(directory, ...)
         if !isdirectory(target)
             continue
         endif
-        let script = target.'/bin/activate_this.py'
+        let script = s:joinpath(target, 'bin/activate_this.py')
         if !filereadable(script)
             continue
         endif
