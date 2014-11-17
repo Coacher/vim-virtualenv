@@ -17,7 +17,7 @@ List virtualenvs located inside `g:virtualenv_directory`:
 
     :VirtualEnvList
 
-You can optionally specify the directory that holds virtualenvs:
+List virtualenvs located inside the '/foo/bar' directory:
 
     :VirtualEnvList /foo/bar
 
@@ -43,7 +43,7 @@ Deactivate the current virtualenv:
 You can show the current virtualenv name in the statusline
 via `virtualenv#statusline()` function.
 
-For more detailed help see
+For more detailed help see:
 
     :help virtualenv
 
