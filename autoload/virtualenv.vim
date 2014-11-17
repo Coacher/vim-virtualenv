@@ -63,7 +63,7 @@ function! virtualenv#force_activate(target)
     if g:virtualenv_cdvirtualenv_on_activate
         if (!s:issubdir(s:virtualenv_return_dir, a:target)
             \ || g:virtualenv_force_cdvirtualenv_on_activate)
-            execute 'cd' a:target
+            execute 'cd' fnameescape(a:target)
         endif
     endif
 
@@ -89,7 +89,7 @@ function! virtualenv#force_deactivate()
     let $VIRTUAL_ENV = ''
 
     if g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir')
-        execute 'cd' s:virtualenv_return_dir
+        execute 'cd' fnameescape(s:virtualenv_return_dir)
     endif
 
     unlet! s:virtualenv_return_dir
@@ -98,7 +98,7 @@ endfunction
 
 function! virtualenv#cdvirtualenv()
     if exists('s:virtualenv_dir')
-        execute 'cd' s:virtualenv_dir
+        execute 'cd' fnameescape(s:virtualenv_dir)
     endif
 endfunction
 
