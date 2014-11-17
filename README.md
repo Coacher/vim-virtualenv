@@ -13,7 +13,7 @@ Python 2 and Python 3 versions that Vim was compiled against.
 Usage examples
 ==============
 
-List all available virtualenvs:
+List virtualenvs located inside `g:virtualenv_directory`:
 
     :VirtualEnvList
 
@@ -21,13 +21,16 @@ You can optionally specify the directory that holds virtualenvs:
 
     :VirtualEnvList /foo/bar
 
-Activate the 'spam' virtualenv:
+Activate the 'foo' virtualenv located inside `g:virtualenv_directory`:
 
-    :VirtualEnvActivate spam
+    :VirtualEnvActivate foo
 
-You can also use `<Tab>` completion:
+Activate virtualenv located at '/foo/bar/baz':
 
-    :VirtualEnvActivate <Tab>
+    :VirtualEnvActivate /foo/bar/baz
+
+You can also use `<Tab>` completion with `VirtualEnvActivate`
+and `VirtualEnvList` commands.
 
 Change the current directory to the current virtualenv directory:
 
@@ -44,8 +47,8 @@ For more detailed help see
 
     :help virtualenv
 
-Changes in this fork
-====================
+Changes from jmcantrell/vim-virtualenv
+======================================
 
 * Add Python3 support. Environments for `:python` and `:python3` commands
     are updated separately depending on the Python major version
@@ -63,9 +66,19 @@ Changes in this fork
     values of `sys.path` and `$PATH` variables. If you know what you are doing,
     you can use `virtualenv#force_activate($VIRTUAL_ENV)`.
 
+* Add support for activation by path to `VirtualEnvActivate` command.
+    Path can be absolute or relative, in the latter case it is first expanded
+    against `g:virtualenv_directory` and then against the current directory.
+
+* Add optional argument to specify directory to `VirtualEnvList` command.
+
+* Add proper `<Tab>` completion support to `VirtualEnvActivate`
+    and `VirtualEnvList` commands.
+
+* Add `VirtualEnvCdvirtualenv` command to change the current directory
+    to the current virtualenv directory.
+
 * Add options to automatically `cd` into the virtualenv directory on activation
     and return back on deactivation.
 
-* Add `VirtualEnvCdvirtualenv` command.
-
-* Add optional argument for `VirtualEnvList` command to specify the directory.
+* Rename `virtualenv#names` function to `virtualenv#find`.
