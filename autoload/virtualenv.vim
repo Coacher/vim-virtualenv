@@ -101,7 +101,7 @@ endfunction
 function! virtualenv#list(...)
     let directory = (a:0 > 0) ? (a:1) : g:virtualenv_directory
     for virtualenv in virtualenv#find(directory)
-        echo substitute(virtualenv, '^'.directory.'/', '', '')
+        echo virtualenv
     endfor
 endfunction
 
