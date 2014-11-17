@@ -161,10 +161,10 @@ function! s:joinpath(first, last)
         let prefix = s:cleanpath(a:first)
         let suffix = s:cleanpath(a:last)
 
-        if suffix =~ '^/'
-            return s:cleanpath(prefix.suffix)
-        else
+        if suffix !~ '^/'
             return s:cleanpath(prefix.'/'.suffix)
+        else
+            return s:cleanpath(prefix.suffix)
         endif
     else
         return s:cleanpath(a:last)
@@ -192,7 +192,7 @@ endfunction
 function! s:is_python_available(version)
     if !exists('s:is_python'.a:version.'_available')
         try
-            let command = (a:version == 3) ? 'py3file' : 'pyfile'
+            let command = (a:version != 3) ? 'pyfile' : 'py3file'
             execute command fnameescape(g:virtualenv_python_script)
             execute 'let s:is_python'.a:version.'_available = 1'
         catch
@@ -220,7 +220,7 @@ endfunction
 
 function! s:execute_python_command(command)
     if exists('s:python_version')
-        let interpreter = (s:python_version == 3) ? 'python3' : 'python'
+        let interpreter = (s:python_version != 3) ? 'python' : 'python3'
         execute interpreter a:command
     endif
 endfunction
