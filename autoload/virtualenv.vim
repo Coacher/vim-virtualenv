@@ -116,7 +116,7 @@ endfunction
 
 function! virtualenv#find(directory, ...)
     let virtualenvs = []
-    let pattern = (a:0 > 0) ? (a:1) : '*'
+    let pattern = (a:0 > 0) ? (a:1) : '*/'
     for target in globpath(a:directory, pattern, 0, 1)
         if !isdirectory(target)
             continue

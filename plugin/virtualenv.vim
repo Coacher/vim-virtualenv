@@ -65,7 +65,7 @@ function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
         let directory = fnamemodify(a:arglead, ':h')
         let pattern = fnamemodify(a:arglead, ':t')
 
-        let virtualenvs = virtualenv#find(directory, pattern.'*')
+        let virtualenvs = virtualenv#find(directory, pattern.'*/')
 
         if !empty(virtualenvs)
             return virtualenvs
@@ -75,7 +75,7 @@ function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
     else
         let virtualenvs = virtualenv#find(g:virtualenv_directory, a:arglead.'*')
         return map(virtualenvs,
-                    \'substitute(v:val, "^".g:virtualenv_directory."/", "", "")')
+                    \"substitute(v:val, '^'.g:virtualenv_directory.'/', '', '')")
     endif
 endfunction
 
