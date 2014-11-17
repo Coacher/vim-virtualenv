@@ -1,3 +1,12 @@
+function! virtualenv#init()
+    " make g:virtualenv_directory an absolute path and strip trailing slashes
+    let g:virtualenv_directory = fnamemodify(g:virtualenv_directory, ':p:h')
+
+    " normalize g:virtualenv_directory path collapsing multiple slashes
+    " into one on the way
+    let g:virtualenv_directory = s:normpath(g:virtualenv_directory)
+endfunction
+
 function! virtualenv#activate(...)
     if (a:0 > 0)
         let name = a:1

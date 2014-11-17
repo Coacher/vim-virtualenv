@@ -44,12 +44,11 @@ if !exists('g:virtualenv_directory')
     endif
 endif
 
-" make g:virtualenv_directory an absolute path and strip trailing slashes
-let g:virtualenv_directory = fnameescape(fnamemodify(g:virtualenv_directory, ':p:h'))
-
 if !exists('g:virtualenv_python_script')
   let g:virtualenv_python_script = expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py'
 endif
+
+call virtualenv#init()
 
 command! -nargs=? -bar -complete=dir VirtualEnvList
             \ call virtualenv#list(<f-args>)
