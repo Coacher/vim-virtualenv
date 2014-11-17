@@ -10,19 +10,18 @@ Python virtual environments from a Vim session. It requires |if_pyth|.
 COMMANDS                                    *virtualenv-commands*
 
 :VirtualEnvList [path]                      *:VirtualEnvList*
-    List all available virtualenvs inside the "path" directory.
+    List virtualenvs located inside the "path" directory.
     If "path" is not specified, then |g:virtualenv_directory| value is used.
 
 :VirtualEnvActivate [name]                  *:VirtualEnvActivate*
-    Activate the "name" virtualenv.
-    Name can be completed with <Tab> at the command line.
-    Name can also be a path to the virtualenv directory.
+    Activate the "name" virtualenv located inside |g:virtualenv_directory|.
+    Alternatively "name" can be a path to the virtualenv directory.
 
     If "name" is not specified, it will be guessed based on
     the current filename.
 
 :VirtualEnvCdvirtualenv                     *:VirtualEnvCdvirtualenv*
-    Change current directory to the current virtualenv directory.
+    Change the current directory to the current virtualenv directory.
 
 :VirtualEnvDeactivate                       *:VirtualEnvDeactivate*
     Deactivate the current virtualenv.
@@ -57,22 +56,22 @@ g:virtualenv_auto_activate                  *g:virtualenv_auto_activate*
 
                                     *g:virtualenv_cdvirtualenv_on_activate*
 g:virtualenv_cdvirtualenv_on_activate
-    This variable controls whether vim-virtualenv changes current
+    This variable controls whether vim-virtualenv changes the current
     directory to the virtualenv directory on activation.
 
     Default value is 1.
 
                                 *g:virtualenv_force_cdvirtualenv_on_activate*
 g:virtualenv_force_cdvirtualenv_on_activate
-    This variable controls whether vim-virtualenv changes current
+    This variable controls whether vim-virtualenv changes the current
     directory to the virtualenv directory on activation
-    even when the current directory is already inside the virtualenv.
+    even if the current directory is already inside the virtualenv.
 
     Default value is 0.
 
                                         *g:virtualenv_return_on_deactivate*
 g:virtualenv_return_on_deactivate
-    This variable controls whether vim-virtualenv restores current
+    This variable controls whether vim-virtualenv restores the current
     directory to its original value on virtualenv deactivation.
 
     Default value is 1.
