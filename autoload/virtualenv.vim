@@ -78,6 +78,10 @@ function! virtualenv#deactivate()
         return
     endif
 
+    return virtualenv#force_deactivate()
+endfunction
+
+function! virtualenv#force_deactivate()
     call s:execute_python_command('virtualenv_deactivate()')
 
     unlet! s:virtualenv_name
