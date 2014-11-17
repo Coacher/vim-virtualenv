@@ -100,8 +100,8 @@ endfunction
 
 function! virtualenv#list(...)
     let directory = (a:0 > 0) ? (a:1) : g:virtualenv_directory
-    for name in virtualenv#names(directory)
-        echo name
+    for virtualenv in virtualenv#find(directory)
+        echo substitute(virtualenv, '^'.directory.'/', '', '')
     endfor
 endfunction
 
@@ -113,10 +113,11 @@ function! virtualenv#statusline()
     endif
 endfunction
 
-function! virtualenv#names(directory, ...)
+
+function! virtualenv#find(directory, ...)
     let virtualenvs = []
-    let pattern = (a:0 > 0) ? (a:1) : ''
-    for target in globpath(a:directory, pattern.'*', 0, 1)
+    let pattern = (a:0 > 0) ? (a:1) : '*'
+    for target in globpath(a:directory, pattern, 0, 1)
         if !isdirectory(target)
             continue
         endif
@@ -124,7 +125,7 @@ function! virtualenv#names(directory, ...)
         if !filereadable(script)
             continue
         endif
-        call add(virtualenvs, fnamemodify(target, ':t'))
+        call add(virtualenvs, target)
     endfor
     return virtualenvs
 endfunction
