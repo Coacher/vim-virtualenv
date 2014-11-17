@@ -62,22 +62,31 @@ command! -nargs=0 -bar VirtualEnvDeactivate
 function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
     if (a:arglead !~ '/\+')
         let virtualenvs = virtualenv#find(g:virtualenv_directory, a:arglead.'*')
-        let virtualenvs = map(virtualenvs,
-                    \"substitute(v:val, '^'.g:virtualenv_directory.'/', '', '')")
-        return map(virtualenvs, 'fnameescape(v:val)')
+        let virtualenvs = s:makerelative(virtualenvs, g:virtualenv_directory)
+
+        return s:fnameescapelist(virtualenvs)
     else
         let directory = fnamemodify(a:arglead, ':h')
-        let pattern = fnamemodify(a:arglead, ':t')
+        let pattern = fnamemodify(a:arglead, ':t').'*/'
 
-        let virtualenvs = virtualenv#find(directory, pattern.'*/')
+        let virtualenvs = virtualenv#find(directory, pattern)
 
         if !empty(virtualenvs)
-            return map(virtualenvs, 'fnameescape(v:val)')
+            return s:fnameescapelist(virtualenvs)
         else
-            return map(globpath(directory, pattern.'*/', 0, 1), 'fnameescape(v:val)')
+            return s:fnameescapelist(globpath(directory, pattern, 0, 1))
         endif
     endif
 endfunction
+
+function! s:fnameescapelist(list)
+    return map(a:list, 'fnameescape(v:val)')
+endfunction
+
+function! s:makerelative(list, directory)
+    return map(a:list, 'substitute(v:val, ''^'.a:directory.'/'', '''', '''')')
+endfunction
+
 
 if g:virtualenv_auto_activate
     call virtualenv#activate()
