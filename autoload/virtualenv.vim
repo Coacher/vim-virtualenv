@@ -157,17 +157,12 @@ function! s:issubdir(subdirectory, directory)
 endfunction
 
 function! s:joinpath(first, last)
-    if !empty(a:first)
-        let prefix = s:cleanpath(a:first)
-        let suffix = s:cleanpath(a:last)
-
-        if suffix !~ '^/'
-            return s:cleanpath(prefix.'/'.suffix)
-        else
-            return s:cleanpath(prefix.suffix)
-        endif
+    if (a:first !~ '^$')
+        let prefix = substitute(a:first, '[/]\+$', '', '')
+        let suffix = substitute(a:last, '^[/]\+', '', '')
+        return prefix.'/'.suffix
     else
-        return s:cleanpath(a:last)
+        return a:last
     endif
 endfunction
 
