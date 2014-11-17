@@ -45,7 +45,7 @@ if !exists('g:virtualenv_directory')
 endif
 
 " make g:virtualenv_directory an absolute path and strip trailing slashes
-let g:virtualenv_directory = fnamemodify(g:virtualenv_directory, ':p:h')
+let g:virtualenv_directory = fnameescape(fnamemodify(g:virtualenv_directory, ':p:h'))
 
 if !exists('g:virtualenv_python_script')
   let g:virtualenv_python_script = expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py'
@@ -63,8 +63,9 @@ command! -nargs=0 -bar VirtualEnvDeactivate
 function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
     if (a:arglead !~ '/\+')
         let virtualenvs = virtualenv#find(g:virtualenv_directory, a:arglead.'*')
-        return map(virtualenvs,
+        let virtualenvs = map(virtualenvs,
                     \"substitute(v:val, '^'.g:virtualenv_directory.'/', '', '')")
+        return map(virtualenvs, 'fnameescape(v:val)')
     else
         let directory = fnamemodify(a:arglead, ':h')
         let pattern = fnamemodify(a:arglead, ':t')
@@ -72,9 +73,9 @@ function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
         let virtualenvs = virtualenv#find(directory, pattern.'*/')
 
         if !empty(virtualenvs)
-            return virtualenvs
+            return map(virtualenvs, 'fnameescape(v:val)')
         else
-            return globpath(directory, pattern.'*/', 0, 1)
+            return map(globpath(directory, pattern.'*/', 0, 1), 'fnameescape(v:val)')
         endif
     endif
 endfunction
