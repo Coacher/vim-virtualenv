@@ -30,7 +30,7 @@ function! virtualenv#activate(...)
 
     let virtualenv_path = [g:virtualenv_directory, getcwd(), '']
     for directory in virtualenv_path
-        let target = fnamemodify(s:joinpath(directory, s:cleanpath(name)), ':p')
+        let target = fnamemodify(s:joinpath(directory, s:normpath(name)), ':p')
         if isdirectory(target)
             return virtualenv#force_activate(target)
         endif
@@ -154,8 +154,8 @@ endfunction
 
 
 function! s:issubdir(subdirectory, directory)
-    let directory = s:cleanpath(a:subdirectory)
-    let pattern = '^'.s:cleanpath(a:directory).'/'
+    let directory = s:normpath(a:subdirectory)
+    let pattern = '^'.s:normpath(a:directory).'/'
 
     return (directory =~ pattern)
 endfunction
@@ -170,21 +170,21 @@ function! s:joinpath(first, last)
     endif
 endfunction
 
-function! s:cleanpath(path)
+function! s:normpath(path)
     let path = a:path
     if !empty(path)
         if path =~ '^\~'
-            let user = split(path, '/')[0]
+            let user = matchstr(path, '^\~[^/]*')
             let home_directory = fnamemodify(user, ':p:h')
-            let path = substitute(path, '\'.user, home_directory, '')
+            let path = substitute(path, '^\'.user, home_directory, '')
         endif
         let path = simplify(path)
-        if path =~ '^\@!/$'
-            let path = path[:-2]
-        endif
+        let path = substitute(path, '^[/]\+', '/', '')
+        let path = substitute(path, '[/]\+$', '', '')
         return path
+    else
+        return ''
     endif
-    return ''
 endfunction
 
 
