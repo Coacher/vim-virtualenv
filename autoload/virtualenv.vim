@@ -38,9 +38,10 @@ function! virtualenv#activate(...)
 
     call virtualenv#deactivate()
 
+    let name = s:normpath(name)
     let virtualenv_path = [g:virtualenv_directory, getcwd(), '']
     for directory in virtualenv_path
-        let target = glob(fnamemodify(s:joinpath(directory, s:normpath(name)), ':p'))
+        let target = glob(fnamemodify(s:joinpath(directory, name), ':p'))
         if isdirectory(target)
             return virtualenv#force_activate(target)
         endif
