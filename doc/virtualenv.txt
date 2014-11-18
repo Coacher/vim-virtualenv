@@ -1,4 +1,4 @@
-*virtualenv.txt*            Basic Python virtual environments support for Vim.
+*virtualenv.txt*        Better Python virtual environments support for Vim.
 
 ==============================================================================
 INTRODUCTION                                *virtualenv* *vim-virtualenv*
