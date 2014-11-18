@@ -60,9 +60,9 @@ Changes from jmcantrell/vim-virtualenv
     If it is set and virtualenv is not activated, then simply adjust
     the `g:virtualenv_directory` variable.
 
-* Do not re-activate virtualenv when $VIRTUAL\_ENV variable is set.
+* Do not reactivate virtualenv when $VIRTUAL\_ENV variable is set.
     Reason: in this case virtualenv has already been activated,
-    therefore we cannot re-activate it properly, i.e. save the _original_
+    therefore we cannot reactivate it properly, i.e. save the _original_
     values of `sys.path` and `$PATH` variables. If you know what you are doing,
     you can use `virtualenv#force_activate($VIRTUAL_ENV)`.
 
