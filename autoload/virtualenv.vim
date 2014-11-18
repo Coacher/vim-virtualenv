@@ -1,10 +1,15 @@
 function! virtualenv#init()
-    " make g:virtualenv_directory an absolute path and strip trailing slashes
-    let g:virtualenv_directory = fnamemodify(g:virtualenv_directory, ':p:h')
+    " make g:virtualenv_directory path absolute
+    let g:virtualenv_directory = fnamemodify(g:virtualenv_directory, ':p')
 
-    " normalize g:virtualenv_directory path collapsing multiple slashes
-    " into one on the way
+    " normalize g:virtualenv_directory path
     let g:virtualenv_directory = s:normpath(g:virtualenv_directory)
+
+    if !isdirectory(g:virtualenv_directory)
+        call s:Error('incorrect value of ''g:virtualenv_directory'' variable: "'
+                    \.g:virtualenv_directory.'" is not a directory')
+        return 1
+    endif
 endfunction
 
 function! virtualenv#activate(...)
