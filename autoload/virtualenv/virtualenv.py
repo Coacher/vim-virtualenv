@@ -14,8 +14,9 @@ def virtualenv_is_armed():
 def virtualenv_activate(activate_this):
     global __virtualenv_saved_sys_path
     global __virtualenv_saved_os_path
+
     __virtualenv_saved_sys_path = list(sys.path)
-    __virtualenv_saved_os_path = os.environ.get('PATH', '')
+    __virtualenv_saved_os_path = os.environ.get('PATH', None)
 
     with open(activate_this) as f:
         exec(compile(f.read(), activate_this, 'exec'),
@@ -26,9 +27,17 @@ def virtualenv_deactivate():
     try:
         global __virtualenv_saved_sys_path
         global __virtualenv_saved_os_path
+
         sys.path[:] = __virtualenv_saved_sys_path
-        os.environ['PATH'] = __virtualenv_saved_os_path
-        del __virtualenv_saved_sys_path
+
+        if __virtualenv_saved_os_path is not None:
+            os.environ['PATH'] = __virtualenv_saved_os_path
+        else:
+            os.environ.pop('PATH', None)
+
+        os.environ.pop('VIRTUAL_ENV', None)
+
         del __virtualenv_saved_os_path
+        del __virtualenv_saved_sys_path
     except NameError:
         pass

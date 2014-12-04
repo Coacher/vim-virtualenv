@@ -102,7 +102,6 @@ function! virtualenv#force_deactivate()
 
     unlet! s:virtualenv_name
     unlet! s:virtualenv_dir
-    let $VIRTUAL_ENV = ''
 
     if g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir')
         execute 'cd' fnameescape(s:virtualenv_return_dir)
