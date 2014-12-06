@@ -217,15 +217,20 @@ function! s:is_python_available(version)
 endfunction
 
 function! s:is_virtualenv_supported(target)
-    let pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
-    if empty(pythons)
-        call s:Error('"'.a:target.'" appears to have no python installations')
-        return
-    elseif len(pythons) > 1
-        call s:Warning('"'.a:target.'" appears to have multiple python installations;
-                    \ will use "'.pythons[0].'"')
+    if !exists('g:virtualenv_force_python_version')
+        let pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
+        if empty(pythons)
+            call s:Error('"'.a:target.'" appears to have no python installations')
+            return
+        elseif len(pythons) > 1
+            call s:Warning('"'.a:target.'" appears to have multiple python installations;
+                        \ will use "'.pythons[0].'"')
+        endif
+        let python_major_version = pythons[0][-4:][0]
+    else
+        let python_major_version = g:virtualenv_force_python_version
+        call s:Warning('enforce python version "'.python_major_version.'" for "'.a:target.'"')
     endif
-    let python_major_version = pythons[0][-4:][0]
     if !(s:is_python_available(python_major_version))
         call s:Error('"'.a:target.'" requires
                     \ python'.python_major_version.' support')
