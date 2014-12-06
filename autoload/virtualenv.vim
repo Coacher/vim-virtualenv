@@ -221,6 +221,9 @@ function! s:is_virtualenv_supported(target)
     if empty(pythons)
         call s:Error('"'.a:target.'" appears to have no python installations')
         return
+    elseif len(pythons) > 1
+        call s:Warning('"'.a:target.'" appears to have multiple python installations;
+                    \ will use "'.pythons[0].'"')
     endif
     let python_major_version = pythons[0][-4:][0]
     if !(s:is_python_available(python_major_version))
