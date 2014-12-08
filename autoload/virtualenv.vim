@@ -47,7 +47,7 @@ function! virtualenv#activate(...)
     let virtualenv_path = [g:virtualenv_directory, getcwd(), '/']
     for directory in virtualenv_path
         let target = glob(fnamemodify(s:joinpath(directory, name), ':p'))
-        if isdirectory(target)
+        if s:is_virtualenv(target)
             return virtualenv#force_activate(target)
         endif
     endfor
@@ -57,24 +57,19 @@ function! virtualenv#activate(...)
 endfunction
 
 function! virtualenv#force_activate(target)
-    if !isdirectory(a:target)
-        call s:Error('"'.a:target.'" is not a directory')
+    if !s:is_virtualenv(a:target)
+        call s:Error('"'.a:target.'" is not a valid virtualenv')
         return 1
     endif
 
-    let script = s:joinpath(a:target, 'bin/activate_this.py')
-    if !filereadable(script)
-        call s:Error('"'.script.'" is not found or is not readable')
-        return 1
-    endif
-
-    if !(virtualenv#is_supported(a:target))
+    if !virtualenv#is_supported(a:target)
         return 1
     endif
 
     let s:virtualenv_return_dir = getcwd()
 
-    call s:execute_python_command('virtualenv_activate("'.script.'")')
+    call s:execute_python_command('virtualenv_activate("'
+                \.s:joinpath(a:target, 'bin/activate_this.py').'")')
 
     if g:virtualenv_cdvirtualenv_on_activate
         if (!s:issubdir(s:virtualenv_return_dir, a:target)
@@ -137,11 +132,7 @@ function! virtualenv#find(directory, ...)
     let virtualenvs = []
     let pattern = (a:0 > 0) ? (a:1) : '*/'
     for target in globpath(a:directory, pattern, 0, 1)
-        if !isdirectory(target)
-            continue
-        endif
-        let script = s:joinpath(target, 'bin/activate_this.py')
-        if !filereadable(script)
+        if !s:is_virtualenv(target)
             continue
         endif
         call add(virtualenvs, target)
@@ -164,9 +155,8 @@ function! virtualenv#is_supported(target)
         let python_major_version = g:virtualenv_force_python_version
         call s:Warning('enforcing python version "'.python_major_version.'" for "'.a:target.'"')
     endif
-    if !(s:is_python_available(python_major_version))
-        call s:Error('"'.a:target.'" requires
-                    \ python'.python_major_version.' support')
+    if !s:is_python_available(python_major_version)
+        call s:Error('"'.a:target.'" requires python'.python_major_version.' support')
         return
     endif
     let s:python_version = l:python_major_version
@@ -189,6 +179,11 @@ function! s:Warning(message)
     if g:virtualenv_debug
         echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
     endif
+endfunction
+
+
+function! s:is_virtualenv(target)
+    return isdirectory(a:target) && filereadable(s:joinpath(a:target, 'bin/activate_this.py'))
 endfunction
 
 
