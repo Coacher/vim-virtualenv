@@ -68,7 +68,7 @@ function! virtualenv#force_activate(target)
         return 1
     endif
 
-    if !(s:is_virtualenv_supported(a:target))
+    if !(virtualenv#is_supported(a:target))
         return 1
     endif
 
@@ -149,6 +149,30 @@ function! virtualenv#find(directory, ...)
     return virtualenvs
 endfunction
 
+function! virtualenv#is_supported(target)
+    if !exists('g:virtualenv_force_python_version')
+        let pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
+        if empty(pythons)
+            call s:Error('"'.a:target.'" appears to have no python installations')
+            return
+        elseif len(pythons) > 1
+            call s:Warning('"'.a:target.'" appears to have multiple python installations;
+                        \ will use "'.pythons[0].'"')
+        endif
+        let python_major_version = pythons[0][-4:][0]
+    else
+        let python_major_version = g:virtualenv_force_python_version
+        call s:Warning('enforcing python version "'.python_major_version.'" for "'.a:target.'"')
+    endif
+    if !(s:is_python_available(python_major_version))
+        call s:Error('"'.a:target.'" requires
+                    \ python'.python_major_version.' support')
+        return
+    endif
+    let s:python_version = l:python_major_version
+    return 1
+endfunction
+
 function! virtualenv#is_armed()
     redir => output
         silent call s:execute_python_command('virtualenv_is_armed()')
@@ -214,30 +238,6 @@ function! s:is_python_available(version)
         endtry
     endif
     execute 'return s:is_python'.a:version.'_available'
-endfunction
-
-function! s:is_virtualenv_supported(target)
-    if !exists('g:virtualenv_force_python_version')
-        let pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
-        if empty(pythons)
-            call s:Error('"'.a:target.'" appears to have no python installations')
-            return
-        elseif len(pythons) > 1
-            call s:Warning('"'.a:target.'" appears to have multiple python installations;
-                        \ will use "'.pythons[0].'"')
-        endif
-        let python_major_version = pythons[0][-4:][0]
-    else
-        let python_major_version = g:virtualenv_force_python_version
-        call s:Warning('enforce python version "'.python_major_version.'" for "'.a:target.'"')
-    endif
-    if !(s:is_python_available(python_major_version))
-        call s:Error('"'.a:target.'" requires
-                    \ python'.python_major_version.' support')
-        return
-    endif
-    let s:python_version = l:python_major_version
-    return 1
 endfunction
 
 function! s:execute_python_command(command)
