@@ -46,8 +46,13 @@ function! virtualenv#activate(...)
     let name = s:normpath(name)
     let virtualenv_path = [g:virtualenv_directory, getcwd(), '/']
     for directory in virtualenv_path
-        let target = glob(fnamemodify(s:joinpath(directory, name), ':p'))
-        if s:is_virtualenv(target)
+        let virtualenvs = virtualenv#find(directory, name)
+        if !empty(virtualenvs)
+            let target = s:normpath(virtualenvs[0])
+            if len(virtualenvs) > 1
+                call s:Warning('"'.directory.'" appears to have multiple virtualenvs
+                            \ under the name "'.name.'", will use "'.target.'"')
+            endif
             return virtualenv#force_activate(target)
         endif
     endfor
