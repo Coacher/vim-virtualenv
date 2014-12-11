@@ -78,10 +78,7 @@ function! virtualenv#force_activate(target)
         let s:virtualenv_name = fnamemodify(a:target, ':t')
 
         call s:execute_python_command('virtualenv_activate("'
-                    \.s:joinpath(a:target, 'bin/activate_this.py').
-                    \'")')
-
-        let $VIRTUAL_ENV = s:virtualenv_dir
+                    \.s:joinpath(a:target, 'bin/activate_this.py').'")')
     catch
         return 1
     endtry

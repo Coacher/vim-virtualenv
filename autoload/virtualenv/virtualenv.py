@@ -7,6 +7,8 @@ def virtualenv_is_armed():
 def virtualenv_activate(activate_this):
     import os, sys
 
+    os.environ['VIRTUAL_ENV'] = os.path.dirname(os.path.dirname(activate_this))
+
     global __virtualenv_saved_sys_path
     global __virtualenv_saved_os_path
 
