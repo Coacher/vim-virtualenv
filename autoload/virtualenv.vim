@@ -71,10 +71,20 @@ function! virtualenv#force_activate(target)
         return 1
     endif
 
-    let s:virtualenv_return_dir = getcwd()
+    try
+        let s:virtualenv_return_dir = getcwd()
 
-    call s:execute_python_command('virtualenv_activate("'
-                \.s:joinpath(a:target, 'bin/activate_this.py').'")')
+        let s:virtualenv_dir = a:target
+        let s:virtualenv_name = fnamemodify(a:target, ':t')
+
+        call s:execute_python_command('virtualenv_activate("'
+                    \.s:joinpath(a:target, 'bin/activate_this.py').
+                    \'")')
+
+        let $VIRTUAL_ENV = s:virtualenv_dir
+    catch
+        return 1
+    endtry
 
     if g:virtualenv_cdvirtualenv_on_activate
         if (!s:issubdir(s:virtualenv_return_dir, a:target)
@@ -82,10 +92,6 @@ function! virtualenv#force_activate(target)
             execute 'cd' fnameescape(a:target)
         endif
     endif
-
-    let $VIRTUAL_ENV = a:target
-    let s:virtualenv_dir = a:target
-    let s:virtualenv_name = fnamemodify(a:target, ':t')
 endfunction
 
 function! virtualenv#deactivate()
@@ -98,7 +104,11 @@ function! virtualenv#deactivate()
 endfunction
 
 function! virtualenv#force_deactivate()
-    call s:execute_python_command('virtualenv_deactivate()')
+    try
+        call s:execute_python_command('virtualenv_deactivate()')
+    catch
+        return 1
+    endtry
 
     unlet! s:virtualenv_name
     unlet! s:virtualenv_dir
