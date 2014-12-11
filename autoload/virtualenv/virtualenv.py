@@ -1,17 +1,12 @@
-import sys
-import os
-
-
 def virtualenv_is_armed():
-    if (
-            ('__virtualenv_saved_sys_path' in globals())
-            and
-            ('__virtualenv_saved_os_path' in globals())
-    ):
+    if all(('__virtualenv_saved_sys_path' in globals(),
+            '__virtualenv_saved_os_path' in globals())):
         print('armed')
 
 
 def virtualenv_activate(activate_this):
+    import os, sys
+
     global __virtualenv_saved_sys_path
     global __virtualenv_saved_os_path
 
@@ -25,6 +20,8 @@ def virtualenv_activate(activate_this):
 
 def virtualenv_deactivate():
     try:
+        import os, sys
+
         global __virtualenv_saved_sys_path
         global __virtualenv_saved_os_path
 
