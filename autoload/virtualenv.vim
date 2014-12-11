@@ -41,7 +41,9 @@ function! virtualenv#activate(...)
         endif
     endif
 
-    call virtualenv#deactivate()
+    if virtualenv#deactivate()
+        return 1
+    endif
 
     let name = s:normpath(name)
     let virtualenv_path = [g:virtualenv_directory, getcwd(), '/']
@@ -83,6 +85,9 @@ function! virtualenv#force_activate(target)
         return 1
     endtry
 
+    command! -nargs=0 -bar VirtualEnvCdvirtualenv
+                \ call virtualenv#cdvirtualenv()
+
     if g:virtualenv_cdvirtualenv_on_activate
         if (!s:issubdir(s:virtualenv_return_dir, a:target)
             \ || g:virtualenv_force_cdvirtualenv_on_activate)
@@ -109,6 +114,8 @@ function! virtualenv#force_deactivate()
 
     unlet! s:virtualenv_name
     unlet! s:virtualenv_dir
+
+    delcommand VirtualEnvCdvirtualenv
 
     if g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir')
         execute 'cd' fnameescape(s:virtualenv_return_dir)

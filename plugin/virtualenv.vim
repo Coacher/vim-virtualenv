@@ -56,8 +56,6 @@ command! -nargs=? -bar -complete=dir VirtualEnvList
             \ call virtualenv#list(<f-args>)
 command! -nargs=? -bar -complete=customlist,s:CompleteVirtualEnv VirtualEnvActivate
             \ call virtualenv#activate(<f-args>)
-command! -nargs=0 -bar VirtualEnvCdvirtualenv
-            \ call virtualenv#cdvirtualenv()
 command! -nargs=0 -bar VirtualEnvDeactivate
             \ call virtualenv#deactivate()
 
@@ -101,7 +99,7 @@ endfunction
 
 
 if g:virtualenv_auto_activate
-    call virtualenv#activate()
+    autocmd BufEnter * call virtualenv#activate()
 endif
 
 let &cpo = s:save_cpo
