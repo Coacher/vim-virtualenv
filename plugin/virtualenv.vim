@@ -99,7 +99,8 @@ endfunction
 
 
 if g:virtualenv_auto_activate
-    autocmd BufEnter * call virtualenv#activate()
+    execute 'autocmd BufFilePost,BufNewFile,BufRead '
+                \.g:virtualenv_directory.'/* call virtualenv#activate()'
 endif
 
 let &cpo = s:save_cpo
