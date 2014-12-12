@@ -15,7 +15,7 @@ COMMANDS                                    *virtualenv-commands*
 
 :VirtualEnvActivate [name]                  *:VirtualEnvActivate*
     Activate the "name" virtualenv located inside |g:virtualenv_directory|.
-    Alternatively "name" can be an absolute or relative path
+    Alternatively "name" can be an absolute or a relative path
     to the virtualenv directory, in the latter case it is first expanded
     against |g:virtualenv_directory| and then against the current directory.
 
@@ -52,7 +52,7 @@ g:virtualenv_directory                      *g:virtualenv_directory*
 <
 g:virtualenv_auto_activate                  *g:virtualenv_auto_activate*
     This variable controls whether vim-virtualenv attempts to determine
-    and activate the current virtualenv on start.
+    and activate a virtualenv based on the current filename on file open.
 
     Default value is 1.
 
