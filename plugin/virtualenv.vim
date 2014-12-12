@@ -61,19 +61,22 @@ command! -nargs=0 -bar VirtualEnvDeactivate
 
 function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
     if (a:arglead !~ '/')
-        let virtualenvs = virtualenv#find(g:virtualenv_directory, a:arglead.'*')
-        let virtualenvs = s:makerelative(virtualenvs, g:virtualenv_directory)
+        let pattern = a:arglead.'*/'
+        let virtualenvs = virtualenv#find(g:virtualenv_directory, pattern)
+        let virtualenvs = s:relpathlist(virtualenvs, g:virtualenv_directory)
+        let virtualenvs = map(virtualenvs, 'substitute(v:val, ''[/]\+$'', '''', '''')')
 
-        if expand(g:virtualenv_directory) != expand(getcwd())
-            let virtualenvs_from_cwd = virtualenv#find(getcwd(), a:arglead.'*/', 0, 1)
-            let virtualenvs += s:makerelative(virtualenvs_from_cwd, getcwd())
+        let directory = getcwd()
+        if g:virtualenv_directory != directory
+            let virtualenvs_from_cwd = virtualenv#find(directory, pattern, 0, 1)
+            let virtualenvs += s:relpathlist(virtualenvs_from_cwd, directory)
         endif
 
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
         else
-            return s:fnameescapelist(s:makerelative(
-                        \globpath(getcwd(), a:arglead.'*/', 0, 1), getcwd()))
+            return s:fnameescapelist(s:relpathlist(
+                        \globpath(directory, pattern, 0, 1), directory))
         endif
     else
         let directory = fnamemodify(a:arglead, ':h')
@@ -93,7 +96,7 @@ function! s:fnameescapelist(list)
     return map(a:list, 'fnameescape(v:val)')
 endfunction
 
-function! s:makerelative(list, directory)
+function! s:relpathlist(list, directory)
     return map(a:list, 'substitute(v:val, ''^'.a:directory.'/'', '''', '''')')
 endfunction
 
