@@ -14,11 +14,27 @@ endfunction
 
 function! virtualenv#activate(...)
     if (a:0 > 0)
-        let name = a:1
+        let name = s:normpath(a:1)
         if empty(name)
             call s:Error('empty virtualenv name')
             return 1
         endif
+
+        let virtualenv_path = [g:virtualenv_directory, getcwd(), '/']
+        for directory in virtualenv_path
+            let virtualenvs = virtualenv#find(directory, name)
+            if !empty(virtualenvs)
+                let target = s:normpath(virtualenvs[0])
+                if len(virtualenvs) > 1
+                    call s:Warning('"'.directory.'" appears to have multiple virtualenvs
+                                \ under the name "'.name.'", will use "'.target.'"')
+                endif
+                return virtualenv#deactivate() || virtualenv#force_activate(target)
+            endif
+        endfor
+
+        call s:Warning('virtualenv "'.name.'" was not found in '.string(virtualenv_path))
+        return 1
     else
         if !isdirectory($VIRTUAL_ENV)
             " try to determine virtualenv from the current file path
@@ -27,11 +43,14 @@ function! virtualenv#activate(...)
                 let name = matchstr(substitute(current_file_directory,
                             \ '^'.g:virtualenv_directory.'/', '', ''),
                             \ '^[^/]\+')
-            else
-                call s:Warning('unable to determine virtualenv
-                            \ from the current file path')
-                return
+                let target = s:joinpath(g:virtualenv_directory, name)
+                if s:is_virtualenv(target)
+                    return virtualenv#deactivate() || virtualenv#force_activate(target)
+                endif
             endif
+
+            call s:Warning('unable to determine virtualenv from the current file path')
+            return
         else
             " if $VIRTUAL_ENV is set, then we are inside an active virtualenv
             call s:Warning('active virtualenv detected,
@@ -40,27 +59,6 @@ function! virtualenv#activate(...)
             return
         endif
     endif
-
-    if virtualenv#deactivate()
-        return 1
-    endif
-
-    let name = s:normpath(name)
-    let virtualenv_path = [g:virtualenv_directory, getcwd(), '/']
-    for directory in virtualenv_path
-        let virtualenvs = virtualenv#find(directory, name)
-        if !empty(virtualenvs)
-            let target = s:normpath(virtualenvs[0])
-            if len(virtualenvs) > 1
-                call s:Warning('"'.directory.'" appears to have multiple virtualenvs
-                            \ under the name "'.name.'", will use "'.target.'"')
-            endif
-            return virtualenv#force_activate(target)
-        endif
-    endfor
-
-    call s:Warning('virtualenv "'.name.'" was not found in '.string(virtualenv_path))
-    return 1
 endfunction
 
 function! virtualenv#force_activate(target)
