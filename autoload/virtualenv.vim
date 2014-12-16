@@ -74,7 +74,7 @@ function! virtualenv#force_activate(target)
     try
         let s:virtualenv_return_dir = getcwd()
 
-        let s:virtualenv_dir = a:target
+        let s:virtualenv_directory_ = a:target
         let s:virtualenv_name = fnamemodify(a:target, ':t')
 
         call s:execute_python_command('virtualenv_activate("'
@@ -111,7 +111,7 @@ function! virtualenv#force_deactivate()
     endtry
 
     unlet! s:virtualenv_name
-    unlet! s:virtualenv_dir
+    unlet! s:virtualenv_directory_
 
     delcommand VirtualEnvCdvirtualenv
 
@@ -124,8 +124,8 @@ function! virtualenv#force_deactivate()
 endfunction
 
 function! virtualenv#cdvirtualenv()
-    if exists('s:virtualenv_dir')
-        execute 'cd' fnameescape(s:virtualenv_dir)
+    if exists('s:virtualenv_directory_')
+        execute 'cd' fnameescape(s:virtualenv_directory_)
     endif
 endfunction
 
