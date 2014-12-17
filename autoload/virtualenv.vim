@@ -77,8 +77,8 @@ function! virtualenv#force_activate(target)
         let s:virtualenv_directory_ = a:target
         let s:virtualenv_name = fnamemodify(a:target, ':t')
 
-        call s:execute_python_command('virtualenv_activate("'
-                    \.s:joinpath(a:target, 'bin/activate_this.py').'")')
+        call s:execute_python_command('virtualenv_activate',
+                    \s:joinpath(a:target, 'bin/activate_this.py'))
     catch
         return 1
     endtry
@@ -105,7 +105,7 @@ endfunction
 
 function! virtualenv#force_deactivate()
     try
-        call s:execute_python_command('virtualenv_deactivate()')
+        call s:execute_python_command('virtualenv_deactivate')
     catch
         return 1
     endtry
@@ -182,7 +182,7 @@ endfunction
 
 function! virtualenv#is_armed()
     redir => output
-        silent call s:execute_python_command('virtualenv_is_armed()')
+        silent call s:execute_python_command('virtualenv_is_armed')
     redir END
     return (output =~ 'armed')
 endfunction
@@ -252,9 +252,37 @@ function! s:is_python_available(version)
     execute 'return s:is_python'.a:version.'_available'
 endfunction
 
-function! s:execute_python_command(command)
+function! s:execute_python_command(command, ...)
     if exists('s:python_version')
         let interpreter = (s:python_version != 3) ? 'python' : 'python3'
-        execute interpreter a:command
+        execute interpreter a:command s:construct_arguments(a:0, a:000)
+    endif
+endfunction
+
+function! s:construct_arguments(number, list)
+    let arguments = '('
+    if a:number > 0
+        let first_arguments = (a:number > 1) ? a:list[:(a:number - 2)] : []
+        for argument in first_arguments
+            let arguments .= s:process_argument(argument).', '
+        endfor
+        let last_argument = a:list[(a:number - 1)]
+        if type(last_argument) != type({})
+            let arguments .= s:process_argument(last_argument)
+        else
+            for [key, value] in items(last_argument)
+                let arguments .= key.'='.s:process_argument(value).', '
+            endfor
+        endif
+    endif
+    let arguments .= ')'
+    return arguments
+endfunction
+
+function! s:process_argument(argument)
+    if type(a:argument) == type(0) || type(a:argument) == type(0.0)
+        return a:argument
+    else
+        return string(a:argument)
     endif
 endfunction

@@ -5,7 +5,7 @@ By default, `:python` and `:!python` (as well as `:python3` and `:!python3`)
 commands have access only to the system-wide Python environment.
 
 vim-virtualenv plugin changes Python `sys.path` and environment `$PATH`
-variables so that they refer to the chosen virtualenv.
+and `$PYTHONPATH` variables so that they refer to the chosen virtualenv.
 
 However, `:python` and `:python3` commands will be still tied to, respectively,
 Python 2 and Python 3 versions that Vim was compiled against.
@@ -63,8 +63,9 @@ Changes from jmcantrell/vim-virtualenv
 * Do not reactivate virtualenv when $VIRTUAL\_ENV variable is set.
     Reason: in this case virtualenv has already been activated,
     therefore we cannot reactivate it properly, i.e. save the _original_
-    values of `sys.path` and `$PATH` variables. If you know what you are doing,
-    you can use `virtualenv#force_activate($VIRTUAL_ENV)`.
+    values of `sys.path`, `$PATH` and `$PYTHONPATH` variables.
+    If you know what you are doing, you can use
+    `virtualenv#force_activate($VIRTUAL_ENV)`.
 
 * Add support for activation by path to `VirtualEnvActivate` command.
     Path can be absolute or relative, in the latter case it is first expanded
