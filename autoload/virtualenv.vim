@@ -78,7 +78,7 @@ function! virtualenv#force_activate(target)
         let s:virtualenv_name = fnamemodify(a:target, ':t')
 
         call s:execute_python_command('virtualenv_activate',
-                    \s:joinpath(a:target, 'bin/activate_this.py'))
+                    \s:joinpath(s:virtualenv_directory_, 'bin/activate_this.py'))
     catch
         return 1
     endtry
@@ -87,9 +87,9 @@ function! virtualenv#force_activate(target)
                 \ call virtualenv#cdvirtualenv()
 
     if g:virtualenv_cdvirtualenv_on_activate
-        if (!s:issubdir(s:virtualenv_return_dir, a:target)
+        if (!s:issubdir(s:virtualenv_return_dir, s:virtualenv_directory_)
             \ || g:virtualenv_force_cdvirtualenv_on_activate)
-            execute 'cd' fnameescape(a:target)
+            call virtualenv#cdvirtualenv()
         endif
     endif
 endfunction
