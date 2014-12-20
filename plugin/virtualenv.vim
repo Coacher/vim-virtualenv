@@ -75,8 +75,12 @@ function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
         else
-            return s:fnameescapelist(s:relpathlist(
-                        \globpath(directory, pattern, 0, 1), directory))
+            if a:arglead =~ '^\~'
+                return [fnamemodify(a:arglead, ':p')]
+            else
+                return s:fnameescapelist(s:relpathlist(
+                            \globpath(directory, pattern, 0, 1), directory))
+            endif
         endif
     else
         let directory = fnamemodify(a:arglead, ':h')
