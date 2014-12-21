@@ -39,16 +39,7 @@ function! virtualenv#activate(...)
         if !isdirectory($VIRTUAL_ENV)
             " try to determine virtualenv from the current file path
             let current_file_directory = expand('%:p:h')
-            if s:issubdir(current_file_directory, g:virtualenv_directory)
-                let name = matchstr(substitute(current_file_directory,
-                            \ '^'.g:virtualenv_directory.'/', '', ''),
-                            \ '^[^/]\+')
-                let target = s:joinpath(g:virtualenv_directory, name)
-                if s:is_virtualenv(target)
-                    return virtualenv#deactivate() || virtualenv#force_activate(target)
-                endif
-            endif
-
+            call virtualenv#activate_by_path(current_file_directory)
             call s:Warning('unable to determine virtualenv from the current file path')
             return
         else
@@ -142,6 +133,28 @@ function! virtualenv#statusline()
     else
         return ''
     endif
+endfunction
+
+
+function! virtualenv#activate_by_path(path)
+    if s:issubdir(a:path, g:virtualenv_directory)
+        let name = matchstr(substitute(a:path,
+                    \ '^'.g:virtualenv_directory.'/', '', ''),
+                    \ '^[^/]\+')
+        let target = s:joinpath(g:virtualenv_directory, name)
+        if s:is_virtualenv(target)
+            return virtualenv#deactivate() || virtualenv#force_activate(target)
+        endif
+    else
+        let target = '/'
+        for part in split(fnamemodify(a:path, ':p'), '/')
+            let target = s:joinpath(target, part)
+            if s:is_virtualenv(target)
+                return virtualenv#deactivate() || virtualenv#force_activate(target)
+            endif
+        endfor
+    endif
+    return 1
 endfunction
 
 
