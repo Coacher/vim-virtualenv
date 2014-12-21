@@ -160,12 +160,14 @@ endfunction
 
 function! virtualenv#find(directory, ...)
     let virtualenvs = []
-    let pattern = (a:0 > 0) ? (a:1) : '*/'
-    for target in globpath(a:directory, pattern, 0, 1)
+    let pattern = (a:0 > 0) ? (a:1) : '*'
+    let tail = matchstr(pattern, '[/]\+$')
+    let pattern_ = s:joinpath(pattern, '/')
+    for target in globpath(a:directory, pattern_, 0, 1)
         if !s:is_virtualenv(target)
             continue
         endif
-        call add(virtualenvs, target)
+        call add(virtualenvs, fnamemodify(target, ':h').tail)
     endfor
     return virtualenvs
 endfunction
