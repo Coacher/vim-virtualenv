@@ -112,7 +112,7 @@ endfunction
 
 if g:virtualenv_auto_activate
     execute 'autocmd BufFilePost,BufNewFile,BufRead '
-                \.g:virtualenv_directory.'/* call virtualenv#activate()'
+           \.g:virtualenv_directory.'/* call virtualenv#activate()'
 endif
 
 let &cpo = s:save_cpo

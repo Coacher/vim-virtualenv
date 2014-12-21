@@ -27,7 +27,7 @@ function! virtualenv#activate(...)
                 let target = s:normpath(virtualenvs[0])
                 if len(virtualenvs) > 1
                     call s:Warning('"'.directory.'" appears to have multiple virtualenvs
-                                \ under the name "'.name.'", will use "'.target.'"')
+                                  \ under the name "'.name.'", will use "'.target.'"')
                 endif
                 return virtualenv#deactivate() || virtualenv#force_activate(target)
             endif
@@ -45,7 +45,7 @@ function! virtualenv#activate(...)
         else
             " if $VIRTUAL_ENV is set, then we are inside an active virtualenv
             call s:Warning('active virtualenv detected,
-                        \ it cannot be deactivated via this plugin')
+                          \ it cannot be deactivated via this plugin')
             let s:virtualenv_name = fnamemodify($VIRTUAL_ENV, ':t')
             return
         endif
@@ -69,17 +69,16 @@ function! virtualenv#force_activate(target)
         let s:virtualenv_name = fnamemodify(a:target, ':t')
 
         call s:execute_python_command('virtualenv_activate',
-                    \s:joinpath(s:virtualenv_directory_, 'bin/activate_this.py'))
+                \s:joinpath(s:virtualenv_directory_, 'bin/activate_this.py'))
     catch
         return 1
     endtry
 
-    command! -nargs=0 -bar VirtualEnvCdvirtualenv
-                \ call virtualenv#cdvirtualenv()
+    command! -nargs=0 -bar VirtualEnvCdvirtualenv call virtualenv#cdvirtualenv()
 
     if g:virtualenv_cdvirtualenv_on_activate
         if (!s:issubdir(s:virtualenv_return_dir, s:virtualenv_directory_)
-            \ || g:virtualenv_force_cdvirtualenv_on_activate)
+           \ || g:virtualenv_force_cdvirtualenv_on_activate)
             call virtualenv#cdvirtualenv()
         endif
     endif
@@ -138,9 +137,9 @@ endfunction
 
 function! virtualenv#activate_by_path(path)
     if s:issubdir(a:path, g:virtualenv_directory)
-        let name = matchstr(substitute(a:path,
-                    \ '^'.g:virtualenv_directory.'/', '', ''),
-                    \ '^[^/]\+')
+        let name = matchstr(
+                    \substitute(a:path, '^'.g:virtualenv_directory.'/', '', ''),
+                    \'^[^/]\+')
         let target = s:joinpath(g:virtualenv_directory, name)
         if s:is_virtualenv(target)
             return virtualenv#deactivate() || virtualenv#force_activate(target)
@@ -162,8 +161,8 @@ function! virtualenv#find(directory, ...)
     let virtualenvs = []
     let pattern = (a:0 > 0) ? (a:1) : '*'
     let tail = matchstr(pattern, '[/]\+$')
-    let pattern_ = s:joinpath(pattern, '/')
-    for target in globpath(a:directory, pattern_, 0, 1)
+    let pattern = s:joinpath(pattern, '/')
+    for target in globpath(a:directory, pattern, 0, 1)
         if !s:is_virtualenv(target)
             continue
         endif
@@ -180,7 +179,7 @@ function! virtualenv#is_supported(target)
             return
         elseif len(pythons) > 1
             call s:Warning('"'.a:target.'" appears to have multiple python installations;
-                        \ will use "'.pythons[0].'"')
+                          \ will use "'.pythons[0].'"')
         endif
         let python_major_version = pythons[0][-4:][0]
     else
