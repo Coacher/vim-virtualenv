@@ -54,23 +54,21 @@ endif
 
 command! -nargs=? -bar -complete=dir VirtualEnvList
             \ call virtualenv#list(<f-args>)
-command! -nargs=? -bar -complete=customlist,s:CompleteVirtualEnv VirtualEnvActivate
-            \ call virtualenv#activate(<f-args>)
+command! -nargs=? -bar -complete=customlist,s:CompleteVirtualEnv
+            \ VirtualEnvActivate call virtualenv#activate(<f-args>)
 command! -nargs=0 -bar VirtualEnvDeactivate
             \ call virtualenv#deactivate()
 
 function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
     if (a:arglead !~ '/')
-        let pattern = a:arglead.'*/'
-        let virtualenvs = virtualenv#find(g:virtualenv_directory, pattern)
-        let virtualenvs = s:relpathlist(virtualenvs, g:virtualenv_directory)
-        let virtualenvs = map(virtualenvs, 'substitute(v:val, ''[/]\+$'', '''', '''')')
+        let pattern = a:arglead.'*'
+        let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
 
         let directory = getcwd()
         if g:virtualenv_directory != directory
-            let virtualenvs_from_cwd = virtualenv#find(directory, pattern, 0, 1)
-            let virtualenvs += s:relpathlist(virtualenvs_from_cwd, directory)
+            let virtualenvs += s:relvirtualenvlist(directory, pattern)
         endif
+        let pattern .= '/'
 
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
@@ -78,15 +76,14 @@ function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
             if a:arglead =~ '^\~'
                 return [fnamemodify(a:arglead, ':p')]
             else
-                return s:fnameescapelist(s:relpathlist(
-                            \globpath(directory, pattern, 0, 1), directory))
+                return s:fnameescapelist(s:relgloblist(directory, pattern))
             endif
         endif
     else
         let directory = fnamemodify(a:arglead, ':h')
-        let pattern = fnamemodify(a:arglead, ':t').'*/'
-
+        let pattern = fnamemodify(a:arglead, ':t').'*'
         let virtualenvs = virtualenv#find(directory, pattern)
+        let pattern .= '/'
 
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
@@ -102,6 +99,14 @@ endfunction
 
 function! s:relpathlist(list, directory)
     return map(a:list, 'substitute(v:val, ''^'.a:directory.'/'', '''', '''')')
+endfunction
+
+function! s:relgloblist(directory, pattern)
+    return s:relpathlist(globpath(a:directory, a:pattern, 0, 1), a:directory)
+endfunction
+
+function! s:relvirtualenvlist(directory, pattern)
+    return s:relpathlist(virtualenv#find(a:directory, a:pattern), a:directory)
 endfunction
 
 
