@@ -66,7 +66,8 @@ function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
 
         let directory = getcwd()
         if g:virtualenv_directory != directory
-            let virtualenvs += s:relvirtualenvlist(directory, pattern)
+            call s:appendcwdlist(virtualenvs,
+                                \s:relvirtualenvlist(directory, pattern))
         endif
         let pattern .= '/'
 
@@ -107,6 +108,16 @@ endfunction
 
 function! s:relvirtualenvlist(directory, pattern)
     return s:relpathlist(virtualenv#find(a:directory, a:pattern), a:directory)
+endfunction
+
+function! s:appendcwdlist(list, cwdlist)
+    for entry in a:cwdlist
+        if (index(a:list, entry) == -1)
+            call add(a:list, entry)
+        else
+            call add(a:list, './'.entry)
+        endif
+    endfor
 endfunction
 
 
