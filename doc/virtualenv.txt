@@ -74,7 +74,7 @@ g:virtualenv_force_cdvirtualenv_on_activate
                                         *g:virtualenv_force_python_version*
 g:virtualenv_force_python_version
     This variable forces vim-virtualenv to use the specified version
-    of |python| command and skip Python version check inside the virtualenv.
+    of |python| command and skip Python version check for the virtualenv.
     Accepted values are '2' and '3' for |:python| and |:python3| commands,
     respectively.
 
