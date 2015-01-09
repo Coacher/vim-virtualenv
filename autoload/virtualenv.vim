@@ -43,9 +43,18 @@ function! virtualenv#activate(...)
             " equals to the value of s:virtualenv_directory_ variable,
             " then try to determine virtualenv from the current file path
             let current_file_directory = expand('%:p:h')
-            call virtualenv#activate_by_path(current_file_directory)
-            call s:Warning('unable to determine virtualenv from the current file path')
-            return
+            let target = s:virtualenv_from_path(current_file_directory)
+            if !empty(target)
+                if exists('s:virtualenv_directory_') && target == s:virtualenv_directory_
+                    call s:Warning('"'.target.'" virtualenv is already active')
+                    return
+                else
+                    return virtualenv#deactivate() || virtualenv#force_activate(target)
+                endif
+            else
+                call s:Warning('unable to determine virtualenv from the current file path')
+                return
+            endif
         else
             " otherwise we are inside an externally activated virtualenv
             call s:Warning('active virtualenv detected,
@@ -139,28 +148,6 @@ function! virtualenv#statusline()
 endfunction
 
 
-function! virtualenv#activate_by_path(path)
-    if s:issubdir(a:path, g:virtualenv_directory)
-        let name = matchstr(
-                    \substitute(a:path, '^'.g:virtualenv_directory.'/', '', ''),
-                    \'^[^/]\+')
-        let target = s:joinpath(g:virtualenv_directory, name)
-        if s:is_virtualenv(target)
-            return virtualenv#deactivate() || virtualenv#force_activate(target)
-        endif
-    else
-        let target = '/'
-        for part in split(fnamemodify(a:path, ':p'), '/')
-            let target = s:joinpath(target, part)
-            if s:is_virtualenv(target)
-                return virtualenv#deactivate() || virtualenv#force_activate(target)
-            endif
-        endfor
-    endif
-    return 1
-endfunction
-
-
 function! virtualenv#find(directory, ...)
     let virtualenvs = []
     let pattern = (a:0 > 0) ? (a:1) : '*'
@@ -219,6 +206,27 @@ endfunction
 
 function! s:is_virtualenv(target)
     return isdirectory(a:target) && filereadable(s:joinpath(a:target, 'bin/activate_this.py'))
+endfunction
+
+function! s:virtualenv_from_path(path)
+    if s:issubdir(a:path, g:virtualenv_directory)
+        let name = matchstr(
+                    \substitute(a:path, '^'.g:virtualenv_directory.'/', '', ''),
+                    \'^[^/]\+')
+        let target = s:joinpath(g:virtualenv_directory, name)
+        if s:is_virtualenv(target)
+            return target
+        endif
+    else
+        let target = '/'
+        for part in split(fnamemodify(a:path, ':p'), '/')
+            let target = s:joinpath(target, part)
+            if s:is_virtualenv(target)
+                return target
+            endif
+        endfor
+    endif
+    return ''
 endfunction
 
 
