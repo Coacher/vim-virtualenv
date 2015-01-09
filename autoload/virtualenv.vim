@@ -26,8 +26,9 @@ function! virtualenv#activate(...)
             if !empty(virtualenvs)
                 let target = s:normpath(virtualenvs[0])
                 if len(virtualenvs) > 1
-                    call s:Warning('"'.directory.'" appears to have multiple virtualenvs
-                                  \ under the name "'.name.'", will use "'.target.'"')
+                    call s:Warning('"'.directory.'" appears to contain multiple
+                                  \ virtualenvs under the name "'.name.'"')
+                    call s:Warning('processing "'.target.'"')
                 endif
                 return virtualenv#deactivate() || virtualenv#force_activate(target)
             endif
@@ -175,11 +176,11 @@ function! virtualenv#is_supported(target)
     if !exists('g:virtualenv_force_python_version')
         let pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
         if empty(pythons)
-            call s:Error('"'.a:target.'" appears to have no python installations')
+            call s:Error('"'.a:target.'" appears to contain no python installations')
             return
         elseif len(pythons) > 1
-            call s:Warning('"'.a:target.'" appears to have multiple python installations;
-                          \ will use "'.pythons[0].'"')
+            call s:Warning('"'.a:target.'" appears to contain multiple python installations')
+            call s:Warning('processing "'.pythons[0].'"')
         endif
         let python_major_version = pythons[0][-4:][0]
     else
