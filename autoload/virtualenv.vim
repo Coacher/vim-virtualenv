@@ -37,14 +37,17 @@ function! virtualenv#activate(...)
         call s:Warning('virtualenv "'.name.'" was not found in '.string(virtualenv_path))
         return 1
     else
-        if !isdirectory($VIRTUAL_ENV)
-            " try to determine virtualenv from the current file path
+        if empty($VIRTUAL_ENV) || (exists('s:virtualenv_directory_')
+                                  \ && $VIRTUAL_ENV == s:virtualenv_directory_)
+            " if either $VIRTUAL_ENV is not set, or it is set and
+            " equals to the value of s:virtualenv_directory_ variable,
+            " then try to determine virtualenv from the current file path
             let current_file_directory = expand('%:p:h')
             call virtualenv#activate_by_path(current_file_directory)
             call s:Warning('unable to determine virtualenv from the current file path')
             return
         else
-            " if $VIRTUAL_ENV is set, then we are inside an active virtualenv
+            " otherwise we are inside an externally activated virtualenv
             call s:Warning('active virtualenv detected,
                           \ it cannot be deactivated via this plugin')
             let s:virtualenv_name = fnamemodify($VIRTUAL_ENV, ':t')
