@@ -210,22 +210,18 @@ endfunction
 
 function! s:virtualenv_from_path(path)
     if s:issubdir(a:path, g:virtualenv_directory)
-        let name = matchstr(
-                    \substitute(a:path, '^'.g:virtualenv_directory.'/', '', ''),
-                    \'^[^/]\+')
-        let target = s:joinpath(g:virtualenv_directory, name)
+        let target = g:virtualenv_directory
+        let tail = substitute(a:path, '^'.g:virtualenv_directory.'/', '', '')
+    else
+        let target = '/'
+        let tail = fnamemodify(a:path, ':p')
+    endif
+    for part in split(tail, '/')
+        let target = s:joinpath(target, part)
         if s:is_virtualenv(target)
             return target
         endif
-    else
-        let target = '/'
-        for part in split(fnamemodify(a:path, ':p'), '/')
-            let target = s:joinpath(target, part)
-            if s:is_virtualenv(target)
-                return target
-            endif
-        endfor
-    endif
+    endfor
     return ''
 endfunction
 
