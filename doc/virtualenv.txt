@@ -1,7 +1,7 @@
 *virtualenv.txt*        Better Python virtual environments support for Vim.
 
 ==============================================================================
-INTRODUCTION                                *virtualenv* *vim-virtualenv*
+INTRODUCTION                                *virtualenv*
 
 *vim-virtualenv* provides a simple way to activate and deactivate
 Python virtual environments from a Vim session. It requires |if_pyth|.
