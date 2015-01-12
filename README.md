@@ -43,7 +43,7 @@ Deactivate the current virtualenv:
 You can show the current virtualenv name in the statusline
 via `virtualenv#statusline()` function.
 
-For more detailed help see:
+For a more detailed help see:
 
     :help virtualenv
 
