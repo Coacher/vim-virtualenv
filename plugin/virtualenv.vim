@@ -127,3 +127,4 @@ if g:virtualenv_auto_activate
 endif
 
 let &cpo = s:save_cpo
+unlet s:save_cpo
