@@ -21,14 +21,16 @@ def virtualenv_activate(activate_this):
 
     with open(activate_this) as f:
         exec(compile(f.read(), activate_this, 'exec'),
-             dict(__file__ = activate_this))
+             dict(__file__=activate_this))
 
-    sys_path_diff = [sp for sp in list(sys.path) if sp not in __virtualenv_saved_sys_path]
+    sys_path_diff = [sp for sp in list(sys.path)
+                     if sp not in __virtualenv_saved_sys_path]
     if sys_path_diff:
         os.environ['PYTHONPATH'] = os.pathsep.join(sys_path_diff)
 
         if __virtualenv_saved_python_path:
-            os.environ['PYTHONPATH'] += os.pathsep + __virtualenv_saved_python_path
+            os.environ['PYTHONPATH'] += os.pathsep + \
+                __virtualenv_saved_python_path
 
 
 def virtualenv_deactivate():
