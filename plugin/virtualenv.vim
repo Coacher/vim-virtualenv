@@ -77,19 +77,41 @@ function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
             if a:arglead =~ '^\~'
                 return [fnamemodify(a:arglead, ':p')]
             else
-                return s:fnameescapelist(s:relgloblist(directory, pattern))
+                let globs = s:relgloblist(g:virtualenv_directory, pattern)
+                if g:virtualenv_directory != directory
+                    call s:appendcwdlist(globs, s:relgloblist(directory, pattern))
+                endif
+                return s:fnameescapelist(globs)
             endif
         endif
     else
-        let directory = fnamemodify(a:arglead, ':h')
-        let pattern = fnamemodify(a:arglead, ':t').'*'
-        let virtualenvs = virtualenv#find(directory, pattern)
+        if (a:arglead =~ '^[\.\~/]')
+            let directory = fnamemodify(a:arglead, ':h')
+            let pattern = fnamemodify(a:arglead, ':t').'*'
+            let virtualenvs = virtualenv#find(directory, pattern)
+        else
+            let directory = getcwd()
+            let pattern = a:arglead.'*'
+            let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
+            if g:virtualenv_directory != directory
+                call s:appendcwdlist(virtualenvs,
+                                    \s:relvirtualenvlist(directory, pattern))
+            endif
+        endif
         let pattern .= '/'
 
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
         else
-            return s:fnameescapelist(globpath(directory, pattern, 0, 1))
+            if (a:arglead =~ '^[\.\~/]')
+                return s:fnameescapelist(globpath(directory, pattern, 0, 1))
+            else
+                let globs = s:relgloblist(g:virtualenv_directory, pattern)
+                if g:virtualenv_directory != directory
+                    call s:appendcwdlist(globs, s:relgloblist(directory, pattern))
+                endif
+                return s:fnameescapelist(globs)
+            endif
         endif
     endif
 endfunction
