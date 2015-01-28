@@ -6,8 +6,8 @@ function! virtualenv#init()
     let g:virtualenv_directory = s:normpath(g:virtualenv_directory)
 
     if !isdirectory(g:virtualenv_directory)
-        call s:Error('incorrect value of ''g:virtualenv_directory'' variable: "'
-                    \.g:virtualenv_directory.'" is not a directory')
+        call s:Error('incorrect value of ''g:virtualenv_directory'' variable: '
+                    \.g:virtualenv_directory.' is not a directory')
         return 1
     endif
 endfunction
@@ -24,40 +24,46 @@ function! virtualenv#activate(...)
         for directory in virtualenv_path
             let virtualenvs = virtualenv#find(directory, name)
             if !empty(virtualenvs)
-                let target = s:normpath(virtualenvs[0])
-                if len(virtualenvs) > 1
-                    call s:Warning('"'.directory.'" appears to contain multiple
-                                  \ virtualenvs under the name "'.name.'"')
-                    call s:Warning('processing "'.target.'"')
+                let [target; rest] = virtualenvs
+                let target = s:normpath(target)
+                if !empty(rest)
+                    call s:Warning('multiple virtualenvs under the name '
+                                  \.name.' were found in '.directory)
+                    call s:Warning('processing '.target)
                 endif
-                return virtualenv#deactivate() || virtualenv#force_activate(target)
+                return virtualenv#deactivate() ||
+                     \ virtualenv#force_activate(target)
             endif
         endfor
 
-        call s:Warning('virtualenv "'.name.'" was not found in '.string(virtualenv_path))
+        call s:Warning('virtualenv '.name.' was not found in '
+                      \.string(virtualenv_path))
         return 1
     else
-        if empty($VIRTUAL_ENV) || (exists('s:virtualenv_directory_')
-                                  \ && $VIRTUAL_ENV == s:virtualenv_directory_)
+        if empty($VIRTUAL_ENV) || (exists('s:virtualenv_directory_') &&
+                                  \$VIRTUAL_ENV ==# s:virtualenv_directory_)
             " if either $VIRTUAL_ENV is not set, or it is set and
             " equals to the value of s:virtualenv_directory_ variable,
             " then try to determine virtualenv from the current file path
             let current_file_directory = expand('%:p:h')
             let target = s:virtualenv_from_path(current_file_directory)
             if !empty(target)
-                if exists('s:virtualenv_directory_') && target == s:virtualenv_directory_
-                    call s:Warning('"'.target.'" virtualenv is already active')
+                if exists('s:virtualenv_directory_') &&
+                  \target ==# s:virtualenv_directory_
+                    call s:Warning('virtualenv '.target.' is already active')
                     return
                 else
-                    return virtualenv#deactivate() || virtualenv#force_activate(target)
+                    return virtualenv#deactivate() ||
+                         \ virtualenv#force_activate(target)
                 endif
             else
-                call s:Warning('unable to determine virtualenv from the current file path')
+                call s:Warning('unable to determine virtualenv
+                              \ from the current file path')
                 return
             endif
         else
-            " otherwise we are inside an externally activated virtualenv
-            call s:Warning('active virtualenv detected,
+            " otherwise it is an externally activated virtualenv
+            call s:Warning('externally activated virtualenv detected,
                           \ it cannot be deactivated via this plugin')
             let s:virtualenv_name = fnamemodify($VIRTUAL_ENV, ':t')
             return
@@ -67,7 +73,7 @@ endfunction
 
 function! virtualenv#force_activate(target)
     if !s:is_virtualenv(a:target)
-        call s:Error('"'.a:target.'" is not a valid virtualenv')
+        call s:Error(a:target.' is not a valid virtualenv')
         return 1
     endif
 
@@ -90,8 +96,8 @@ function! virtualenv#force_activate(target)
     command! -nargs=0 -bar VirtualEnvCdvirtualenv call virtualenv#cdvirtualenv()
 
     if g:virtualenv_cdvirtualenv_on_activate
-        if (!s:issubdir(s:virtualenv_return_dir, s:virtualenv_directory_)
-           \ || g:virtualenv_force_cdvirtualenv_on_activate)
+        if !s:issubdir(s:virtualenv_return_dir, s:virtualenv_directory_) ||
+          \g:virtualenv_force_cdvirtualenv_on_activate
             call virtualenv#cdvirtualenv()
         endif
     endif
@@ -165,20 +171,25 @@ endfunction
 function! virtualenv#is_supported(target)
     if !exists('g:virtualenv_force_python_version')
         let pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
-        if empty(pythons)
-            call s:Error('"'.a:target.'" appears to contain no python installations')
+        if !empty(pythons)
+            let [python; rest] = pythons
+            if !empty(rest)
+                call s:Warning('multiple python installations were found in '
+                              \.a:target)
+                call s:Warning('processing '.python)
+            endif
+        else
+            call s:Error('no python installations were found in '.a:target)
             return
-        elseif len(pythons) > 1
-            call s:Warning('"'.a:target.'" appears to contain multiple python installations')
-            call s:Warning('processing "'.pythons[0].'"')
         endif
-        let python_major_version = pythons[0][-4:][0]
+        let python_major_version = python[-4:][0]
     else
         let python_major_version = g:virtualenv_force_python_version
-        call s:Warning('enforcing python version "'.python_major_version.'" for "'.a:target.'"')
+        call s:Warning('python version for '.a:target.' is set to'
+                      \.g:virtualenv_force_python_version)
     endif
     if !s:is_python_available(python_major_version)
-        call s:Error('"'.a:target.'" requires python'.python_major_version.' support')
+        call s:Error(a:target.' requires python'.python_major_version.' support')
         return
     endif
     let s:python_version = l:python_major_version
@@ -205,7 +216,8 @@ endfunction
 
 
 function! s:is_virtualenv(target)
-    return isdirectory(a:target) && filereadable(s:joinpath(a:target, 'bin/activate_this.py'))
+    return isdirectory(a:target) &&
+         \ filereadable(s:joinpath(a:target, 'bin/activate_this.py'))
 endfunction
 
 function! s:virtualenv_from_path(path)
@@ -246,7 +258,7 @@ endfunction
 function! s:normpath(path)
     let path = a:path
     if !empty(path)
-        if path =~ '^\~'
+        if (path =~ '^\~')
             let user = matchstr(path, '^\~[^/]*')
             let home_directory = fnamemodify(user, ':p:h')
             let path = substitute(path, '^\'.user, home_directory, '')
@@ -283,7 +295,7 @@ endfunction
 
 function! s:construct_arguments(number, list)
     let arguments = '('
-    if a:number > 0
+    if (a:number > 0)
         let first_arguments = (a:number > 1) ? a:list[:(a:number - 2)] : []
         for argument in first_arguments
             let arguments .= s:process_argument(argument).', '

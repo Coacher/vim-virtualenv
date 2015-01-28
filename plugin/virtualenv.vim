@@ -45,7 +45,8 @@ if !exists('g:virtualenv_directory')
 endif
 
 if !exists('g:virtualenv_python_script')
-  let g:virtualenv_python_script = expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py'
+    let g:virtualenv_python_script =
+            \ expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py'
 endif
 
 if virtualenv#init()
@@ -62,52 +63,52 @@ command! -nargs=0 -bar VirtualEnvDeactivate
 function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
     if (a:arglead !~ '/')
         let pattern = a:arglead.'*'
-        let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
-
         let directory = getcwd()
-        if g:virtualenv_directory != directory
+        let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
+        if g:virtualenv_directory !=# directory
             call s:appendcwdlist(virtualenvs,
                                 \s:relvirtualenvlist(directory, pattern))
         endif
-        let pattern .= '/'
 
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
         else
-            if a:arglead =~ '^\~'
-                return [fnamemodify(a:arglead, ':p')]
-            else
+            if (a:arglead !~ '^\~')
+                let pattern .= '/'
                 let globs = s:relgloblist(g:virtualenv_directory, pattern)
-                if g:virtualenv_directory != directory
-                    call s:appendcwdlist(globs, s:relgloblist(directory, pattern))
+                if g:virtualenv_directory !=# directory
+                    call s:appendcwdlist(globs,
+                                        \s:relgloblist(directory, pattern))
                 endif
                 return s:fnameescapelist(globs)
+            else
+                return [fnamemodify(a:arglead, ':p')]
             endif
         endif
     else
         if (a:arglead =~ '^[\.\~/]')
-            let directory = fnamemodify(a:arglead, ':h')
             let pattern = fnamemodify(a:arglead, ':t').'*'
+            let directory = fnamemodify(a:arglead, ':h')
             let virtualenvs = virtualenv#find(directory, pattern)
         else
-            let directory = getcwd()
             let pattern = a:arglead.'*'
+            let directory = getcwd()
             let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
-            if g:virtualenv_directory != directory
+            if g:virtualenv_directory !=# directory
                 call s:appendcwdlist(virtualenvs,
                                     \s:relvirtualenvlist(directory, pattern))
             endif
         endif
-        let pattern .= '/'
 
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
         else
+            let pattern .= '/'
             if (a:arglead =~ '^[\.\~/]')
                 return s:fnameescapelist(globpath(directory, pattern, 0, 1))
             else
                 let globs = s:relgloblist(g:virtualenv_directory, pattern)
-                if g:virtualenv_directory != directory
+                if g:virtualenv_directory !=# directory
                     call s:appendcwdlist(globs, s:relgloblist(directory, pattern))
                 endif
                 return s:fnameescapelist(globs)
