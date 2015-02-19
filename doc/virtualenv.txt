@@ -19,8 +19,8 @@ COMMANDS                                    *virtualenv-commands*
     to the virtualenv directory, in the latter case it is first expanded
     against |g:virtualenv_directory| and then against the current directory.
 
-    If "name" is not specified, it will be guessed based on
-    the current filename.
+    If "name" is not specified, vim-virtualenv searches from the directory
+    of the current file upwards until it finds a virtualenv.
 
 :VirtualEnvCdvirtualenv                     *:VirtualEnvCdvirtualenv*
     Change the current directory to the current virtualenv directory.
@@ -31,8 +31,8 @@ COMMANDS                                    *virtualenv-commands*
 ==============================================================================
 STATUSLINE                                  *virtualenv-statusline*
 
-You can show the current virtualenv name in the 'statusline',
-or in any other place that you want to, by calling the virtualenv#statusline()
+Current virtualenv name can be shown in the 'statusline',
+or in any other place, by calling the virtualenv#statusline()
 function. The output is controlled by the |g:virtualenv_stl_format| variable.
 
 ==============================================================================
@@ -51,21 +51,21 @@ g:virtualenv_directory                      *g:virtualenv_directory*
         let g:virtualenv_directory = '/path/to/virtualenvs'
 <
 g:virtualenv_auto_activate                  *g:virtualenv_auto_activate*
-    This variable controls whether vim-virtualenv attempts to determine
-    and activate a virtualenv based on the current filename on file open.
+    This variable controls whether vim-virtualenv should attempt to determine
+    and activate a virtualenv based on the current file path on file open.
 
     Default value is 1.
 
                                     *g:virtualenv_cdvirtualenv_on_activate*
 g:virtualenv_cdvirtualenv_on_activate
-    This variable controls whether vim-virtualenv changes the current
+    This variable controls whether vim-virtualenv should change the current
     directory to the virtualenv directory on activation.
 
     Default value is 1.
 
                                 *g:virtualenv_force_cdvirtualenv_on_activate*
 g:virtualenv_force_cdvirtualenv_on_activate
-    This variable controls whether vim-virtualenv changes the current
+    This variable controls whether vim-virtualenv should change the current
     directory to the virtualenv directory on activation
     even if the current directory is already inside the virtualenv.
 
@@ -82,7 +82,7 @@ g:virtualenv_force_python_version
 
                                         *g:virtualenv_return_on_deactivate*
 g:virtualenv_return_on_deactivate
-    This variable controls whether vim-virtualenv restores the current
+    This variable controls whether vim-virtualenv should restore the current
     directory to its original value on virtualenv deactivation.
 
     Default value is 1.
@@ -97,7 +97,8 @@ g:virtualenv_stl_format                     *g:virtualenv_stl_format*
         let g:virtualenv_stl_format = '[%n]'
 <
 g:virtualenv_debug                          *g:virtualenv_debug*
-    This variable controls whether vim-virtualenv prints warning messages.
+    This variable controls whether vim-virtualenv should print
+    warning messages.
 
     Default value is 0.
 
