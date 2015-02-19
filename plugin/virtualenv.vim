@@ -55,12 +55,12 @@ endif
 
 command! -nargs=? -bar -complete=dir VirtualEnvList
             \ call virtualenv#list(<f-args>)
-command! -nargs=? -bar -complete=customlist,s:CompleteVirtualEnv
+command! -nargs=? -bar -complete=customlist,s:virtualenv_completion
             \ VirtualEnvActivate call virtualenv#activate(<f-args>)
 command! -nargs=0 -bar VirtualEnvDeactivate
             \ call virtualenv#deactivate()
 
-function! s:CompleteVirtualEnv(arglead, cmdline, cursorpos)
+function! s:virtualenv_completion(arglead, cmdline, cursorpos)
     if (a:arglead !~ '/')
         let pattern = a:arglead.'*'
         let directory = getcwd()
