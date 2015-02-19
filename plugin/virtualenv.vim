@@ -2,7 +2,7 @@ if exists('g:virtualenv_loaded')
     finish
 endif
 
-if !has('python') && !has('python3')
+if (!has('python') && !has('python3'))
     echoerr 'vim-virtualenv requires python or python3 support enabled'
     finish
 endif
@@ -65,7 +65,7 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
         let pattern = a:arglead.'*'
         let directory = getcwd()
         let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
-        if g:virtualenv_directory !=# directory
+        if (g:virtualenv_directory !=# directory)
             call s:appendcwdlist(virtualenvs,
                                 \s:relvirtualenvlist(directory, pattern))
         endif
@@ -76,7 +76,7 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
             if (a:arglead !~ '^\~')
                 let pattern .= '/'
                 let globs = s:relgloblist(g:virtualenv_directory, pattern)
-                if g:virtualenv_directory !=# directory
+                if (g:virtualenv_directory !=# directory)
                     call s:appendcwdlist(globs,
                                         \s:relgloblist(directory, pattern))
                 endif
@@ -94,7 +94,7 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
             let pattern = a:arglead.'*'
             let directory = getcwd()
             let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
-            if g:virtualenv_directory !=# directory
+            if (g:virtualenv_directory !=# directory)
                 call s:appendcwdlist(virtualenvs,
                                     \s:relvirtualenvlist(directory, pattern))
             endif
@@ -108,7 +108,7 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
                 return s:fnameescapelist(globpath(directory, pattern, 0, 1))
             else
                 let globs = s:relgloblist(g:virtualenv_directory, pattern)
-                if g:virtualenv_directory !=# directory
+                if (g:virtualenv_directory !=# directory)
                     call s:appendcwdlist(globs, s:relgloblist(directory, pattern))
                 endif
                 return s:fnameescapelist(globs)
@@ -144,7 +144,7 @@ function! s:appendcwdlist(list, cwdlist)
 endfunction
 
 
-if g:virtualenv_auto_activate
+if (g:virtualenv_auto_activate)
     execute 'autocmd BufFilePost,BufNewFile,BufRead '
            \.g:virtualenv_directory.'/* call virtualenv#activate()'
 endif
