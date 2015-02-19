@@ -29,8 +29,8 @@ Activate virtualenv located at '/foo/bar/baz':
 
     :VirtualEnvActivate /foo/bar/baz
 
-You can also use `<Tab>` completion with `VirtualEnvActivate`
-and `VirtualEnvList` commands.
+Both `VirtualEnvActivate` and `VirtualEnvList` commands support
+`<Tab>` completion.
 
 Change the current directory to the current virtualenv directory:
 
@@ -40,7 +40,7 @@ Deactivate the current virtualenv:
 
     :VirtualEnvDeactivate
 
-You can show the current virtualenv name in the statusline
+Current virtualenv name can be shown in the statusline
 via `virtualenv#statusline()` function.
 
 For a more detailed help see:
