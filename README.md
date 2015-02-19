@@ -47,39 +47,26 @@ For a more detailed help see:
 
     :help virtualenv
 
-Changes from jmcantrell/vim-virtualenv
-======================================
+Key features
+============
 
-* Add Python3 support. Environments for `:python` and `:python3` commands
-    are updated separately depending on the Python major version
-    inside the target virtualenv.
+* Activate, deactivate and list virtualenvs from a Vim session.
+    By default, vim-virtualenv works with virtualenvs located inside
+    `g:virtualenv_directory` to avoid unnecessary typing.
 
-* Remove $PROJECT\_HOME handling from `virtualenv#activate()` function.
-    Reason: unclear virtualenv state when $PROJECT\_HOME variable is set.
-    If it is set and virtualenv is activated, then there is nothing to do.
-    If it is set and virtualenv is not activated, then simply adjust
-    the `g:virtualenv_directory` variable.
+* Activate virtualenvs by path using `VirtualEnvActivate` command.
+    Paths can be absolute or relative, in the latter case they are first
+    expanded against `g:virtualenv_directory` and then against the current
+    directory.
 
-* Do not reactivate virtualenv when $VIRTUAL\_ENV variable is set externally.
-    Reason: in this case virtualenv has already been activated,
-    therefore we cannot reactivate it properly, i.e. save the _original_
-    values of `sys.path`, `$PATH` and `$PYTHONPATH` variables.
-    If you know what you are doing, you can use
-    `virtualenv#force_activate($VIRTUAL_ENV)`.
+* Both `VirtualEnvActivate` and `VirtualEnvList` commands support
+    `<Tab>` completion.
 
-* Add support for activation by path to `VirtualEnvActivate` command.
-    Path can be absolute or relative, in the latter case it is first expanded
-    against `g:virtualenv_directory` and then against the current directory.
+* Change the current directory to the current virtualenv directory
+    using `VirtualEnvCdvirtualenv` command. By default, vim-virtualenv
+    automatically does this on virtualenv activation and returns back on
+    deactivation.
 
-* Add optional argument to specify directory to `VirtualEnvList` command.
-
-* Add proper `<Tab>` completion support to `VirtualEnvActivate`
-    and `VirtualEnvList` commands.
-
-* Add `VirtualEnvCdvirtualenv` command to change the current directory
-    to the current virtualenv directory.
-
-* Add options to automatically `cd` into the virtualenv directory on activation
-    and return back on deactivation.
-
-* Rename `virtualenv#names` function to `virtualenv#find`.
+* Python3 support.
+    `sys.path` for `:python` and `:python3` commands is updated separately
+    depending on the Python major version inside the target virtualenv.
