@@ -53,6 +53,11 @@ if virtualenv#init()
     finish
 endif
 
+if (g:virtualenv_auto_activate)
+    execute 'autocmd BufFilePost,BufNewFile,BufRead '
+           \.g:virtualenv_directory.'/* call virtualenv#activate()'
+endif
+
 command! -nargs=? -bar -complete=dir VirtualEnvList
             \ call virtualenv#list(<f-args>)
 command! -nargs=? -bar -complete=customlist,s:virtualenv_completion
@@ -142,12 +147,6 @@ function! s:appendcwdlist(list, cwdlist)
         endif
     endfor
 endfunction
-
-
-if (g:virtualenv_auto_activate)
-    execute 'autocmd BufFilePost,BufNewFile,BufRead '
-           \.g:virtualenv_directory.'/* call virtualenv#activate()'
-endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
