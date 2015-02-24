@@ -1,8 +1,23 @@
-def virtualenv_is_armed():
-    if all(('__virtualenv_saved_sys_path' in globals(),
-            '__virtualenv_saved_os_path' in globals(),
-            '__virtualenv_saved_python_path' in globals())):
+def virtualenv_armed(internal=True):
+    if ('__virtualenv_saved_sys_path' in globals() and
+            (all(('__virtualenv_saved_os_path' in globals(),
+                  '__virtualenv_saved_python_path' in globals())) or
+             not internal)):
         print('armed')
+
+
+def virtualenv_update_syspath(syspath):
+    import sys
+
+    global __virtualenv_saved_sys_path
+
+    __virtualenv_saved_sys_path = list(sys.path)
+
+    new_sys_path = eval(syspath)
+    if '_vim_path_' not in new_sys_path:
+        new_sys_path.append('_vim_path_')
+
+    sys.path[:] = new_sys_path
 
 
 def virtualenv_activate(activate_this):
@@ -33,31 +48,35 @@ def virtualenv_activate(activate_this):
                 __virtualenv_saved_python_path
 
 
-def virtualenv_deactivate():
+def virtualenv_deactivate(internal=True):
     try:
-        import os
         import sys
 
         global __virtualenv_saved_sys_path
-        global __virtualenv_saved_os_path
-        global __virtualenv_saved_python_path
 
         sys.path[:] = __virtualenv_saved_sys_path
 
-        if __virtualenv_saved_os_path is not None:
-            os.environ['PATH'] = __virtualenv_saved_os_path
-        else:
-            os.environ.pop('PATH', None)
-
-        if __virtualenv_saved_python_path is not None:
-            os.environ['PYTHONPATH'] = __virtualenv_saved_python_path
-        else:
-            os.environ.pop('PYTHONPATH', None)
-
-        os.environ.pop('VIRTUAL_ENV', None)
-
-        del __virtualenv_saved_python_path
-        del __virtualenv_saved_os_path
         del __virtualenv_saved_sys_path
+
+        if internal:
+            import os
+
+            global __virtualenv_saved_os_path
+            global __virtualenv_saved_python_path
+
+            if __virtualenv_saved_os_path is not None:
+                os.environ['PATH'] = __virtualenv_saved_os_path
+            else:
+                os.environ.pop('PATH', None)
+
+            if __virtualenv_saved_python_path is not None:
+                os.environ['PYTHONPATH'] = __virtualenv_saved_python_path
+            else:
+                os.environ.pop('PYTHONPATH', None)
+
+            os.environ.pop('VIRTUAL_ENV', None)
+
+            del __virtualenv_saved_python_path
+            del __virtualenv_saved_os_path
     except NameError:
         pass
