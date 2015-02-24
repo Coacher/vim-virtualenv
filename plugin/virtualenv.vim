@@ -37,11 +37,8 @@ if !exists('g:virtualenv_stl_format')
 endif
 
 if !exists('g:virtualenv_directory')
-    if isdirectory($WORKON_HOME)
-        let g:virtualenv_directory = $WORKON_HOME
-    else
-        let g:virtualenv_directory = '~/.virtualenvs'
-    endif
+    let g:virtualenv_directory =
+            \ !isdirectory($WORKON_HOME) ? '~/.virtualenvs' : $WORKON_HOME
 endif
 
 if !exists('g:virtualenv_python_script')
