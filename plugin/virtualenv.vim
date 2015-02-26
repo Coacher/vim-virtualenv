@@ -2,8 +2,8 @@ if exists('g:virtualenv_loaded')
     finish
 endif
 
-if (!has('python') && !has('python3'))
-    echoerr 'vim-virtualenv requires python or python3 support enabled'
+if !(has('python') || has('python3'))
+    echoerr 'vim-virtualenv requires python or python3 feature to be enabled'
     finish
 endif
 
@@ -12,39 +12,24 @@ let g:virtualenv_loaded = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-if !exists('g:virtualenv_auto_activate')
-    let g:virtualenv_auto_activate = 1
-endif
-
-if !exists('g:virtualenv_cdvirtualenv_on_activate')
-    let g:virtualenv_cdvirtualenv_on_activate = 1
-endif
-
-if !exists('g:virtualenv_force_cdvirtualenv_on_activate')
-    let g:virtualenv_force_cdvirtualenv_on_activate = 0
-endif
-
-if !exists('g:virtualenv_return_on_deactivate')
-    let g:virtualenv_return_on_deactivate = 1
-endif
-
-if !exists('g:virtualenv_debug')
-    let g:virtualenv_debug = 0
-endif
-
-if !exists('g:virtualenv_stl_format')
-    let g:virtualenv_stl_format = '%n'
-endif
-
-if !exists('g:virtualenv_directory')
-    let g:virtualenv_directory =
-            \ !isdirectory($WORKON_HOME) ? '~/.virtualenvs' : $WORKON_HOME
-endif
-
-if !exists('g:virtualenv_python_script')
-    let g:virtualenv_python_script =
-            \ expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py'
-endif
+let g:virtualenv_directory =
+        \ get(g:, 'virtualenv_directory',
+        \     !isdirectory($WORKON_HOME) ? '~/.virtualenvs' : $WORKON_HOME)
+let g:virtualenv_auto_activate =
+        \ get(g:, 'virtualenv_auto_activate', 1)
+let g:virtualenv_cdvirtualenv_on_activate =
+        \ get(g:, 'virtualenv_cdvirtualenv_on_activate', 1)
+let g:virtualenv_force_cdvirtualenv_on_activate =
+        \ get(g:, 'virtualenv_force_cdvirtualenv_on_activate', 0)
+let g:virtualenv_return_on_deactivate =
+        \ get(g:, 'virtualenv_return_on_deactivate', 1)
+let g:virtualenv_stl_format =
+        \ get(g:, 'virtualenv_stl_format', '%n')
+let g:virtualenv_debug =
+        \ get(g:, 'virtualenv_debug', 0)
+let g:virtualenv_python_script =
+        \ get(g:, 'virtualenv_python_script',
+        \     expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py')
 
 if virtualenv#init()
     finish
@@ -95,7 +80,8 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
         else
             let pattern = a:arglead.'*'
             let directory = getcwd()
-            let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
+            let virtualenvs =
+                    \ s:relvirtualenvlist(g:virtualenv_directory, pattern)
             if (g:virtualenv_directory !=# directory)
                 call s:appendcwdlist(virtualenvs,
                                     \s:relvirtualenvlist(directory, pattern))
@@ -111,7 +97,8 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
             else
                 let globs = s:relgloblist(g:virtualenv_directory, pattern)
                 if (g:virtualenv_directory !=# directory)
-                    call s:appendcwdlist(globs, s:relgloblist(directory, pattern))
+                    call s:appendcwdlist(globs,
+                                        \s:relgloblist(directory, pattern))
                 endif
                 return s:fnameescapelist(globs)
             endif
