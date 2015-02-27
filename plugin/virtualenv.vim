@@ -41,11 +41,11 @@ if (g:virtualenv_auto_activate)
 endif
 
 command! -nargs=? -bar -complete=dir VirtualEnvList
-            \ call virtualenv#list(<f-args>)
+        \ call virtualenv#list(<f-args>)
 command! -nargs=? -bar -complete=customlist,s:virtualenv_completion
-            \ VirtualEnvActivate call virtualenv#activate(<f-args>)
+        \ VirtualEnvActivate call virtualenv#activate(<f-args>)
 command! -nargs=0 -bar VirtualEnvDeactivate
-            \ call virtualenv#deactivate()
+        \ call virtualenv#deactivate()
 
 function! s:virtualenv_completion(arglead, cmdline, cursorpos)
     if (a:arglead !~ '/')

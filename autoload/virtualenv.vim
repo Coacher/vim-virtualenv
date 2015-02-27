@@ -6,8 +6,7 @@ function! virtualenv#init()
     let g:virtualenv_directory = s:normpath(g:virtualenv_directory)
 
     if !isdirectory(g:virtualenv_directory)
-        call s:Error('incorrect value of ''g:virtualenv_directory'' variable: '
-                    \.g:virtualenv_directory.' is not a directory')
+        call s:Error(g:virtualenv_directory.' is not a directory')
         return 1
     endif
 endfunction
@@ -41,7 +40,8 @@ function! virtualenv#activate(...)
         return 1
     else
         if (empty($VIRTUAL_ENV) ||
-           \(exists('s:virtualenv_directory_') && ($VIRTUAL_ENV ==# s:virtualenv_directory_)))
+           \(exists('s:virtualenv_directory_') &&
+           \ ($VIRTUAL_ENV ==# s:virtualenv_directory_)))
             " if either $VIRTUAL_ENV is not set, or it is set and
             " equals to the value of s:virtualenv_directory_ variable,
             " then search upwards from the directory of the current file
@@ -58,8 +58,7 @@ function! virtualenv#activate(...)
                            \virtualenv#force_activate(target))
                 endif
             else
-                call s:Warning('unable to determine virtualenv
-                              \ from the current file path')
+                call s:Warning('virtualenv of the current file was not found')
                 return
             endif
         else
@@ -76,29 +75,39 @@ function! virtualenv#force_activate(target, ...)
     endif
 
     let internal = !(a:0 && (a:1 ==# 'external'))
+    let pyversion = virtualenv#supported(a:target, (internal) ? '' : 'external')
 
-    " s:python_version is set here
-    if !virtualenv#supported(a:target, (internal) ? '' : 'external')
+    if !(pyversion)
+        call s:Error(a:target.' is not supported')
         return 1
     endif
 
+    let s:python_version = pyversion
+    let s:virtualenv_internal = internal
+    let s:virtualenv_directory_ = a:target
+    let s:virtualenv_return_dir = getcwd()
+    let s:virtualenv_name = fnamemodify(a:target, ':t')
+
     try
-        let s:virtualenv_return_dir = getcwd()
-
-        let s:virtualenv_internal = internal
-        let s:virtualenv_directory_ = a:target
-        let s:virtualenv_name = fnamemodify(a:target, ':t')
-
         if (s:virtualenv_internal)
             call s:execute_python_command(
-                        \'virtualenv_activate', s:joinpath(
-                        \    s:virtualenv_directory_, 'bin/activate_this.py'))
+                    \'virtualenv_activate', s:joinpath(
+                    \    s:virtualenv_directory_, 'bin/activate_this.py'))
         else
             let [syspath] = s:execute_system_python_command(
-                        \'import sys; print(list(sys.path))')
+                    \'import sys; print(list(sys.path))')
             call s:execute_python_command('virtualenv_update_syspath', syspath)
         endif
     catch
+        unlet! s:virtualenv_name
+        unlet! s:virtualenv_return_dir
+        unlet! s:virtualenv_directory_
+        unlet! s:virtualenv_internal
+        unlet! s:python_version
+
+        call s:Error(v:throwpoint)
+        call s:Error(v:exception)
+
         return 1
     endtry
 
@@ -106,7 +115,7 @@ function! virtualenv#force_activate(target, ...)
 
     if (g:virtualenv_cdvirtualenv_on_activate)
         if (!s:issubdir(s:virtualenv_return_dir, s:virtualenv_directory_) ||
-            \g:virtualenv_force_cdvirtualenv_on_activate)
+           \g:virtualenv_force_cdvirtualenv_on_activate)
             call virtualenv#cdvirtualenv()
         endif
     endif
@@ -121,24 +130,23 @@ function! virtualenv#deactivate()
 endfunction
 
 function! virtualenv#force_deactivate()
-    try
-        call s:execute_python_command(
-                    \'virtualenv_deactivate', s:virtualenv_internal)
-    catch
-        return 1
-    endtry
-
-    delcommand VirtualEnvCdvirtualenv
-
-    unlet! s:virtualenv_name
-    unlet! s:virtualenv_directory_
-    unlet! s:virtualenv_internal
-
     if (g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir'))
         execute 'cd' fnameescape(s:virtualenv_return_dir)
     endif
 
+    delcommand VirtualEnvCdvirtualenv
+
+    try
+        call s:execute_python_command(
+                \'virtualenv_deactivate', s:virtualenv_internal)
+    catch
+        return 1
+    endtry
+
+    unlet! s:virtualenv_name
     unlet! s:virtualenv_return_dir
+    unlet! s:virtualenv_directory_
+    unlet! s:virtualenv_internal
     unlet! s:python_version
 endfunction
 
@@ -163,7 +171,7 @@ function! virtualenv#statusline()
     endif
 endfunction
 
-
+" helper functions
 function! virtualenv#find(directory, ...)
     let virtualenvs = []
     let pattern = (a:0) ? a:1 : '*'
@@ -207,13 +215,12 @@ function! virtualenv#supported_internal(target)
         call s:Error(a:target.' requires python'.python_major_version.' support')
         return
     endif
-    let s:python_version = python_major_version
-    return 1
+    return python_major_version
 endfunction
 
 function! virtualenv#supported_external(target)
     let [extpython] = s:execute_system_python_command(
-                \'import platform; print(platform.python_version())')
+            \'import platform; print(platform.python_version())')
     let python_major_version = extpython[0]
     if !s:python_available(python_major_version)
         call s:Error(a:target.' requires python'.python_major_version.' support')
@@ -221,14 +228,14 @@ function! virtualenv#supported_external(target)
     endif
     let s:python_version = python_major_version
     let [vimpython] = s:execute_python_command(
-                \'import platform; print(platform.python_version())')
+            \'import platform; print(platform.python_version())')
+    unlet! s:python_version
     if (vimpython !=# extpython)
         call s:Error('python version mismatch')
         call s:Error('Vim version: '.vimpython.'; '.a:target.' version: '.extpython)
-        unlet! s:python_version
         return
     endif
-    return 1
+    return python_major_version
 endfunction
 
 function! virtualenv#armed()
@@ -236,22 +243,11 @@ function! virtualenv#armed()
         return
     endif
     let [status] = s:execute_python_command(
-                \'virtualenv_armed', s:virtualenv_internal)
+            \'virtualenv_armed', s:virtualenv_internal)
     return (status ==# 'armed')
 endfunction
 
-
-function! s:Error(message)
-    echohl ErrorMsg | echo 'vim-virtualenv: '.a:message | echohl None
-endfunction
-
-function! s:Warning(message)
-    if (g:virtualenv_debug)
-        echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
-    endif
-endfunction
-
-
+" misc functions
 function! s:isvirtualenv(target)
     return (isdirectory(a:target) &&
            \filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
@@ -274,7 +270,18 @@ function! s:virtualenv_search_upwards(path)
     return ''
 endfunction
 
+" debug functions
+function! s:Error(message)
+    echohl ErrorMsg | echo 'vim-virtualenv: '.a:message | echohl None
+endfunction
 
+function! s:Warning(message)
+    if (g:virtualenv_debug)
+        echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
+    endif
+endfunction
+
+" paths machinery
 function! s:issubdir(subdirectory, directory)
     let directory = s:normpath(a:subdirectory)
     let pattern = '^'.s:normpath(a:directory).'/'
@@ -308,7 +315,7 @@ function! s:normpath(path)
     endif
 endfunction
 
-
+" python machinery
 function! s:python_available(version)
     if !exists('s:python'.a:version.'_available')
         try
