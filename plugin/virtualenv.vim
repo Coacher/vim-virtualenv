@@ -2,8 +2,14 @@ if exists('g:virtualenv_loaded')
     finish
 endif
 
-if !(has('python') || has('python3'))
+if (!exists('g:virtualenv_force_python_version') &&
+   \!(has('python') || has('python3')))
     echoerr 'vim-virtualenv requires python or python3 feature to be enabled'
+    finish
+elseif (exists('g:virtualenv_force_python_version') &&
+       \!has('python'.((g:virtualenv_force_python_version != 3) ? '' : '3')))
+    let pyversion = (g:virtualenv_force_python_version != 3) ? '' : '3'
+    echoerr 'vim-virtualenv requires python'.pyversion.' feature to be enabled'
     finish
 endif
 
