@@ -23,6 +23,8 @@ let g:virtualenv_directory =
         \     !isdirectory($WORKON_HOME) ? '~/.virtualenvs' : $WORKON_HOME)
 let g:virtualenv_auto_activate =
         \ get(g:, 'virtualenv_auto_activate', 1)
+let g:virtualenv_auto_activate_everywhere =
+        \ get(g:, 'virtualenv_auto_activate_everywhere', 0)
 let g:virtualenv_cdvirtualenv_on_activate =
         \ get(g:, 'virtualenv_cdvirtualenv_on_activate', 1)
 let g:virtualenv_force_cdvirtualenv_on_activate =
@@ -41,7 +43,9 @@ if virtualenv#init()
     finish
 endif
 
-if (g:virtualenv_auto_activate)
+if (g:virtualenv_auto_activate_everywhere)
+    execute 'autocmd BufFilePost,BufNewFile,BufRead * call virtualenv#activate()'
+elseif (g:virtualenv_auto_activate)
     execute 'autocmd BufFilePost,BufNewFile,BufRead '
            \.g:virtualenv_directory.'/* call virtualenv#activate()'
 endif
