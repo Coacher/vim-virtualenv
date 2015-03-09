@@ -2,15 +2,17 @@ if exists('g:loaded_virtualenv')
     finish
 endif
 
-if (!exists('g:virtualenv_force_python_version') &&
-   \!(has('python') || has('python3')))
-    echoerr 'vim-virtualenv requires python or python3 feature to be enabled'
-    finish
-elseif (exists('g:virtualenv_force_python_version') &&
-       \!has('python'.((g:virtualenv_force_python_version != 3) ? '' : '3')))
-    let pyversion = (g:virtualenv_force_python_version != 3) ? '' : '3'
-    echoerr 'vim-virtualenv requires python'.pyversion.' feature to be enabled'
-    finish
+if !exists('g:virtualenv#force_python_version')
+    if !(has('python') || has('python3'))
+        echoerr 'vim-virtualenv requires python or python3 feature to be enabled'
+        finish
+    endif
+else
+    let python = 'python'.((g:virtualenv#force_python_version != 3) ? '' : '3')
+    if !has(python)
+        echoerr 'vim-virtualenv requires the '.python.' feature to be enabled'
+        finish
+    endif
 endif
 
 let g:loaded_virtualenv = 1
@@ -18,51 +20,49 @@ let g:loaded_virtualenv = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-let g:virtualenv_directory =
-        \ get(g:, 'virtualenv_directory',
+let g:virtualenv#directory =
+        \ get(g:, 'virtualenv#directory',
         \     !isdirectory($WORKON_HOME) ? '~/.virtualenvs' : $WORKON_HOME)
-let g:virtualenv_auto_activate =
-        \ get(g:, 'virtualenv_auto_activate', 1)
-let g:virtualenv_auto_activate_everywhere =
-        \ get(g:, 'virtualenv_auto_activate_everywhere', 0)
-let g:virtualenv_cdvirtualenv_on_activate =
-        \ get(g:, 'virtualenv_cdvirtualenv_on_activate', 1)
-let g:virtualenv_force_cdvirtualenv_on_activate =
-        \ get(g:, 'virtualenv_force_cdvirtualenv_on_activate', 0)
-let g:virtualenv_return_on_deactivate =
-        \ get(g:, 'virtualenv_return_on_deactivate', 1)
-let g:virtualenv_stl_format =
-        \ get(g:, 'virtualenv_stl_format', '%n')
-let g:virtualenv_debug =
-        \ get(g:, 'virtualenv_debug', 0)
-let g:virtualenv_python_script =
-        \ get(g:, 'virtualenv_python_script',
+let g:virtualenv#auto_activate =
+        \ get(g:, 'virtualenv#auto_activate', 1)
+let g:virtualenv#auto_activate_everywhere =
+        \ get(g:, 'virtualenv#auto_activate_everywhere', 0)
+let g:virtualenv#cdvirtualenv_on_activate =
+        \ get(g:, 'virtualenv#cdvirtualenv_on_activate', 1)
+let g:virtualenv#return_on_deactivate =
+        \ get(g:, 'virtualenv#return_on_deactivate', 1)
+let g:virtualenv#statusline_format =
+        \ get(g:, 'virtualenv#statusline_format', '%n')
+let g:virtualenv#debug =
+        \ get(g:, 'virtualenv#debug', 0)
+let g:virtualenv#python_script =
+        \ get(g:, 'virtualenv#python_script',
         \     expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py')
 
 if virtualenv#init()
     finish
 endif
 
-if (g:virtualenv_auto_activate_everywhere)
+if (g:virtualenv#auto_activate_everywhere)
     execute 'autocmd BufFilePost,BufNewFile,BufRead * call virtualenv#activate()'
-elseif (g:virtualenv_auto_activate)
+elseif (g:virtualenv#auto_activate)
     execute 'autocmd BufFilePost,BufNewFile,BufRead '
-           \.g:virtualenv_directory.'/* call virtualenv#activate()'
+           \.g:virtualenv#directory.'/* call virtualenv#activate()'
 endif
 
 command! -nargs=? -bar -complete=dir VirtualEnvList
         \ call virtualenv#list(<f-args>)
-command! -nargs=? -bar -complete=customlist,s:virtualenv_completion
-        \ VirtualEnvActivate call virtualenv#activate(<f-args>)
+command! -nargs=? -bar -complete=customlist,s:completion VirtualEnvActivate
+        \ call virtualenv#activate(<f-args>)
 command! -nargs=0 -bar VirtualEnvDeactivate
         \ call virtualenv#deactivate()
 
-function! s:virtualenv_completion(arglead, cmdline, cursorpos)
+function! s:completion(arglead, cmdline, cursorpos)
     if (a:arglead !~ '/')
         let pattern = a:arglead.'*'
         let directory = getcwd()
-        let virtualenvs = s:relvirtualenvlist(g:virtualenv_directory, pattern)
-        if (g:virtualenv_directory !=# directory)
+        let virtualenvs = s:relvirtualenvlist(g:virtualenv#directory, pattern)
+        if (g:virtualenv#directory !=# directory)
             call s:appendcwdlist(virtualenvs,
                                 \s:relvirtualenvlist(directory, pattern))
         endif
@@ -72,8 +72,8 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
         else
             if (a:arglead !~ '^\~')
                 let pattern .= '/'
-                let globs = s:relgloblist(g:virtualenv_directory, pattern)
-                if (g:virtualenv_directory !=# directory)
+                let globs = s:relgloblist(g:virtualenv#directory, pattern)
+                if (g:virtualenv#directory !=# directory)
                     call s:appendcwdlist(globs,
                                         \s:relgloblist(directory, pattern))
                 endif
@@ -91,8 +91,8 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
             let pattern = a:arglead.'*'
             let directory = getcwd()
             let virtualenvs =
-                    \ s:relvirtualenvlist(g:virtualenv_directory, pattern)
-            if (g:virtualenv_directory !=# directory)
+                    \ s:relvirtualenvlist(g:virtualenv#directory, pattern)
+            if (g:virtualenv#directory !=# directory)
                 call s:appendcwdlist(virtualenvs,
                                     \s:relvirtualenvlist(directory, pattern))
             endif
@@ -105,8 +105,8 @@ function! s:virtualenv_completion(arglead, cmdline, cursorpos)
             if (a:arglead =~ '^[\.\~/]')
                 return s:fnameescapelist(globpath(directory, pattern, 0, 1))
             else
-                let globs = s:relgloblist(g:virtualenv_directory, pattern)
-                if (g:virtualenv_directory !=# directory)
+                let globs = s:relgloblist(g:virtualenv#directory, pattern)
+                if (g:virtualenv#directory !=# directory)
                     call s:appendcwdlist(globs,
                                         \s:relgloblist(directory, pattern))
                 endif
