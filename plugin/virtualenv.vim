@@ -1,4 +1,4 @@
-if exists('g:virtualenv_loaded')
+if exists('g:loaded_virtualenv')
     finish
 endif
 
@@ -13,7 +13,7 @@ elseif (exists('g:virtualenv_force_python_version') &&
     finish
 endif
 
-let g:virtualenv_loaded = 1
+let g:loaded_virtualenv = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
