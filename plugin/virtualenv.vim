@@ -44,7 +44,7 @@ if virtualenv#init()
 endif
 
 if (g:virtualenv#auto_activate_everywhere)
-    execute 'autocmd BufFilePost,BufNewFile,BufRead * call virtualenv#activate()'
+    autocmd BufFilePost,BufNewFile,BufRead * call virtualenv#activate()
 elseif (g:virtualenv#auto_activate)
     execute 'autocmd BufFilePost,BufNewFile,BufRead '
            \.g:virtualenv#directory.'/* call virtualenv#activate()'
