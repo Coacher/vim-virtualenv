@@ -58,8 +58,10 @@ command! -nargs=0 -bar VirtualEnvDeactivate
         \ call virtualenv#deactivate()
 
 function! s:completion(arglead, cmdline, cursorpos)
-    if (a:arglead !~ '/')
-        let pattern = a:arglead.'*'
+    let arglead = fnameescape(a:arglead)
+
+    if (arglead !~ '/')
+        let pattern = arglead.'*'
         let directory = getcwd()
         let virtualenvs = s:relvirtualenvlist(g:virtualenv#directory, pattern)
         if (g:virtualenv#directory !=# directory)
@@ -70,7 +72,7 @@ function! s:completion(arglead, cmdline, cursorpos)
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
         else
-            if (a:arglead !~ '^\~')
+            if (arglead !~ '^\~')
                 let pattern .= '/'
                 let globs = s:relgloblist(g:virtualenv#directory, pattern)
                 if (g:virtualenv#directory !=# directory)
@@ -79,16 +81,16 @@ function! s:completion(arglead, cmdline, cursorpos)
                 endif
                 return s:fnameescapelist(globs)
             else
-                return [fnamemodify(a:arglead, ':p')]
+                return [fnamemodify(arglead, ':p')]
             endif
         endif
     else
-        if (a:arglead =~ '^[\.\~/]')
-            let pattern = fnamemodify(a:arglead, ':t').'*'
-            let directory = fnamemodify(a:arglead, ':h')
+        if (arglead =~ '^[\.\~/]')
+            let pattern = fnamemodify(arglead, ':t').'*'
+            let directory = fnamemodify(arglead, ':h')
             let virtualenvs = virtualenv#find(directory, pattern)
         else
-            let pattern = a:arglead.'*'
+            let pattern = arglead.'*'
             let directory = getcwd()
             let virtualenvs =
                     \ s:relvirtualenvlist(g:virtualenv#directory, pattern)
@@ -102,7 +104,7 @@ function! s:completion(arglead, cmdline, cursorpos)
             return s:fnameescapelist(virtualenvs)
         else
             let pattern .= '/'
-            if (a:arglead =~ '^[\.\~/]')
+            if (arglead =~ '^[\.\~/]')
                 return s:fnameescapelist(globpath(directory, pattern, 0, 1))
             else
                 let globs = s:relgloblist(g:virtualenv#directory, pattern)
