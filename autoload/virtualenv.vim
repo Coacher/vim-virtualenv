@@ -1,12 +1,16 @@
 function! virtualenv#init()
-    " make g:virtualenv_directory path absolute
-    let g:virtualenv_directory = fnamemodify(g:virtualenv_directory, ':p')
+    let g:virtualenv#directory =
+            \ s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
 
-    " normalize g:virtualenv_directory path
-    let g:virtualenv_directory = s:normpath(g:virtualenv_directory)
+    if !isdirectory(g:virtualenv#directory)
+        call s:Error(string(g:virtualenv#directory).' is not a directory')
+        return 1
+    endif
 
-    if !isdirectory(g:virtualenv_directory)
-        call s:Error(g:virtualenv_directory.' is not a directory')
+    if (exists('g:virtualenv#force_python_version') &&
+      \ (index([2,3], g:virtualenv#force_python_version) == -1))
+        call s:Error('invalid value for g:virtualenv#force_python_version: '
+                    \.string(g:virtualenv#force_python_version))
         return 1
     endif
 endfunction
@@ -19,7 +23,7 @@ function! virtualenv#activate(...)
             return 1
         endif
 
-        let virtualenv_path = [g:virtualenv_directory, getcwd(), '/']
+        let virtualenv_path = [g:virtualenv#directory, getcwd(), '/']
         for directory in virtualenv_path
             let virtualenvs = virtualenv#find(directory, name)
             if !empty(virtualenvs)
@@ -31,7 +35,7 @@ function! virtualenv#activate(...)
                     call s:Warning('processing '.target)
                 endif
                 return (virtualenv#deactivate() ||
-                       \virtualenv#force_activate(target))
+                      \ virtualenv#force_activate(target))
             endif
         endfor
 
@@ -40,22 +44,22 @@ function! virtualenv#activate(...)
         return 1
     else
         if (empty($VIRTUAL_ENV) ||
-           \(exists('s:virtualenv_directory_') &&
-           \ ($VIRTUAL_ENV ==# s:virtualenv_directory_)))
+          \ (exists('s:virtualenv_directory') &&
+          \  ($VIRTUAL_ENV ==# s:virtualenv_directory)))
             " if either $VIRTUAL_ENV is not set, or it is set and
-            " equals to the value of s:virtualenv_directory_ variable,
+            " equals to the value of s:virtualenv_directory variable,
             " then search upwards from the directory of the current file
             let current_file_directory = expand('%:p:h')
             let target = s:virtualenv_search_upwards(current_file_directory)
 
             if !empty(target)
-                if (exists('s:virtualenv_directory_') &&
-                   \target ==# s:virtualenv_directory_)
+                if (exists('s:virtualenv_directory') &&
+                  \ (target ==# s:virtualenv_directory))
                     call s:Warning('virtualenv '.target.' is already active')
                     return
                 else
                     return (virtualenv#deactivate() ||
-                           \virtualenv#force_activate(target))
+                          \ virtualenv#force_activate(target))
                 endif
             else
                 call s:Warning('virtualenv of the current file was not found')
@@ -84,15 +88,15 @@ function! virtualenv#force_activate(target, ...)
 
     let s:python_version = pyversion
     let s:virtualenv_internal = internal
-    let s:virtualenv_directory_ = a:target
+    let s:virtualenv_directory = a:target
     let s:virtualenv_return_dir = getcwd()
     let s:virtualenv_name = fnamemodify(a:target, ':t')
 
     try
         if (s:virtualenv_internal)
             call s:execute_python_command(
-                    \'virtualenv_activate', s:joinpath(
-                    \    s:virtualenv_directory_, 'bin/activate_this.py'))
+                    \'virtualenv_activate',
+                    \s:joinpath(s:virtualenv_directory, 'bin/activate_this.py'))
         else
             let [syspath] = s:execute_system_python_command(
                     \'import sys; print(list(sys.path))')
@@ -101,7 +105,7 @@ function! virtualenv#force_activate(target, ...)
     catch
         unlet! s:virtualenv_name
         unlet! s:virtualenv_return_dir
-        unlet! s:virtualenv_directory_
+        unlet! s:virtualenv_directory
         unlet! s:virtualenv_internal
         unlet! s:python_version
 
@@ -113,11 +117,9 @@ function! virtualenv#force_activate(target, ...)
 
     command! -nargs=0 -bar VirtualEnvCdvirtualenv call virtualenv#cdvirtualenv()
 
-    if (g:virtualenv_cdvirtualenv_on_activate)
-        if (!s:issubdir(s:virtualenv_return_dir, s:virtualenv_directory_) ||
-           \g:virtualenv_force_cdvirtualenv_on_activate)
-            call virtualenv#cdvirtualenv()
-        endif
+    if (g:virtualenv#cdvirtualenv_on_activate &&
+      \ !s:issubdir(s:virtualenv_return_dir, s:virtualenv_directory))
+        call virtualenv#cdvirtualenv()
     endif
 endfunction
 
@@ -130,7 +132,7 @@ function! virtualenv#deactivate()
 endfunction
 
 function! virtualenv#force_deactivate()
-    if (g:virtualenv_return_on_deactivate && exists('s:virtualenv_return_dir'))
+    if (g:virtualenv#return_on_deactivate && exists('s:virtualenv_return_dir'))
         execute 'cd' fnameescape(s:virtualenv_return_dir)
     endif
 
@@ -145,19 +147,19 @@ function! virtualenv#force_deactivate()
 
     unlet! s:virtualenv_name
     unlet! s:virtualenv_return_dir
-    unlet! s:virtualenv_directory_
+    unlet! s:virtualenv_directory
     unlet! s:virtualenv_internal
     unlet! s:python_version
 endfunction
 
 function! virtualenv#cdvirtualenv()
-    if exists('s:virtualenv_directory_')
-        execute 'cd' fnameescape(s:virtualenv_directory_)
+    if exists('s:virtualenv_directory')
+        execute 'cd' fnameescape(s:virtualenv_directory)
     endif
 endfunction
 
 function! virtualenv#list(...)
-    let directory = !(a:0) ? g:virtualenv_directory : a:1
+    let directory = !(a:0) ? g:virtualenv#directory : a:1
     for virtualenv in virtualenv#find(directory)
         echo virtualenv
     endfor
@@ -165,7 +167,8 @@ endfunction
 
 function! virtualenv#statusline()
     if exists('s:virtualenv_name')
-        return substitute(g:virtualenv_stl_format, '\C%n', s:virtualenv_name, 'g')
+        return substitute(g:virtualenv#statusline_format, '\C%n',
+                         \s:virtualenv_name, 'g')
     else
         return ''
     endif
@@ -187,32 +190,34 @@ function! virtualenv#find(directory, ...)
 endfunction
 
 function! virtualenv#supported(target, ...)
-    let internal = !(a:0 && (a:1 ==# 'external'))
-    return (internal) ? virtualenv#supported_internal(a:target)
-                    \ : virtualenv#supported_external(a:target)
+    if !exists('g:virtualenv#force_python_version')
+        let internal = !(a:0 && (a:1 ==# 'external'))
+        let python_major_version =
+                \ (internal) ? virtualenv#supported_internal(a:target)
+                \            : virtualenv#supported_external(a:target)
+    else
+        let python_major_version = g:virtualenv#force_python_version
+        call s:Warning('python version for '.a:target.' is set to '
+                      \.g:virtualenv#force_python_version)
+    endif
+    return python_major_version
 endfunction
 
 function! virtualenv#supported_internal(target)
-    if !exists('g:virtualenv_force_python_version')
-        let pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
-        if !empty(pythons)
-            let [python; rest] = pythons
-            if !empty(rest)
-                call s:Warning('multiple python versions were found in '.a:target)
-                call s:Warning('processing '.python)
-            endif
-        else
-            call s:Error('no python installations were found in '.a:target)
-            return
+    let pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
+    if !empty(pythons)
+        let [python; rest] = pythons
+        if !empty(rest)
+            call s:Warning('multiple python versions were found in '.a:target)
+            call s:Warning('processing '.python)
         endif
-        let python_major_version = python[-4:][0]
     else
-        let python_major_version = g:virtualenv_force_python_version
-        call s:Warning('python version for '.a:target.' is set to '
-                      \.g:virtualenv_force_python_version)
+        call s:Error('no python installations were found in '.a:target)
+        return
     endif
+    let python_major_version = python[-4:][0]
     if !s:python_available(python_major_version)
-        call s:Error(a:target.' requires python'.python_major_version.' support')
+        call s:Error(a:target.' requires python'.python_major_version)
         return
     endif
     return python_major_version
@@ -223,16 +228,16 @@ function! virtualenv#supported_external(target)
             \'import platform; print(platform.python_version())')
     let python_major_version = extpython[0]
     if !s:python_available(python_major_version)
-        call s:Error(a:target.' requires python'.python_major_version.' support')
+        call s:Error(a:target.' requires python'.python_major_version)
         return
     endif
-    let s:python_version = python_major_version
-    let [vimpython] = s:execute_python_command(
+    let [vimpython] = s:execute_pythonX_command(
+            \python_major_version,
             \'import platform; print(platform.python_version())')
-    unlet! s:python_version
     if (vimpython !=# extpython)
         call s:Error('python version mismatch')
-        call s:Error('Vim version: '.vimpython.'; '.a:target.' version: '.extpython)
+        call s:Error(a:target.' version: '.extpython)
+        call s:Error('Vim version: '.vimpython)
         return
     endif
     return python_major_version
@@ -250,13 +255,13 @@ endfunction
 " misc functions
 function! s:isvirtualenv(target)
     return (isdirectory(a:target) &&
-           \filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
+          \ filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
 endfunction
 
 function! s:virtualenv_search_upwards(path)
-    if s:issubdir(a:path, g:virtualenv_directory)
-        let target = g:virtualenv_directory
-        let tail = substitute(a:path, '^'.g:virtualenv_directory.'/', '', '')
+    if s:issubdir(a:path, g:virtualenv#directory)
+        let target = g:virtualenv#directory
+        let tail = substitute(a:path, '^'.g:virtualenv#directory.'/', '', '')
     else
         let target = '/'
         let tail = fnamemodify(a:path, ':p')
@@ -276,7 +281,7 @@ function! s:Error(message)
 endfunction
 
 function! s:Warning(message)
-    if (g:virtualenv_debug)
+    if (g:virtualenv#debug)
         echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
     endif
 endfunction
@@ -320,7 +325,7 @@ function! s:python_available(version)
     if !exists('s:python'.a:version.'_available')
         try
             let command = (a:version != 3) ? 'pyfile' : 'py3file'
-            execute command fnameescape(g:virtualenv_python_script)
+            execute command fnameescape(g:virtualenv#python_script)
             execute 'let s:python'.a:version.'_available = 1'
         catch
             execute 'let s:python'.a:version.'_available = 0'
@@ -334,16 +339,21 @@ function! s:execute_system_python_command(command)
 endfunction
 
 function! s:execute_python_command(command, ...)
-    if exists('s:python_version')
-        let interpreter = (s:python_version != 3) ? 'python' : 'python3'
-        let command = a:command.((a:0) ? s:construct_arguments(a:0, a:000) : '')
-        redir => output
-            silent execute interpreter command
-        redir END
-        return split(output, '\n')
-    else
-        return []
-    endif
+    let interpreter = (s:python_version != 3) ? 'python' : 'python3'
+    let command = a:command.((a:0) ? s:construct_arguments(a:0, a:000) : '')
+    redir => output
+        silent execute interpreter command
+    redir END
+    return split(output, '\n')
+endfunction
+
+function! s:execute_pythonX_command(version, command, ...)
+    let interpreter = (a:version != 3) ? 'python' : 'python3'
+    let command = a:command.((a:0) ? s:construct_arguments(a:0, a:000) : '')
+    redir => output
+        silent execute interpreter command
+    redir END
+    return split(output, '\n')
 endfunction
 
 function! s:construct_arguments(number, list)
