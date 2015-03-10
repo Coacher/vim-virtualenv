@@ -286,6 +286,35 @@ function! s:Warning(message)
     endif
 endfunction
 
+if (g:virtualenv#debug)
+function! s:DescribeVariable(scope, name)
+    execute 'let value = get('.a:scope.', '''.a:name.''', ''_undefined_'')'
+    echo a:scope.a:name.' = '.string(value)
+endfunction
+
+function! virtualenv#dump()
+    let opts = ['virtualenv#directory',
+               \'virtualenv#auto_activate',
+               \'virtualenv#auto_activate_everywhere',
+               \'virtualenv#cdvirtualenv_on_activate',
+               \'virtualenv#return_on_deactivate',
+               \'virtualenv#statusline_format',
+               \'virtualenv#force_python_version',
+               \'virtualenv#debug',
+               \'virtualenv#python_script']
+    let state = ['python2_available', 'python3_available', 'python_version',
+                \'virtualenv_name', 'virtualenv_internal',
+                \'virtualenv_directory', 'virtualenv_return_dir']
+    for name in opts
+        call s:DescribeVariable('g:', name)
+    endfor
+    echo '--------------------------------'
+    for name in state
+        call s:DescribeVariable('s:', name)
+    endfor
+endfunction
+endif
+
 " paths machinery
 function! s:issubdir(subdirectory, directory)
     let directory = s:normpath(a:subdirectory)
