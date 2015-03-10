@@ -13,7 +13,7 @@ Python 2 and Python 3 versions that Vim was compiled against.
 Usage examples
 ==============
 
-List virtualenvs located inside `g:virtualenv_directory`:
+List virtualenvs located inside `g:virtualenv#directory`:
 
     :VirtualEnvList
 
@@ -21,7 +21,7 @@ List virtualenvs located inside the '/foo/bar' directory:
 
     :VirtualEnvList /foo/bar
 
-Activate the 'foo' virtualenv located inside `g:virtualenv_directory`:
+Activate the 'foo' virtualenv located inside `g:virtualenv#directory`:
 
     :VirtualEnvActivate foo
 
@@ -52,11 +52,11 @@ Key features
 
 * Activate, deactivate and list virtualenvs from a Vim session.
   By default, vim-virtualenv works with virtualenvs located inside
-  `g:virtualenv_directory` to avoid unnecessary typing.
+  `g:virtualenv#directory` to avoid unnecessary typing.
 
 * Activate virtualenvs by path using `VirtualEnvActivate` command.
   Paths can be absolute or relative, in the latter case they are first expanded
-  against `g:virtualenv_directory` and then against the current directory.
+  against `g:virtualenv#directory` and then against the current directory.
 
 * Use `<Tab>` completion with `VirtualEnvActivate` and `VirtualEnvList`
   commands to avoid even more typing.
