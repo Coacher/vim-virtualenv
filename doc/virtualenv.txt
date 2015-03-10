@@ -11,13 +11,13 @@ COMMANDS                                    *virtualenv-commands*
 
 :VirtualEnvList [path]                      *:VirtualEnvList*
     List virtualenvs located inside the "path" directory.
-    If "path" is not specified, then |g:virtualenv_directory| value is used.
+    If "path" is not specified, then |g:virtualenv#directory| value is used.
 
 :VirtualEnvActivate [name]                  *:VirtualEnvActivate*
-    Activate the "name" virtualenv located inside |g:virtualenv_directory|.
+    Activate the "name" virtualenv located inside |g:virtualenv#directory|.
     Alternatively "name" can be an absolute or a relative path
     to the virtualenv directory, in the latter case it is first expanded
-    against |g:virtualenv_directory| and then against the current directory.
+    against |g:virtualenv#directory| and then against the current directory.
 
     If "name" is not specified, vim-virtualenv searches from the directory
     of the current file upwards until it finds a virtualenv.
@@ -31,74 +31,74 @@ COMMANDS                                    *virtualenv-commands*
 ==============================================================================
 STATUSLINE                                  *virtualenv-statusline*
 
-Current virtualenv name can be shown in the 'statusline',
-or in any other place, by calling the virtualenv#statusline()
-function. The output is controlled by the |g:virtualenv_stl_format| variable.
+Current virtualenv name can be shown in the 'statusline', or in any other
+place, by calling the virtualenv#statusline() function. The output is
+controlled by the |g:virtualenv#statusline_format| variable.
 
 ==============================================================================
 CONFIGURATION                               *virtualenv-configuration*
 
-g:virtualenv_loaded                         *g:virtualenv_loaded*
-    If this variable is set, vim-virtualenv is not loaded on Vim start.
-
-g:virtualenv_directory                      *g:virtualenv_directory*
+g:virtualenv#directory                      *g:virtualenv#directory*
     This variable appoints the directory that holds virtualenvs.
 
     If $WORKON_HOME environment variable is set, it is used as default value.
     Otherwise, default value is '~/.virtualenvs'.
 
     Example: >
-        let g:virtualenv_directory = '/path/to/virtualenvs'
+        let g:virtualenv#directory = '/path/to/virtualenvs'
 <
-g:virtualenv_auto_activate                  *g:virtualenv_auto_activate*
+g:virtualenv#auto_activate                  *g:virtualenv#auto_activate*
     This variable controls whether vim-virtualenv should attempt to determine
-    and activate a virtualenv based on the current file path on file open.
+    and activate a virtualenv based on the current file path on file open when
+    the directory of the current file is inside |g:virtualenv#directory|.
 
     Default value is 1.
 
-                                    *g:virtualenv_cdvirtualenv_on_activate*
-g:virtualenv_cdvirtualenv_on_activate
+                                    *g:virtualenv#auto_activate_everywhere*
+g:virtualenv#auto_activate_everywhere
+    This variable controls whether vim-virtualenv should always attempt to
+    determine and activate a virtualenv based on the current file path on file
+    open.
+
+    Note: This variable overrules |g:virtualenv#auto_activate|.
+
+    Default value is 0.
+
+                                    *g:virtualenv#cdvirtualenv_on_activate*
+g:virtualenv#cdvirtualenv_on_activate
     This variable controls whether vim-virtualenv should change the current
     directory to the virtualenv directory on activation.
 
     Default value is 1.
 
-                                *g:virtualenv_force_cdvirtualenv_on_activate*
-g:virtualenv_force_cdvirtualenv_on_activate
-    This variable controls whether vim-virtualenv should change the current
-    directory to the virtualenv directory on activation
-    even if the current directory is already inside the virtualenv.
-
-    Default value is 0.
-
-                                        *g:virtualenv_force_python_version*
-g:virtualenv_force_python_version
-    This variable forces vim-virtualenv to use the specified version
-    of |python| command and skip Python version check for the virtualenv.
+                                        *g:virtualenv#force_python_version*
+g:virtualenv#force_python_version
+    This variable forces vim-virtualenv to use the specified version of the
+    |python| command and skip the Python version check for the virtualenv.
     Accepted values are '2' and '3' for |:python| and |:python3| commands,
     respectively.
 
     Undefined by default.
 
-                                        *g:virtualenv_return_on_deactivate*
-g:virtualenv_return_on_deactivate
+                                        *g:virtualenv#return_on_deactivate*
+g:virtualenv#return_on_deactivate
     This variable controls whether vim-virtualenv should restore the current
     directory to its original value on virtualenv deactivation.
 
     Default value is 1.
 
-g:virtualenv_stl_format                     *g:virtualenv_stl_format*
+g:virtualenv#statusline_format              *g:virtualenv#statusline_format*
     This variable sets the format string for virtualenv#statusline() function
     output. Any '%n' flag will be replaced with the current virtualenv name.
 
     Default value is '%n'.
 
     Example: >
-        let g:virtualenv_stl_format = '[%n]'
+        let g:virtualenv#statusline_format = '[%n]'
 <
-g:virtualenv_debug                          *g:virtualenv_debug*
-    This variable controls whether vim-virtualenv should print
-    warning messages.
+g:virtualenv#debug                          *g:virtualenv#debug*
+    This variable controls whether vim-virtualenv should print warning
+    messages.
 
     Default value is 0.
 
@@ -119,7 +119,7 @@ https://github.com/jmcantrell/vim-virtualenv
 ==============================================================================
 LICENSE                                     *virtualenv-license*
 
-vim-virtualenv is released under Vim License.
+vim-virtualenv is released under the Vim License.
 See |license|.
 
 vim:tw=78:sw=4:et:ft=help:norl:
