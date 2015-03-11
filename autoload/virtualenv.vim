@@ -115,7 +115,7 @@ function! virtualenv#force_activate(target, ...)
         return 1
     endtry
 
-    command! -nargs=0 -bar VirtualEnvCdvirtualenv call virtualenv#cdvirtualenv()
+    command! -nargs=0 -bar VirtualEnvCD call virtualenv#cdvirtualenv()
 
     if (g:virtualenv#cdvirtualenv_on_activate &&
       \ !s:issubdir(s:virtualenv_return_dir, s:virtualenv_directory))
@@ -136,7 +136,7 @@ function! virtualenv#force_deactivate()
         execute 'cd' fnameescape(s:virtualenv_return_dir)
     endif
 
-    delcommand VirtualEnvCdvirtualenv
+    delcommand VirtualEnvCD
 
     try
         call s:execute_python_command(
