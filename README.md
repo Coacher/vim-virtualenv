@@ -25,7 +25,7 @@ Activate the 'foo' virtualenv located inside `g:virtualenv#directory`:
 
     :VirtualEnvActivate foo
 
-Activate virtualenv located at '/foo/bar/baz':
+Activate the virtualenv located at '/foo/bar/baz':
 
     :VirtualEnvActivate /foo/bar/baz
 
@@ -34,7 +34,7 @@ completion.
 
 Change the current directory to the current virtualenv directory:
 
-    :VirtualEnvCdvirtualenv
+    :VirtualEnvCD
 
 Deactivate the current virtualenv:
 
@@ -59,11 +59,11 @@ Key features
   against `g:virtualenv#directory` and then against the current directory.
 
 * Use `<Tab>` completion with `VirtualEnvActivate` and `VirtualEnvList`
-  commands to avoid even more typing.
+  commands to avoid typing even more.
 
 * Change the current directory to the current virtualenv directory using
-  `VirtualEnvCdvirtualenv` command. By default, vim-virtualenv automatically
-  does this on virtualenv activation and returns back on deactivation.
+  `VirtualEnvCD` command. By default, vim-virtualenv automatically does this on
+  virtualenv activation and returns back on deactivation.
 
 * Python3 support. `sys.path` for `:python` and `:python3` commands is updated
   separately depending on the Python major version inside the target
