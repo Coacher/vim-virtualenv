@@ -3,8 +3,8 @@
 ==============================================================================
 INTRODUCTION                                *virtualenv*
 
-*vim-virtualenv* provides a simple way to activate and deactivate
-Python virtual environments from a Vim session. It requires |if_pyth|.
+*vim-virtualenv* provides a simple way to activate and deactivate Python
+virtual environments from a Vim session. It requires |if_pyth|.
 
 ==============================================================================
 COMMANDS                                    *virtualenv-commands*
@@ -15,14 +15,14 @@ COMMANDS                                    *virtualenv-commands*
 
 :VirtualEnvActivate [name]                  *:VirtualEnvActivate*
     Activate the "name" virtualenv located inside |g:virtualenv#directory|.
-    Alternatively "name" can be an absolute or a relative path
-    to the virtualenv directory, in the latter case it is first expanded
-    against |g:virtualenv#directory| and then against the current directory.
+    Alternatively "name" can be an absolute or a relative path to the
+    virtualenv directory, in the latter case it is first expanded against
+    |g:virtualenv#directory| and then against the current directory.
 
     If "name" is not specified, vim-virtualenv searches from the directory
     of the current file upwards until it finds a virtualenv.
 
-:VirtualEnvCdvirtualenv                     *:VirtualEnvCdvirtualenv*
+:VirtualEnvCD                               *:VirtualEnvCD*
     Change the current directory to the current virtualenv directory.
 
 :VirtualEnvDeactivate                       *:VirtualEnvDeactivate*
@@ -60,7 +60,7 @@ g:virtualenv#auto_activate_everywhere
     determine and activate a virtualenv based on the current file path on file
     open.
 
-    Note: This variable overrules |g:virtualenv#auto_activate|.
+    Note: This variable overrides |g:virtualenv#auto_activate|.
 
     Default value is 0.
 
