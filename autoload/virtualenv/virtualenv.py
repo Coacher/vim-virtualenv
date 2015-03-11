@@ -1,8 +1,8 @@
 def virtualenv_armed(internal=True):
     if ('__virtualenv_saved_sys_path' in globals() and
-            (all(('__virtualenv_saved_os_path' in globals(),
-                  '__virtualenv_saved_python_path' in globals())) or
-             not internal)):
+        (all(('__virtualenv_saved_os_path' in globals(),
+              '__virtualenv_saved_python_path' in globals())) or
+         not internal)):
         print('armed')
 
 
