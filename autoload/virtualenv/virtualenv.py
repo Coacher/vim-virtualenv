@@ -1,9 +1,11 @@
-def virtualenv_armed(internal=True):
+def virtualenv_status(internal=True):
     if ('__virtualenv_saved_sys_path' in globals() and
         (all(('__virtualenv_saved_os_path' in globals(),
               '__virtualenv_saved_python_path' in globals())) or
          not internal)):
         print('armed')
+    else:
+        print('standby')
 
 
 def virtualenv_update_syspath(syspath):

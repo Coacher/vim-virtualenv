@@ -248,7 +248,7 @@ function! virtualenv#armed()
         return
     endif
     let [status] = s:execute_python_command(
-            \'virtualenv_armed', s:virtualenv_internal)
+            \'virtualenv_status', s:virtualenv_internal)
     return (status ==# 'armed')
 endfunction
 
