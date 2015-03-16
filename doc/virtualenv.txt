@@ -71,6 +71,23 @@ g:virtualenv#cdvirtualenv_on_activate
 
     Default value is 1.
 
+                                        *g:virtualenv#return_on_deactivate*
+g:virtualenv#return_on_deactivate
+    This variable controls whether vim-virtualenv should restore the current
+    directory to its original value on virtualenv deactivation.
+
+    Default value is 1.
+
+g:virtualenv#statusline_format              *g:virtualenv#statusline_format*
+    This variable sets the format string for the virtualenv#statusline()
+    function output. Any '%n' flag will be replaced with the current
+    virtualenv name.
+
+    Default value is '%n'.
+
+    Example: >
+        let g:virtualenv#statusline_format = '[%n]'
+<
                                         *g:virtualenv#force_python_version*
 g:virtualenv#force_python_version
     This variable forces vim-virtualenv to use the specified version of the
@@ -80,22 +97,6 @@ g:virtualenv#force_python_version
 
     Undefined by default.
 
-                                        *g:virtualenv#return_on_deactivate*
-g:virtualenv#return_on_deactivate
-    This variable controls whether vim-virtualenv should restore the current
-    directory to its original value on virtualenv deactivation.
-
-    Default value is 1.
-
-g:virtualenv#statusline_format              *g:virtualenv#statusline_format*
-    This variable sets the format string for virtualenv#statusline() function
-    output. Any '%n' flag will be replaced with the current virtualenv name.
-
-    Default value is '%n'.
-
-    Example: >
-        let g:virtualenv#statusline_format = '[%n]'
-<
 g:virtualenv#debug                          *g:virtualenv#debug*
     This variable controls whether vim-virtualenv should print warning
     messages.
