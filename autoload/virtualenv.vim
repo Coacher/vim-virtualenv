@@ -199,6 +199,10 @@ function! virtualenv#supported(target, ...)
         let python_major_version = g:virtualenv#force_python_version
         call s:Warning('python version for '.a:target.' is set to '
                       \.g:virtualenv#force_python_version)
+        if !s:python_available(python_major_version)
+            call s:Error(a:target.' requires python'.python_major_version)
+            return
+        endif
     endif
     return python_major_version
 endfunction
