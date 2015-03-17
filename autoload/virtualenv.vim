@@ -229,19 +229,19 @@ endfunction
 
 function! virtualenv#supported_external(target)
     let [extpython] = s:execute_system_python_command(
-            \'import platform; print(platform.python_version())')
-    let python_major_version = extpython[0]
+            \'import sys; print(hex(sys.hexversion))')
+    let [python_major_version] = s:execute_system_python_command(
+            \'import sys; print(sys.version_info[0])')
     if !s:python_available(python_major_version)
         call s:Error(a:target.' requires python'.python_major_version)
         return
     endif
     let [vimpython] = s:execute_pythonX_command(
-            \python_major_version,
-            \'import platform; print(platform.python_version())')
+            \python_major_version, 'import sys; print(hex(sys.hexversion))')
     if (vimpython !=# extpython)
         call s:Error('python version mismatch')
-        call s:Error(a:target.' version: '.extpython)
-        call s:Error('Vim version: '.vimpython)
+        call s:Error(a:target.' hexversion: '.extpython)
+        call s:Error('Vim hexversion: '.vimpython)
         return
     endif
     return python_major_version
