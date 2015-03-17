@@ -197,7 +197,7 @@ function! virtualenv#supported(target, ...)
                 \            : virtualenv#supported_external(a:target)
     else
         let python_major_version = g:virtualenv#force_python_version
-        call s:Warning('python version for '.a:target.' is set to '
+        call s:Warning('Python version for '.a:target.' is set to '
                       \.g:virtualenv#force_python_version)
         if !s:python_available(python_major_version)
             call s:Error(a:target.' requires python'.python_major_version)
@@ -212,11 +212,11 @@ function! virtualenv#supported_internal(target)
     if !empty(pythons)
         let [python; rest] = pythons
         if !empty(rest)
-            call s:Warning('multiple python versions were found in '.a:target)
+            call s:Warning('multiple Python versions were found in '.a:target)
             call s:Warning('processing '.python)
         endif
     else
-        call s:Error('no python installations were found in '.a:target)
+        call s:Error('no Python installations were found in '.a:target)
         return
     endif
     let python_major_version = python[-4:][0]
@@ -239,7 +239,7 @@ function! virtualenv#supported_external(target)
     let [vimpython] = s:execute_pythonX_command(
             \python_major_version, 'import sys; print(hex(sys.hexversion))')
     if (vimpython !=# extpython)
-        call s:Error('python version mismatch')
+        call s:Error('Python version mismatch')
         call s:Error(a:target.' hexversion: '.extpython)
         call s:Error('Vim hexversion: '.vimpython)
         return
