@@ -49,8 +49,9 @@ g:virtualenv#directory                      *g:virtualenv#directory*
 <
 g:virtualenv#auto_activate                  *g:virtualenv#auto_activate*
     This variable controls whether vim-virtualenv should attempt to determine
-    and activate a virtualenv based on the current file path on file open when
-    the directory of the current file is inside |g:virtualenv#directory|.
+    and activate a virtualenv based on the current file path on file open in
+    the case where the directory of the current file is inside
+    |g:virtualenv#directory|.
 
     Default value is 1.
 
