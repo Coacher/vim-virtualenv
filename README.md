@@ -64,7 +64,3 @@ Key features
 * Change the current directory to the current virtualenv directory using
   `VirtualEnvCD` command. By default, vim-virtualenv automatically does this on
   virtualenv activation and returns back on deactivation.
-
-* Python3 support. `sys.path` for `:python` and `:python3` commands is updated
-  separately depending on the Python major version inside the target
-  virtualenv.
