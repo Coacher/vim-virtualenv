@@ -96,7 +96,9 @@ function! virtualenv#force_activate(target, ...)
         if (s:virtualenv_internal)
             call s:execute_python_command(
                     \'virtualenv_activate',
-                    \s:joinpath(s:virtualenv_directory, 'bin/activate_this.py'))
+                    \s:joinpath(s:virtualenv_directory,
+                    \           'bin/activate_this.py'),
+                    \g:virtualenv#update_pythonpath)
         else
             let [syspath] = s:execute_system_python_command(
                     \'import sys; print(list(sys.path))')
@@ -300,6 +302,7 @@ function! virtualenv#dump()
     let opts = ['virtualenv#directory',
                \'virtualenv#auto_activate',
                \'virtualenv#auto_activate_everywhere',
+               \'virtualenv#update_pythonpath',
                \'virtualenv#cdvirtualenv_on_activate',
                \'virtualenv#return_on_deactivate',
                \'virtualenv#statusline_format',
