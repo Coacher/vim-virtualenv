@@ -1,11 +1,12 @@
 vim-virtualenv
 ==============
 
-By default, `:python` and `:!python` (as well as `:python3` and `:!python3`)
-commands have access only to the system-wide Python environment.
+By default, `:python` and `:python3` commands have access only to the
+system-wide Python environment.
 
-vim-virtualenv plugin changes Python `sys.path` and environment `$PATH` and
-`$PYTHONPATH` variables so that they refer to the chosen virtualenv.
+vim-virtualenv plugin allows to change Vim internal python `sys.path` and
+environment `$PATH` and `$PYTHONPATH` variables so that they refer to the
+chosen virtualenv.
 
 However, `:python` and `:python3` commands will be still tied to, respectively,
 Python 2 and Python 3 versions that Vim was compiled against.
@@ -53,6 +54,10 @@ Key features
 * Activate, deactivate and list virtualenvs from a Vim session.
   By default, vim-virtualenv works with virtualenvs located inside
   `g:virtualenv#directory` to avoid unnecessary typing.
+
+* When a Vim session is started inside an active virtualenv, vim-virtualenv
+  synchronizes the Vim internal python `sys.path` variable with the current
+  virtualenv.
 
 * Activate virtualenvs by path using `VirtualEnvActivate` command.
   Paths can be absolute or relative, in the latter case they are first expanded
