@@ -11,7 +11,8 @@ COMMANDS                                    *virtualenv-commands*
 
 :VirtualEnvList [path]                      *:VirtualEnvList*
     List virtualenvs located inside the "path" directory.
-    If "path" is not specified, then |g:virtualenv#directory| value is used.
+    If "path" is not specified, then the value of |g:virtualenv#directory|
+    variable is used.
 
 :VirtualEnvActivate [name]                  *:VirtualEnvActivate*
     Activate the "name" virtualenv located inside |g:virtualenv#directory|.
@@ -33,7 +34,7 @@ STATUSLINE                                  *virtualenv-statusline*
 
 Current virtualenv name can be shown in the 'statusline', or in any other
 place, by calling the virtualenv#statusline() function. The output is
-controlled by the |g:virtualenv#statusline_format| variable.
+controlled by |g:virtualenv#statusline_format| variable.
 
 ==============================================================================
 CONFIGURATION                               *virtualenv-configuration*

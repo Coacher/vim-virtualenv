@@ -56,7 +56,7 @@ Key features
   `g:virtualenv#directory` to avoid unnecessary typing.
 
 * When a Vim session is started inside an active virtualenv, vim-virtualenv
-  synchronizes the Vim internal python `sys.path` variable with the current
+  synchronizes Vim internal python `sys.path` variable with the current
   virtualenv.
 
 * Activate virtualenvs by path using `VirtualEnvActivate` command.
