@@ -50,7 +50,7 @@ function! virtualenv#activate(...)
             " equals to the value of s:virtualenv_directory variable,
             " then search upwards from the directory of the current file
             let current_file_directory = expand('%:p:h')
-            let target = s:virtualenv_search_upwards(current_file_directory)
+            let target = virtualenv#origin(current_file_directory)
 
             if !empty(target)
                 if (exists('s:virtualenv_directory') &&
@@ -258,13 +258,7 @@ function! virtualenv#armed()
     return (status ==# 'armed')
 endfunction
 
-" misc functions
-function! s:isvirtualenv(target)
-    return (isdirectory(a:target) &&
-          \ filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
-endfunction
-
-function! s:virtualenv_search_upwards(path)
+function! virtualenv#origin(path)
     if s:issubdir(a:path, g:virtualenv#directory)
         let target = g:virtualenv#directory
         let tail = substitute(a:path, '^'.g:virtualenv#directory.'/', '', '')
@@ -279,6 +273,12 @@ function! s:virtualenv_search_upwards(path)
         endif
     endfor
     return ''
+endfunction
+
+" misc functions
+function! s:isvirtualenv(target)
+    return (isdirectory(a:target) &&
+          \ filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
 endfunction
 
 " debug functions
