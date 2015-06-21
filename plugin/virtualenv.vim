@@ -59,13 +59,17 @@ command! -nargs=? -bar -complete=customlist,s:completion VirtualEnvActivate
 command! -nargs=0 -bar VirtualEnvDeactivate
         \ call virtualenv#deactivate()
 
+" the rest of this file is the VirtualEnvActivate completion machinery
 function! s:completion(arglead, cmdline, cursorpos)
     let arglead = fnameescape(a:arglead)
 
     if (arglead !~ '/')
+        " not a path was specified
         let pattern = arglead.'*'
         let directory = getcwd()
+        " first search inside g:virtualenv#directory
         let virtualenvs = s:relvirtualenvlist(g:virtualenv#directory, pattern)
+        " then search inside the current directory
         if (g:virtualenv#directory !=# directory)
             call s:appendcwdlist(virtualenvs,
                                 \s:relvirtualenvlist(directory, pattern))
@@ -74,6 +78,7 @@ function! s:completion(arglead, cmdline, cursorpos)
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
         else
+            " if no virtualenvs were found, then return a list of directories
             if (arglead !~ '^\~')
                 let pattern .= '/'
                 let globs = s:relgloblist(g:virtualenv#directory, pattern)
@@ -87,15 +92,20 @@ function! s:completion(arglead, cmdline, cursorpos)
             endif
         endif
     else
+        " a path was specified
         if (arglead =~ '^[\.\~/]')
+            " a path can be unambiguously expanded
             let pattern = fnamemodify(arglead, ':t').'*'
             let directory = fnamemodify(arglead, ':h')
             let virtualenvs = virtualenv#find(directory, pattern)
         else
+            " a path without an unambiguous prefix was specified
             let pattern = arglead.'*'
             let directory = getcwd()
+            " first search inside g:virtualenv#directory
             let virtualenvs =
                     \ s:relvirtualenvlist(g:virtualenv#directory, pattern)
+            " then search inside the current directory
             if (g:virtualenv#directory !=# directory)
                 call s:appendcwdlist(virtualenvs,
                                     \s:relvirtualenvlist(directory, pattern))
@@ -105,6 +115,7 @@ function! s:completion(arglead, cmdline, cursorpos)
         if !empty(virtualenvs)
             return s:fnameescapelist(virtualenvs)
         else
+            " if no virtualenvs were found, then return a list of directories
             let pattern .= '/'
             if (arglead =~ '^[\.\~/]')
                 return s:fnameescapelist(globpath(directory, pattern, 0, 1))
