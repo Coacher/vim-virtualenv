@@ -37,8 +37,8 @@ def virtualenv_activate(activate_this, update_pythonpath=True):
     __virtualenv_saved_os_path = os.environ.get('PATH', None)
     __virtualenv_saved_py_path = os.environ.get('PYTHONPATH', None)
 
-    with open(activate_this) as f:
-        exec(compile(f.read(), activate_this, 'exec'),
+    with open(activate_this) as fhandle:
+        exec(compile(fhandle.read(), activate_this, 'exec'),
              dict(__file__=activate_this))
 
     sys_path_diff = [

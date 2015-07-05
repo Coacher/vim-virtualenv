@@ -8,124 +8,121 @@ if !exists('g:virtualenv#force_python_version')
         finish
     endif
 else
-    let python = 'python'.((g:virtualenv#force_python_version != 3) ? '' : '3')
-    if !has(python)
-        echoerr 'vim-virtualenv requires the '.python.' feature to be enabled'
+    let s:python = 'python'.((g:virtualenv#force_python_version != 3) ? '' : '3')
+    if !has(s:python)
+        echoerr 'vim-virtualenv requires the '.s:python.' feature to be enabled'
         finish
     endif
 endif
 
 let g:loaded_virtualenv = 1
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 let g:virtualenv#directory =
-        \ get(g:, 'virtualenv#directory',
-        \     !isdirectory($WORKON_HOME) ? '~/.virtualenvs' : $WORKON_HOME)
+    \ get(g:, 'virtualenv#directory',
+    \     !isdirectory($WORKON_HOME) ? '~/.virtualenvs' : $WORKON_HOME)
 let g:virtualenv#auto_activate =
-        \ get(g:, 'virtualenv#auto_activate', 1)
+    \ get(g:, 'virtualenv#auto_activate', 1)
 let g:virtualenv#auto_activate_everywhere =
-        \ get(g:, 'virtualenv#auto_activate_everywhere', 0)
+    \ get(g:, 'virtualenv#auto_activate_everywhere', 0)
 let g:virtualenv#update_pythonpath =
-        \ get(g:, 'virtualenv#update_pythonpath', 1)
+    \ get(g:, 'virtualenv#update_pythonpath', 1)
 let g:virtualenv#cdvirtualenv_on_activate =
-        \ get(g:, 'virtualenv#cdvirtualenv_on_activate', 1)
+    \ get(g:, 'virtualenv#cdvirtualenv_on_activate', 1)
 let g:virtualenv#return_on_deactivate =
-        \ get(g:, 'virtualenv#return_on_deactivate', 1)
+    \ get(g:, 'virtualenv#return_on_deactivate', 1)
 let g:virtualenv#statusline_format =
-        \ get(g:, 'virtualenv#statusline_format', '%n')
+    \ get(g:, 'virtualenv#statusline_format', '%n')
 let g:virtualenv#debug =
-        \ get(g:, 'virtualenv#debug', 0)
+    \ get(g:, 'virtualenv#debug', 0)
 let g:virtualenv#python_script =
-        \ get(g:, 'virtualenv#python_script',
-        \     expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py')
+    \ get(g:, 'virtualenv#python_script',
+    \     expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py')
 
 if virtualenv#init()
     finish
 endif
 
-if (g:virtualenv#auto_activate_everywhere)
+augroup VirtualEnvAutoActivate
+if g:virtualenv#auto_activate_everywhere
     autocmd BufFilePost,BufNewFile,BufRead * call virtualenv#activate()
-elseif (g:virtualenv#auto_activate)
-    execute 'autocmd BufFilePost,BufNewFile,BufRead '
-           \.g:virtualenv#directory.'/* call virtualenv#activate()'
+elseif g:virtualenv#auto_activate
+    execute 'autocmd BufFilePost,BufNewFile,BufRead '.
+            \g:virtualenv#directory.'/* call virtualenv#activate()'
 endif
+augroup END
 
 command! -nargs=? -bar -complete=dir VirtualEnvList
-        \ call virtualenv#list(<f-args>)
+    \ call virtualenv#list(<f-args>)
 command! -nargs=? -bar -complete=customlist,s:completion VirtualEnvActivate
-        \ call virtualenv#activate(<f-args>)
+    \ call virtualenv#activate(<f-args>)
 command! -nargs=0 -bar VirtualEnvDeactivate
-        \ call virtualenv#deactivate()
+    \ call virtualenv#deactivate()
 
 " the rest of this file is the VirtualEnvActivate completion machinery
-function! s:completion(arglead, cmdline, cursorpos)
-    let arglead = fnameescape(a:arglead)
+function! s:completion(arglead, ...)
+    let l:arglead = fnameescape(a:arglead)
 
-    if (arglead !~ '/')
+    if (l:arglead !~# '/')
         " not a path was specified
-        let pattern = arglead.'*'
-        let directory = getcwd()
+        let l:pattern = l:arglead.'*'
+        let l:directory = getcwd()
         " first search inside g:virtualenv#directory
-        let virtualenvs = s:relvirtualenvlist(g:virtualenv#directory, pattern)
+        let l:virtualenvs = s:relvenvlist(g:virtualenv#directory, l:pattern)
         " then search inside the current directory
-        if (g:virtualenv#directory !=# directory)
-            call s:appendcwdlist(virtualenvs,
-                                \s:relvirtualenvlist(directory, pattern))
+        if (g:virtualenv#directory !=# l:directory)
+            call s:appendcwdlist(l:virtualenvs, s:relvenvlist(l:directory, l:pattern))
         endif
 
-        if !empty(virtualenvs)
-            return s:fnameescapelist(virtualenvs)
+        if !empty(l:virtualenvs)
+            return s:fnameescapelist(l:virtualenvs)
         else
             " if no virtualenvs were found, then return a list of directories
-            if (arglead !~ '^\~')
-                let pattern .= '/'
-                let globs = s:relgloblist(g:virtualenv#directory, pattern)
-                if (g:virtualenv#directory !=# directory)
-                    call s:appendcwdlist(globs,
-                                        \s:relgloblist(directory, pattern))
+            if (l:arglead !~# '^\~')
+                let l:pattern .= '/'
+                let l:globs = s:relgloblist(g:virtualenv#directory, l:pattern)
+                if (g:virtualenv#directory !=# l:directory)
+                    call s:appendcwdlist(l:globs, s:relgloblist(l:directory, l:pattern))
                 endif
-                return s:fnameescapelist(globs)
+                return s:fnameescapelist(l:globs)
             else
-                return [fnamemodify(arglead, ':p')]
+                return [fnamemodify(l:arglead, ':p')]
             endif
         endif
     else
         " a path was specified
-        if (arglead =~ '^[\.\~/]')
+        if (l:arglead =~# '^[\.\~/]')
             " a path can be unambiguously expanded
-            let pattern = fnamemodify(arglead, ':t').'*'
-            let directory = fnamemodify(arglead, ':h')
-            let virtualenvs = virtualenv#find(directory, pattern)
+            let l:pattern = fnamemodify(l:arglead, ':t').'*'
+            let l:directory = fnamemodify(l:arglead, ':h')
+            let l:virtualenvs = virtualenv#find(l:directory, l:pattern)
         else
             " a path without an unambiguous prefix was specified
-            let pattern = arglead.'*'
-            let directory = getcwd()
+            let l:pattern = l:arglead.'*'
+            let l:directory = getcwd()
             " first search inside g:virtualenv#directory
-            let virtualenvs =
-                    \ s:relvirtualenvlist(g:virtualenv#directory, pattern)
+            let l:virtualenvs = s:relvenvlist(g:virtualenv#directory, l:pattern)
             " then search inside the current directory
-            if (g:virtualenv#directory !=# directory)
-                call s:appendcwdlist(virtualenvs,
-                                    \s:relvirtualenvlist(directory, pattern))
+            if (g:virtualenv#directory !=# l:directory)
+                call s:appendcwdlist(l:virtualenvs, s:relvenvlist(l:directory, l:pattern))
             endif
         endif
 
-        if !empty(virtualenvs)
-            return s:fnameescapelist(virtualenvs)
+        if !empty(l:virtualenvs)
+            return s:fnameescapelist(l:virtualenvs)
         else
             " if no virtualenvs were found, then return a list of directories
-            let pattern .= '/'
-            if (arglead =~ '^[\.\~/]')
-                return s:fnameescapelist(globpath(directory, pattern, 0, 1))
+            let l:pattern .= '/'
+            if (l:arglead =~# '^[\.\~/]')
+                return s:fnameescapelist(globpath(l:directory, l:pattern, 0, 1))
             else
-                let globs = s:relgloblist(g:virtualenv#directory, pattern)
-                if (g:virtualenv#directory !=# directory)
-                    call s:appendcwdlist(globs,
-                                        \s:relgloblist(directory, pattern))
+                let l:globs = s:relgloblist(g:virtualenv#directory, l:pattern)
+                if (g:virtualenv#directory !=# l:directory)
+                    call s:appendcwdlist(l:globs, s:relgloblist(l:directory, l:pattern))
                 endif
-                return s:fnameescapelist(globs)
+                return s:fnameescapelist(l:globs)
             endif
         endif
     endif
@@ -143,19 +140,19 @@ function! s:relgloblist(directory, pattern)
     return s:relpathlist(globpath(a:directory, a:pattern, 0, 1), a:directory)
 endfunction
 
-function! s:relvirtualenvlist(directory, pattern)
+function! s:relvenvlist(directory, pattern)
     return s:relpathlist(virtualenv#find(a:directory, a:pattern), a:directory)
 endfunction
 
 function! s:appendcwdlist(list, cwdlist)
-    for entry in a:cwdlist
-        if (index(a:list, entry) == -1)
-            call add(a:list, entry)
+    for l:entry in a:cwdlist
+        if (index(a:list, l:entry) == -1)
+            call add(a:list, l:entry)
         else
-            call add(a:list, './'.entry)
+            call add(a:list, './'.l:entry)
         endif
     endfor
 endfunction
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
