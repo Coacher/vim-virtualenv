@@ -274,15 +274,15 @@ function! virtualenv#origin(path)
 endfunction
 
 function! virtualenv#state(...)
-    function! Query(key)
+    function! s:Query(key)
         echo a:key.' = '.get(s:state, a:key, '__undefined__')
     endfunction
 
     if (a:0)
-        call Query(a:1)
+        call s:Query(a:1)
     else
         for l:key in keys(s:state)
-            call Query(l:key)
+            call s:Query(l:key)
         endfor
     endif
 endfunction
