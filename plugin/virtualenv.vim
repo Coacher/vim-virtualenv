@@ -46,11 +46,11 @@ if virtualenv#init()
 endif
 
 augroup VirtualEnvAutoActivate
-if g:virtualenv#auto_activate_everywhere
-    autocmd BufFilePost,BufNewFile,BufRead * call virtualenv#activate()
-elseif g:virtualenv#auto_activate
-    execute 'autocmd BufFilePost,BufNewFile,BufRead '.
+if g:virtualenv#auto_activate
+    execute 'autocmd! BufFilePost,BufNewFile,BufRead '.
             \g:virtualenv#directory.'/* call virtualenv#activate()'
+elseif g:virtualenv#auto_activate_everywhere
+    autocmd! BufFilePost,BufNewFile,BufRead * call virtualenv#activate()
 endif
 augroup END
 
