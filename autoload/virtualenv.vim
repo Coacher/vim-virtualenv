@@ -93,13 +93,13 @@ function! virtualenv#force_activate(target, ...)
     try
         if s:state['virtualenv_internal']
             call s:execute_python_command(
-                \ 'virtualenv_activate',
+                \ 'VirtualEnvPlugin.activate',
                 \ s:joinpath(s:state['virtualenv_directory'], 'bin/activate_this.py'),
                 \ g:virtualenv#update_pythonpath)
         else
             let [l:syspath] =
                 \ s:execute_system_python_command('import sys; print(list(sys.path))')
-            call s:execute_python_command('virtualenv_update_syspath', l:syspath)
+            call s:execute_python_command('VirtualEnvPlugin.extactivate', l:syspath)
         endif
     catch
         unlet! s:state['virtualenv_name']
@@ -123,7 +123,7 @@ function! virtualenv#force_activate(target, ...)
 endfunction
 
 function! virtualenv#deactivate()
-    if !has_key(s:state, 'virtualenv_name') || !virtualenv#armed()
+    if !has_key(s:state, 'virtualenv_name')
         call s:Warning('deactivation is not possible')
         return
     endif
@@ -138,8 +138,7 @@ function! virtualenv#force_deactivate()
     delcommand VirtualEnvCD
 
     try
-        call s:execute_python_command(
-            \ 'virtualenv_deactivate', s:state['virtualenv_internal'])
+        call s:execute_python_command('VirtualEnvPlugin.deactivate()')
     catch
         return 1
     endtry
@@ -243,17 +242,6 @@ function! virtualenv#supported_external(target)
         return
     endif
     return l:python_major_version
-endfunction
-
-function! virtualenv#armed()
-    if has_key(s:state, 'virtualenv_internal')
-        let [l:status] =
-            \ s:execute_python_command(
-            \     'virtualenv_status', s:state['virtualenv_internal'])
-        return (l:status ==# 'armed')
-    else
-        return
-    endif
 endfunction
 
 function! virtualenv#origin(path)
