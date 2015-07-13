@@ -13,6 +13,10 @@ function! virtualenv#init()
         return 1
     endif
 
+    if empty($WORKON_HOME)
+        let $WORKON_HOME = g:virtualenv#directory
+    endif
+
     let s:state = {}
 endfunction
 
