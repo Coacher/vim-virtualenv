@@ -1,10 +1,30 @@
 *virtualenv.txt*        Better Python virtual environments support for Vim.
 
 ==============================================================================
-INTRODUCTION                                *virtualenv*
+CONTENTS                                    *virtualenv-contents*
 
-*vim-virtualenv* provides a simple way to activate and deactivate Python
-virtual environments from a Vim session. It requires |if_pyth|.
+    1. Introduction.........................|virtualenv-introduction|
+    2. Commands.............................|virtualenv-commands|
+    3. Configuration........................|virtualenv-configuration|
+    4. The 'statusline' flag................|virtualenv-statusline|
+    5. Functions............................|virtualenv-functions|
+    6. About................................|virtualenv-about|
+    7. License..............................|virtualenv-license|
+
+==============================================================================
+INTRODUCTION                                *virtualenv-introduction*
+
+*vim-virtualenv* plugin provides a simple way to activate and deactivate
+Python virtual environments created by the "virtualenv"
+(https://github.com/pypa/virtualenv) tool from a Vim session as well as
+synchronizes the Vim internal Python "sys.path" variable with an already
+active virtual environment. It requires |if_pyth|.
+
+This plugin distinguishes between internal and external virtualenvs. The
+internal one is a virtual environment that was not activated prior to the Vim
+session start, i.e. it is activated from the Vim session. The external one is
+a virtual environment that was activated before the Vim session start, i.e.
+the Vim session is started inside this virtual environment.
 
 ==============================================================================
 COMMANDS                                    *virtualenv-commands*
@@ -20,21 +40,18 @@ COMMANDS                                    *virtualenv-commands*
     virtualenv directory, in the latter case it is first expanded against
     |g:virtualenv#directory| and then against the current directory.
 
-    If "name" is not specified, vim-virtualenv searches from the directory
-    of the current file upwards until it finds a virtualenv.
+    If "name" is not specified and there is no external virtualenv present,
+    then vim-virtualenv searches from the directory of the current file
+    upwards until it finds a virtualenv.
+    If "name" is not specified and there is an external virtualenv present,
+    then vim-virtualenv synchronizes the Vim internal Python "sys.path"
+    variable with it.
 
 :VirtualEnvCD                               *:VirtualEnvCD*
-    Change the current directory to the current virtualenv directory.
+    Change the current directory to the currently active virtualenv directory.
 
 :VirtualEnvDeactivate                       *:VirtualEnvDeactivate*
-    Deactivate the current virtualenv.
-
-==============================================================================
-STATUSLINE                                  *virtualenv-statusline*
-
-Current virtualenv name can be shown in the 'statusline', or in any other
-place, by calling the virtualenv#statusline() function. The output is
-controlled by |g:virtualenv#statusline_format| variable.
+    Deactivate the currently active virtualenv.
 
 ==============================================================================
 CONFIGURATION                               *virtualenv-configuration*
@@ -88,9 +105,9 @@ g:virtualenv#return_on_deactivate
     Default value is 1.
 
 g:virtualenv#statusline_format              *g:virtualenv#statusline_format*
-    This variable sets the format string for the virtualenv#statusline()
-    function output. Any '%n' flag will be replaced with the current
-    virtualenv name.
+    This variable sets the format string for the |virtualenv#statusline()|
+    function output. Any '%n' flag will be replaced with the name of the
+    currently active virtualenv.
 
     Default value is '%n'.
 
@@ -113,10 +130,69 @@ g:virtualenv#debug                          *g:virtualenv#debug*
     Default value is 0.
 
 ==============================================================================
+STATUSLINE                                  *virtualenv-statusline*
+
+Name of the currently active virtualenv can be shown in the |'statusline'|, or
+in any other place, by calling the |virtualenv#statusline()| function. The
+output is controlled by the |g:virtualenv#statusline_format| variable.
+
+==============================================================================
+FUNCTIONS                                   *virtualenv-functions*
+
+virtualenv#init()                           *virtualenv#init()*
+    Initialize vim-virtualenv plugin: normalize |g:virtualenv#directory| value
+    and update $WORKON_HOME environment variable.
+
+virtualenv#activate([{target}])             *virtualenv#activate()*
+    Autoload function that provides |:VirtualEnvActivate| command
+    functionality. This is a wrapper around |virtualenv#force_activate()|.
+
+                                            *virtualenv#force_activate()*
+virtualenv#force_activate({target} [, {internal}])
+    Activate the virtualenv located inside the {target} directory.
+    The optional {internal} argument must be given and be equal to "external"
+    in order to activate an external virtualenv.
+
+virtualenv#deactivate()                     *virtualenv#deactivate()*
+    Autoload function that provides |:VirtualEnvDeactivate| command
+    functionality. This is a wrapper around |virtualenv#force_deactivate()|.
+
+virtualenv#force_deactivate()               *virtualenv#force_deactivate()*
+    Deactivate the currently active virtualenv.
+    For an external virtualenv this only restores original "sys.path" value.
+
+virtualenv#cdvirtualenv()                   *virtualenv#cdvirtualenv()*
+    Autoload function that provides |:VirtualEnvCD| command functionality.
+
+virtualenv#list([{directory}])              *virtualenv#list()*
+    Autoload function that provides |:VirtualEnvList| command functionality.
+    This is a wrapper around |virtualenv#find()|.
+
+                                            *virtualenv#find()*
+virtualenv#find({target} [, {pattern}])
+    Return a list of virtualenvs located inside the {target} directory.
+    If the optional {pattern} argument is given, then only virtualenvs that
+    match it are returned. {pattern} can be any pattern acceptable by
+    |globpath()|.
+
+virtualenv#statusline()                     *virtualenv#statusline()*
+    Return the currently active virtualenv name or "" if there is none.
+    See also |virtualenv-statusline|.
+
+virtualenv#origin({target})                 *virtualenv#origin()*
+    Search from the {target} directory upwards until a virtualenv is found.
+    Return the found virtualenv directory or "" if none was found.
+
+virtualenv#state([{variable}])              *virtualenv#state()*
+    Echo the internal plugin state.
+    If the optional {variable} argument is given, then echo the value of
+    {variable} only.
+
+==============================================================================
 ABOUT                                       *virtualenv-about*
 
-Author:     Ilya Tumaykin <itumaykin(at)gmail(dot)com>
-Original author:    Jeremy Cantrell <jmcantrell@gmail.com>
+Author:                         Ilya Tumaykin <itumaykin(at)gmail(dot)com>
+Original author:                Jeremy Cantrell <jmcantrell@gmail.com>
 
 Find the latest version of vim-virtualenv at:
 
@@ -132,4 +208,4 @@ LICENSE                                     *virtualenv-license*
 vim-virtualenv is released under the Vim License.
 See |license|.
 
-vim:tw=78:sw=4:et:ft=help:norl:
+vim:tw=78:sw=4:ft=help:norl:
