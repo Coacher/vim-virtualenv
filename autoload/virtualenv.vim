@@ -19,8 +19,9 @@ function! virtualenv#activate(...)
             " try to determine virtualenv from the current file path
             let current_file_directory = expand('%:p:h')
             if s:issubdir(current_file_directory, g:virtualenv_directory)
-                let name = split(substitute(current_file_directory,
-                            \ g:virtualenv_directory, '', ''), '/')[0]
+                let name = matchstr(substitute(current_file_directory,
+                            \ '^'.g:virtualenv_directory.'/', '', ''),
+                            \ '^[^/]\+')
             else
                 call s:Warning('unable to determine virtualenv
                             \ from the current file path')
