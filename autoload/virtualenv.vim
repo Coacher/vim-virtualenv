@@ -161,7 +161,11 @@ function! s:joinpath(first, last)
         let prefix = s:cleanpath(a:first)
         let suffix = s:cleanpath(a:last)
 
-        return s:cleanpath(prefix.'/'.suffix)
+        if suffix =~ '^/'
+            return s:cleanpath(prefix.suffix)
+        else
+            return s:cleanpath(prefix.'/'.suffix)
+        endif
     else
         return s:cleanpath(a:last)
     endif
