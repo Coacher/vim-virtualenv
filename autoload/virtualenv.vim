@@ -191,7 +191,7 @@ function! s:is_python_available(version)
 endfunction
 
 function! s:is_virtualenv_supported(target)
-    let pythons = globpath(a:target.'/lib', 'python?.?', 0, 1)
+    let pythons = globpath(a:target, 'lib/python?.?', 0, 1)
     if empty(pythons)
         call s:Error('"'.a:target.'" appears to have no python installations')
         return
