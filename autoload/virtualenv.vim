@@ -394,3 +394,5 @@ function! s:process_argument(argument)
         return string(a:argument)
     endif
 endfunction
+
+call virtualenv#init()
