@@ -73,7 +73,7 @@ g:virtualenv#auto_activate                  *g:virtualenv#auto_activate*
 
     Default value is 1.
 
-                                    *g:virtualenv#auto_activate_everywhere*
+                                        *g:virtualenv#auto_activate_everywhere*
 g:virtualenv#auto_activate_everywhere
     This variable controls whether vim-virtualenv should always attempt to
     determine and activate a virtualenv based on the current file path on file
@@ -90,15 +90,14 @@ g:virtualenv#update_pythonpath              *g:virtualenv#update_pythonpath*
 
     Default value is 1.
 
-                                    *g:virtualenv#cdvirtualenv_on_activate*
+                                        *g:virtualenv#cdvirtualenv_on_activate*
 g:virtualenv#cdvirtualenv_on_activate
     This variable controls whether vim-virtualenv should change the current
     directory to the virtualenv directory on activation.
 
     Default value is 1.
 
-                                        *g:virtualenv#return_on_deactivate*
-g:virtualenv#return_on_deactivate
+g:virtualenv#return_on_deactivate           *g:virtualenv#return_on_deactivate*
     This variable controls whether vim-virtualenv should restore the current
     directory to its original value on virtualenv deactivation.
 
@@ -114,8 +113,7 @@ g:virtualenv#statusline_format              *g:virtualenv#statusline_format*
     Example: >
         let g:virtualenv#statusline_format = '[%n]'
 <
-                                        *g:virtualenv#force_python_version*
-g:virtualenv#force_python_version
+g:virtualenv#force_python_version           *g:virtualenv#force_python_version*
     This variable forces vim-virtualenv to use the specified version of the
     |python| command and skip the Python version check for the virtualenv.
     Accepted values are '2' and '3' for |:python| and |:python3| commands,
