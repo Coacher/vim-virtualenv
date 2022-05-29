@@ -127,6 +127,17 @@ g:virtualenv#debug                          *g:virtualenv#debug*
 
     Default value is 0.
 
+                                        *g:virtualenv#enable_gutentags_support*
+g:virtualenv#enable_gutentags_support
+    This variable controls whether vim-virtualenv should provide a custom
+    project root finder for |gutentags|. This project root finder returns the
+    currently active virtualenv directory when working inside one and falls
+    back to `gutentags#default_get_project_root` otherwise.
+
+    Note: This feature requires |gutentags| plugin.
+
+    Default value is 0.
+
 ==============================================================================
 STATUSLINE                                  *virtualenv-statusline*
 
