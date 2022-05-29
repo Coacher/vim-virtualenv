@@ -124,6 +124,19 @@ function! virtualenv#force_activate(target, ...)
      \ !s:issubdir(s:state['virtualenv_return_dir'], s:state['virtualenv_directory'])
         call virtualenv#cdvirtualenv()
     endif
+
+    if g:virtualenv#enable_gutentags_support &&
+     \ empty(g:gutentags_project_root_finder)
+        let g:gutentags_project_root_finder = 'virtualenv#gutentags_project_root_finder'
+    endif
+endfunction
+
+function! virtualenv#gutentags_project_root_finder(path)
+    if has_key(s:state, 'virtualenv_directory') &&
+     \ (s:normpath(a:path) =~# '^'.s:state['virtualenv_directory'])
+        return s:state['virtualenv_directory']
+    endif
+    return gutentags#default_get_project_root(a:path)
 endfunction
 
 function! virtualenv#deactivate()
@@ -140,6 +153,11 @@ function! virtualenv#force_deactivate()
     endif
 
     delcommand VirtualEnvCD
+
+    if g:virtualenv#enable_gutentags_support &&
+     \ g:gutentags_project_root_finder == 'virtualenv#gutentags_project_root_finder'
+        let g:gutentags_project_root_finder = ''
+    endif
 
     try
         call s:execute_python_command('VirtualEnvPlugin.deactivate()')

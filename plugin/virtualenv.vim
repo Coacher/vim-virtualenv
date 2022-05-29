@@ -37,6 +37,8 @@ let g:virtualenv#statusline_format =
     \ get(g:, 'virtualenv#statusline_format', '%n')
 let g:virtualenv#debug =
     \ get(g:, 'virtualenv#debug', 0)
+let g:virtualenv#enable_gutentags_support =
+    \ get(g:, 'virtualenv#enable_gutentags_support', 0)
 let g:virtualenv#python_script =
     \ get(g:, 'virtualenv#python_script',
     \     expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py')
