@@ -287,12 +287,12 @@ endfunction
 
 " debug functions
 function! s:Error(message)
-    echohl ErrorMsg | echo 'vim-virtualenv: '.a:message | echohl None
+    echohl ErrorMsg | echomsg 'vim-virtualenv: '.a:message | echohl None
 endfunction
 
 function! s:Warning(message)
     if g:virtualenv#debug
-        echohl WarningMsg | echo 'vim-virtualenv: '.a:message | echohl None
+        echohl WarningMsg | echomsg 'vim-virtualenv: '.a:message | echohl None
     endif
 endfunction
 
