@@ -207,7 +207,7 @@ function! virtualenv#supported(target, ...)
 endfunction
 
 function! virtualenv#supported_internal(target)
-    let l:pythons = globpath(a:target, 'lib/python?.?/', 0, 1)
+    let l:pythons = globpath(a:target, 'lib/python?.?*/', 0, 1)
     if !empty(l:pythons)
         let [l:python; l:rest] = l:pythons
         if !empty(l:rest)
@@ -218,7 +218,8 @@ function! virtualenv#supported_internal(target)
         call s:Error('no Python installations were found in '.a:target)
         return
     endif
-    let l:python_major_version = l:python[-4:][0]
+    let l:python = split(fnamemodify(s:normpath(l:python), ':t'), '\.')
+    let l:python_major_version = l:python[0][-1:]
     if !s:python_available(l:python_major_version)
         call s:Error(a:target.' requires python'.l:python_major_version)
         return
