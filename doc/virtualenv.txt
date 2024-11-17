@@ -57,10 +57,10 @@ COMMANDS                                    *virtualenv-commands*
 CONFIGURATION                               *virtualenv-configuration*
 
 g:virtualenv#directory                      *g:virtualenv#directory*
-    This variable appoints the directory that holds virtualenvs.
+    This variable references the directory that holds virtualenvs.
 
     If $WORKON_HOME environment variable is set, it is used as default value.
-    Otherwise, default value is '~/.virtualenvs'.
+    Otherwise, default value is |v:null|.
 
     Example: >
         let g:virtualenv#directory = '/path/to/virtualenvs'

@@ -22,7 +22,7 @@ set cpoptions&vim
 
 let g:virtualenv#directory =
     \ get(g:, 'virtualenv#directory',
-    \     !isdirectory($WORKON_HOME) ? '~/.virtualenvs' : $WORKON_HOME)
+    \     !isdirectory($WORKON_HOME) ? v:null : $WORKON_HOME)
 let g:virtualenv#auto_activate =
     \ get(g:, 'virtualenv#auto_activate', 1)
 let g:virtualenv#auto_activate_everywhere =
@@ -44,7 +44,7 @@ let g:virtualenv#python_script =
     \     expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py')
 
 augroup VirtualEnvAutoActivate
-if g:virtualenv#auto_activate
+if g:virtualenv#auto_activate && (g:virtualenv#directory !=# v:null)
     execute 'autocmd! BufFilePost,BufNewFile,BufRead '.
             \g:virtualenv#directory.'/* call virtualenv#activate()'
 elseif g:virtualenv#auto_activate_everywhere

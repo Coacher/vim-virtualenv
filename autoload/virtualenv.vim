@@ -1,9 +1,16 @@
 function! virtualenv#init()
-    let g:virtualenv#directory = s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
+    if (g:virtualenv#directory !=# v:null)
+        let g:virtualenv#directory = s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
 
-    if !isdirectory(g:virtualenv#directory)
-        call s:Error(string(g:virtualenv#directory).' is not a directory')
-        return 1
+        if !isdirectory(g:virtualenv#directory)
+            call s:Error('invalid value for g:virtualenv#directory: '.
+                         \string(g:virtualenv#directory))
+            return 1
+        endif
+
+        if empty($WORKON_HOME)
+            let $WORKON_HOME = g:virtualenv#directory
+        endif
     endif
 
     if exists('g:virtualenv#force_python_version') &&
@@ -11,10 +18,6 @@ function! virtualenv#init()
         call s:Error('invalid value for g:virtualenv#force_python_version: '.
                      \string(g:virtualenv#force_python_version))
         return 1
-    endif
-
-    if empty($WORKON_HOME)
-        let $WORKON_HOME = g:virtualenv#directory
     endif
 
     let s:state = {}
@@ -52,8 +55,7 @@ function! virtualenv#activate(...)
             " if either $VIRTUAL_ENV is not set, or it is set and
             " equals to the value of s:state['virtualenv_directory'],
             " then search upwards from the directory of the current file
-            let l:current_file_directory = expand('%:p:h')
-            let l:target = virtualenv#origin(l:current_file_directory)
+            let l:target = virtualenv#origin(expand('%:p:h'))
 
             if !empty(l:target)
                 if has_key(s:state, 'virtualenv_directory') &&
@@ -155,7 +157,7 @@ function! virtualenv#force_deactivate()
     delcommand VirtualEnvCD
 
     if g:virtualenv#enable_gutentags_support &&
-     \ g:gutentags_project_root_finder == 'virtualenv#gutentags_project_root_finder'
+     \ g:gutentags_project_root_finder ==# 'virtualenv#gutentags_project_root_finder'
         let g:gutentags_project_root_finder = ''
     endif
 
@@ -342,10 +344,8 @@ function! s:normpath(path)
         let l:path = simplify(l:path)
         let l:path = substitute(l:path, '^[/]\+', '/', '')
         let l:path = substitute(l:path, '[/]\+$', '', '')
-        return l:path
-    else
-        return ''
     endif
+    return l:path
 endfunction
 
 " python machinery
