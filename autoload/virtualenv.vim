@@ -302,7 +302,9 @@ endfunction
 
 " misc functions
 function! s:isvirtualenv(target)
-    return isdirectory(a:target) && filereadable(s:joinpath(a:target, 'bin/activate_this.py'))
+    return isdirectory(a:target) &&
+        \ (filereadable(s:joinpath(a:target, 'pyvenv.cfg')) ||
+        \  filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
 endfunction
 
 " debug functions
