@@ -99,13 +99,18 @@ function! virtualenv#force_activate(target, ...)
     try
         if s:state['virtualenv_internal']
             call s:execute_python_command(
-                \ 'VirtualEnvPlugin.activate',
-                \ s:joinpath(s:state['virtualenv_directory'], 'bin/activate_this.py'),
+                \ 'VirtualEnvManager.activate',
+                \ s:state['virtualenv_directory'],
                 \ g:virtualenv#update_pythonpath)
         else
-            let [l:syspath] =
-                \ s:execute_system_python_command('import sys; print(list(sys.path))')
-            call s:execute_python_command('VirtualEnvPlugin.extactivate', l:syspath)
+            let [l:sys_path, l:sys_prefix, l:sys_exec_prefix] =
+                \ s:execute_system_python_command(
+                \  'import sys; print(sys.path, sys.prefix, sys.exec_prefix, sep=u"\n")')
+            call s:execute_python_command(
+                \ 'VirtualEnvManager.extactivate',
+                \ l:sys_path,
+                \ l:sys_prefix,
+                \ l:sys_exec_prefix)
         endif
     catch
         unlet! s:state['virtualenv_name']
@@ -162,7 +167,7 @@ function! virtualenv#force_deactivate()
     endif
 
     try
-        call s:execute_python_command('VirtualEnvPlugin.deactivate()')
+        call s:execute_python_command('VirtualEnvManager.deactivate()')
     catch
         return 1
     endtry
@@ -250,7 +255,7 @@ endfunction
 function! virtualenv#supported_external(target)
     let [l:extpython] =
         \ s:execute_system_python_command(
-        \     'import sys; print(u".".join(str(x) for x in sys.version_info))')
+        \  'import sys; print(u".".join(str(x) for x in sys.version_info))')
     let l:python_major_version = l:extpython[0]
     if !s:python_available(l:python_major_version)
         call s:Error(a:target.' requires python'.l:python_major_version)
@@ -258,8 +263,8 @@ function! virtualenv#supported_external(target)
     endif
     let [l:vimpython] =
         \ s:execute_pythonX_command(
-        \     l:python_major_version,
-        \     'import sys; print(u".".join(str(x) for x in sys.version_info))')
+        \  l:python_major_version,
+        \  'import sys; print(u".".join(str(x) for x in sys.version_info))')
     if (l:vimpython !=# l:extpython)
         call s:Error('Python version mismatch')
         call s:Error(a:target.' version: '.l:extpython)
