@@ -1,4 +1,13 @@
 function! virtualenv#init()
+    let s:state = {}
+
+    if exists('g:virtualenv#force_python_version') &&
+     \ (index([2,3], g:virtualenv#force_python_version) == -1)
+        call s:Error('invalid value for g:virtualenv#force_python_version: '.
+                     \string(g:virtualenv#force_python_version))
+        return 1
+    endif
+
     if (g:virtualenv#directory !=# v:null)
         let g:virtualenv#directory = s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
 
@@ -12,15 +21,6 @@ function! virtualenv#init()
             let $WORKON_HOME = g:virtualenv#directory
         endif
     endif
-
-    if exists('g:virtualenv#force_python_version') &&
-     \ (index([2,3], g:virtualenv#force_python_version) == -1)
-        call s:Error('invalid value for g:virtualenv#force_python_version: '.
-                     \string(g:virtualenv#force_python_version))
-        return 1
-    endif
-
-    let s:state = {}
 endfunction
 
 function! virtualenv#activate(...)
