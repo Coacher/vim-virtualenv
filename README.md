@@ -2,9 +2,10 @@ vim-virtualenv
 ==============
 
 This Vim plugin provides a simple way to activate and deactivate Python virtual
-environments created by the [virtualenv](https://github.com/pypa/virtualenv)
-tool from a Vim session as well as synchronizes the Vim internal Python
-`sys.path` variable with an already active virtual environment.
+environments created by the [virtualenv](https://github.com/pypa/virtualenv) or
+[venv](https://docs.python.org/3/library/venv.html) tools from a Vim session as
+well as synchronizes the Vim internal Python `sys.path` variable with an
+already active virtual environment.
 
 By default, `:python` and `:python3` commands have access only to the
 system-wide Python environment. vim-virtualenv changes the Vim internal Python

@@ -16,8 +16,9 @@ INTRODUCTION                                *virtualenv-introduction*
 
 *vim-virtualenv* plugin provides a simple way to activate and deactivate
 Python virtual environments created by the "virtualenv"
-(https://github.com/pypa/virtualenv) tool from a Vim session as well as
-synchronizes the Vim internal Python "sys.path" variable with an already
+(https://github.com/pypa/virtualenv) or "venv"
+(https://docs.python.org/3/library/venv.html) tools from a Vim session as well
+as synchronizes the Vim internal Python "sys.path" variable with an already
 active virtual environment. It requires |if_pyth|.
 
 This plugin distinguishes between internal and external virtualenvs. The
