@@ -43,6 +43,10 @@ let g:virtualenv#python_script =
     \ get(g:, 'virtualenv#python_script',
     \     expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py')
 
+augroup vim-virtualenv-internal
+autocmd! User VirtualEnv* :
+augroup END
+
 augroup VirtualEnvAutoActivate
 if g:virtualenv#auto_activate && (g:virtualenv#directory !=# v:null)
     execute 'autocmd! BufFilePost,BufNewFile,BufRead '.

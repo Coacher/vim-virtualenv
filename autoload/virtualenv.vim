@@ -96,6 +96,8 @@ function! virtualenv#force_activate(target, ...)
     let s:state['virtualenv_return_dir'] = getcwd()
     let s:state['virtualenv_name'] = fnamemodify(a:target, ':t')
 
+    doautocmd <nomodeline> User VirtualEnvActivatePre
+
     try
         if s:state['virtualenv_internal']
             call s:execute_python_command(
@@ -136,6 +138,8 @@ function! virtualenv#force_activate(target, ...)
      \ empty(g:gutentags_project_root_finder)
         let g:gutentags_project_root_finder = 'virtualenv#gutentags_project_root_finder'
     endif
+
+    doautocmd <nomodeline> User VirtualEnvActivatePost
 endfunction
 
 function! virtualenv#gutentags_project_root_finder(path)
@@ -155,6 +159,8 @@ function! virtualenv#deactivate()
 endfunction
 
 function! virtualenv#force_deactivate()
+    doautocmd <nomodeline> User VirtualEnvDeactivatePre
+
     if g:virtualenv#return_on_deactivate && has_key(s:state, 'virtualenv_return_dir')
         execute 'cd' fnameescape(s:state['virtualenv_return_dir'])
     endif
@@ -171,6 +177,8 @@ function! virtualenv#force_deactivate()
     catch
         return 1
     endtry
+
+    doautocmd <nomodeline> User VirtualEnvDeactivatePost
 
     unlet! s:state['virtualenv_name']
     unlet! s:state['virtualenv_return_dir']
