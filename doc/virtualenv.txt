@@ -8,8 +8,9 @@ CONTENTS                                    *virtualenv-contents*
     3. Configuration........................|virtualenv-configuration|
     4. The 'statusline' flag................|virtualenv-statusline|
     5. Functions............................|virtualenv-functions|
-    6. About................................|virtualenv-about|
-    7. License..............................|virtualenv-license|
+    6. Hooks................................|virtualenv-hooks|
+    7. About................................|virtualenv-about|
+    8. License..............................|virtualenv-license|
 
 ==============================================================================
 INTRODUCTION                                *virtualenv-introduction*
@@ -198,6 +199,21 @@ virtualenv#state([{variable}])              *virtualenv#state()*
     If the optional {variable} argument is given, then echo the value of
     {variable} only.
 
+==============================================================================
+HOOKS                                       *virtualenv-hooks*
+
+There are several hooks available:
+    - *VirtualEnvActivatePre*
+    - *VirtualEnvActivatePost*
+    - *VirtualEnvDeactivatePre*
+    - *VirtualEnvDeactivatePost*
+
+All hooks are executed with the virtualenv information present.
+Use |virtualenv#state()| to access it if needed.
+
+Example: >
+    autocmd User VirtualEnvActivatePre :echo virtualenv#state()
+<
 ==============================================================================
 ABOUT                                       *virtualenv-about*
 
