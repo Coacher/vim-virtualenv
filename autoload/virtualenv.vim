@@ -27,7 +27,7 @@ function! virtualenv#activate(...)
     if (a:0)
         let l:name = s:normpath(a:1)
         if empty(l:name)
-            call s:Error('empty virtualenv name')
+            call s:Error('requested virtualenv with an empty name')
             return 1
         endif
 
