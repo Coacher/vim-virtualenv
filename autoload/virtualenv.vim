@@ -46,7 +46,7 @@ function! virtualenv#activate(...)
             endif
         endfor
 
-        call s:Warning('virtualenv '.l:name.' was not found in '.string(l:virtualenv_path))
+        call s:Warning('requested virtualenv '.l:name.' was not found in '.string(l:virtualenv_path))
         return 1
     else
         if empty($VIRTUAL_ENV) ||
@@ -60,7 +60,7 @@ function! virtualenv#activate(...)
             if !empty(l:target)
                 if has_key(s:state, 'virtualenv_directory') &&
                  \ (l:target ==# s:state['virtualenv_directory'])
-                    call s:Warning('virtualenv '.l:target.' is already active')
+                    call s:Warning('virtualenv of the current file is already active')
                     return
                 else
                     return virtualenv#deactivate() || virtualenv#force_activate(l:target)
@@ -152,7 +152,7 @@ endfunction
 
 function! virtualenv#deactivate()
     if !has_key(s:state, 'virtualenv_name')
-        call s:Warning('deactivation is not possible')
+        call s:Warning('no active virtualenv to deactivate')
         return
     endif
     return virtualenv#force_deactivate()
