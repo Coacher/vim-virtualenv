@@ -56,12 +56,12 @@ elseif g:virtualenv#auto_activate_everywhere
 endif
 augroup END
 
-command! -nargs=? -bar -complete=dir VirtualEnvList
-    \ call virtualenv#list(<f-args>)
-command! -nargs=? -bar -complete=customlist,virtualenv#completion#do VirtualEnvActivate
-    \ call virtualenv#activate(<f-args>)
-command! -nargs=0 -bar VirtualEnvDeactivate
-    \ call virtualenv#deactivate()
+command! -nargs=? -bar -complete=dir
+    \ VirtualEnvList call virtualenv#list(<f-args>)
+command! -nargs=? -bar -complete=customlist,virtualenv#completion#do
+    \ VirtualEnvActivate call virtualenv#activate(<f-args>)
+command! -nargs=0 -bar
+    \ VirtualEnvDeactivate call virtualenv#deactivate()
 
 let &cpoptions = s:save_cpo
 unlet s:save_cpo
