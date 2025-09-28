@@ -210,13 +210,12 @@ endfunction
 function! virtualenv#find(directory, ...)
     let l:virtualenvs = []
     let l:pattern = (a:0) ? a:1 : '*'
-    let l:tail = matchstr(l:pattern, '[/]\+$')
     let l:pattern = s:joinpath(l:pattern, '/')
     for l:target in globpath(a:directory, l:pattern, 0, 1)
         if !s:isvirtualenv(l:target)
             continue
         endif
-        call add(l:virtualenvs, fnamemodify(l:target, ':h').l:tail)
+        call add(l:virtualenvs, fnamemodify(l:target, ':h'))
     endfor
     return l:virtualenvs
 endfunction
@@ -300,10 +299,6 @@ function! virtualenv#origin(path)
 endfunction
 
 function! virtualenv#state(...)
-    function! s:Query(key)
-        echo a:key.' = '.get(s:state, a:key, '__undefined__')
-    endfunction
-
     if (a:0)
         call s:Query(a:1)
     else
@@ -318,6 +313,10 @@ function! s:isvirtualenv(target)
     return isdirectory(a:target) &&
         \ (filereadable(s:joinpath(a:target, 'pyvenv.cfg')) ||
         \  filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
+endfunction
+
+function! s:Query(key)
+    echo a:key.' = '.get(s:state, a:key, '__undefined__')
 endfunction
 
 " debug functions
@@ -339,7 +338,7 @@ function! s:issubdir(subdirectory, directory)
 endfunction
 
 function! s:joinpath(first, last)
-    if (a:first !~# '^$')
+    if !empty(a:first)
         let l:prefix = substitute(a:first, '[/]\+$', '', '')
         let l:suffix = substitute(a:last, '^[/]\+', '', '')
         return l:prefix.'/'.l:suffix
