@@ -54,21 +54,24 @@ function! virtualenv#activate(...)
          \  ($VIRTUAL_ENV ==# s:state['virtualenv_directory']))
             " if either $VIRTUAL_ENV is not set, or it is set and
             " equals to the value of s:state['virtualenv_directory'],
-            " then search upwards from the directory of the current file
-            let l:target = virtualenv#origin(expand('%:p:h'))
+            " then use the topmost virtualenv of the current directory
 
-            if !empty(l:target)
-                if has_key(s:state, 'virtualenv_directory') &&
-                 \ (l:target ==# s:state['virtualenv_directory'])
-                    call s:Warning('virtualenv of the current file is already active')
-                    return
-                else
-                    return virtualenv#deactivate() || virtualenv#force_activate(l:target)
+            let l:virtualenv_path = [expand('%:p:h'), getcwd()]
+            for l:directory in l:virtualenv_path
+                let l:target = virtualenv#origin(l:directory)
+                if !empty(l:target)
+                    if has_key(s:state, 'virtualenv_directory') &&
+                     \ (l:target ==# s:state['virtualenv_directory'])
+                        call s:Warning('virtualenv of the current directory is already active')
+                        return
+                    else
+                        return virtualenv#deactivate() || virtualenv#force_activate(l:target)
+                    endif
                 endif
-            else
-                call s:Warning('virtualenv of the current file was not found')
-                return
-            endif
+            endfor
+
+            call s:Warning('virtualenv of the current directory was not found')
+            return
         else
             " otherwise it is an externally activated virtualenv
             return virtualenv#force_activate($VIRTUAL_ENV, 'external')
