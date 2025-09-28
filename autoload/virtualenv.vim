@@ -352,6 +352,7 @@ function! s:normpath(path)
     let l:path = a:path
     if !empty(l:path)
         if (l:path =~# '^\~')
+            " Expand user directories, but otherwise keep the path relative.
             let l:user = matchstr(l:path, '^\~[^/]*')
             let l:home_directory = fnamemodify(l:user, ':p:h')
             let l:path = substitute(l:path, '^\'.l:user, l:home_directory, '')
