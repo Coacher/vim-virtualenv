@@ -1,12 +1,14 @@
 function! virtualenv#init()
     let s:state = {}
+    let s:custom_project_finder = 'virtualenv#gutentags_project_root_finder'
 
     if (g:virtualenv#directory !=# v:null)
-        let g:virtualenv#directory = s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
+        let g:virtualenv#directory =
+            \ s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
 
         if !isdirectory(g:virtualenv#directory)
             call s:Error('invalid value for g:virtualenv#directory: '.
-                         \string(g:virtualenv#directory))
+                        \string(g:virtualenv#directory))
             return 1
         endif
 
@@ -32,14 +34,16 @@ function! virtualenv#activate(...)
                 let l:target = s:normpath(l:target)
                 if !empty(l:rest)
                     call s:Warning('multiple virtualenvs under the name '.
-                                   \l:name.' were found in '.l:directory)
+                                  \l:name.' were found in '.l:directory)
                     call s:Warning('processing '.l:target)
                 endif
-                return virtualenv#deactivate() || virtualenv#force_activate(l:target)
+                return virtualenv#deactivate() ||
+                     \ virtualenv#force_activate(l:target)
             endif
         endfor
 
-        call s:Warning('requested virtualenv '.l:name.' was not found in '.string(l:virtualenv_path))
+        call s:Warning('requested virtualenv '.l:name.
+                      \' was not found in '.string(l:virtualenv_path))
         return 1
     else
         if empty($VIRTUAL_ENV) ||
@@ -55,10 +59,12 @@ function! virtualenv#activate(...)
                 if !empty(l:target)
                     if has_key(s:state, 'virtualenv_directory') &&
                      \ (l:target ==# s:state['virtualenv_directory'])
-                        call s:Warning('virtualenv of the current directory is already active')
+                        call s:Warning('virtualenv of the current directory '.
+                                      \'is already active')
                         return
                     else
-                        return virtualenv#deactivate() || virtualenv#force_activate(l:target)
+                        return virtualenv#deactivate() ||
+                             \ virtualenv#force_activate(l:target)
                     endif
                 endif
             endfor
@@ -79,7 +85,8 @@ function! virtualenv#force_activate(target, ...)
     endif
 
     let l:internal = !(a:0 && (a:1 ==# 'external'))
-    let l:pyversion = virtualenv#supported(a:target, l:internal ? '' : 'external')
+    let l:pyversion =
+        \ virtualenv#supported(a:target, l:internal ? '' : 'external')
 
     if !(l:pyversion)
         call s:Error(a:target.' is not supported')
@@ -103,7 +110,8 @@ function! virtualenv#force_activate(target, ...)
         else
             let [l:sys_path, l:sys_prefix, l:sys_exec_prefix] =
                 \ s:execute_system_python_command(
-                \  'import sys; print(sys.path, sys.prefix, sys.exec_prefix, sep=u"\n")')
+                \  'import sys; '.
+                \  'print(sys.path, sys.prefix, sys.exec_prefix, sep=u"\n")')
             call s:execute_python_command(
                 \ 'VirtualEnvManager.extactivate',
                 \ l:sys_path,
@@ -126,13 +134,15 @@ function! virtualenv#force_activate(target, ...)
     command! -nargs=0 -bar VirtualEnvCD call virtualenv#cdvirtualenv()
 
     if g:virtualenv#cdvirtualenv_on_activate &&
-     \ !s:issubdir(s:state['virtualenv_return_dir'], s:state['virtualenv_directory'])
+     \ !s:issubdir(
+     \  s:state['virtualenv_return_dir'],
+     \  s:state['virtualenv_directory'])
         call virtualenv#cdvirtualenv()
     endif
 
     if g:virtualenv#enable_gutentags_support &&
      \ empty(g:gutentags_project_root_finder)
-        let g:gutentags_project_root_finder = 'virtualenv#gutentags_project_root_finder'
+        let g:gutentags_project_root_finder = s:custom_project_finder
     endif
 
     doautocmd <nomodeline> User VirtualEnvActivatePost
@@ -157,14 +167,15 @@ endfunction
 function! virtualenv#force_deactivate()
     doautocmd <nomodeline> User VirtualEnvDeactivatePre
 
-    if g:virtualenv#return_on_deactivate && has_key(s:state, 'virtualenv_return_dir')
+    if g:virtualenv#return_on_deactivate &&
+     \ has_key(s:state, 'virtualenv_return_dir')
         execute 'cd' fnameescape(s:state['virtualenv_return_dir'])
     endif
 
     delcommand VirtualEnvCD
 
     if g:virtualenv#enable_gutentags_support &&
-     \ g:gutentags_project_root_finder ==# 'virtualenv#gutentags_project_root_finder'
+     \ g:gutentags_project_root_finder ==# s:custom_project_finder
         let g:gutentags_project_root_finder = ''
     endif
 
@@ -197,9 +208,11 @@ function! virtualenv#list(...)
 endfunction
 
 function! virtualenv#statusline()
-    return has_key(s:state, 'virtualenv_name') ?
-         \ substitute(g:virtualenv#statusline_format, '\C%n', s:state['virtualenv_name'], 'g') :
-         \ ''
+    return has_key(s:state, 'virtualenv_name')
+         \ ? substitute(
+         \    g:virtualenv#statusline_format, '\C%n',
+         \    s:state['virtualenv_name'], 'g')
+         \ : ''
 endfunction
 
 " helper functions
@@ -225,7 +238,7 @@ function! virtualenv#supported(target, ...)
     else
         let l:python_major_version = g:virtualenv#force_python_version
         call s:Warning('Python version for '.a:target.' is set to '.
-                       \g:virtualenv#force_python_version)
+                      \g:virtualenv#force_python_version)
         if !s:python_available(l:python_major_version)
             call s:Error(a:target.' requires python'.l:python_major_version)
             return
