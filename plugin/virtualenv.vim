@@ -2,21 +2,9 @@ if exists('g:loaded_virtualenv')
     finish
 endif
 
-if !exists('g:virtualenv#force_python_version')
-    if !(has('python') || has('python3'))
-        echoerr 'vim-virtualenv requires python or python3 feature to be enabled'
-        finish
-    endif
-else
-    if (index([2,3], g:virtualenv#force_python_version) == -1)
-        echoerr 'vim-virtualenv requires virtualenv#force_python_version to be 2 or 3'
-        finish
-    endif
-    let l:python = 'python'.((g:virtualenv#force_python_version == 2) ? '' : '3')
-    if !has(l:python)
-        echoerr 'vim-virtualenv requires the '.l:python.' feature to be enabled'
-        finish
-    endif
+if !has('python3')
+    echoerr 'vim-virtualenv requires python3 feature to be enabled'
+    finish
 endif
 
 let g:loaded_virtualenv = 1

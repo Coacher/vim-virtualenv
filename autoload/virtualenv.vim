@@ -231,20 +231,10 @@ function! virtualenv#find(directory, ...)
 endfunction
 
 function! virtualenv#supported(target, ...)
-    if !exists('g:virtualenv#force_python_version')
-        let l:internal = !(a:0 && (a:1 ==# 'external'))
-        let l:python_major_version =
-            \ l:internal ? virtualenv#supported_internal(a:target)
-            \            : virtualenv#supported_external(a:target)
-    else
-        let l:python_major_version = g:virtualenv#force_python_version
-        call s:Warning('Python version for '.a:target.' is set to '.
-                      \g:virtualenv#force_python_version)
-        if !s:python_available(l:python_major_version)
-            call s:Error(a:target.' requires python'.l:python_major_version)
-            return
-        endif
-    endif
+    let l:internal = !(a:0 && (a:1 ==# 'external'))
+    let l:python_major_version =
+        \ l:internal ? virtualenv#supported_internal(a:target)
+        \            : virtualenv#supported_external(a:target)
     return l:python_major_version
 endfunction
 

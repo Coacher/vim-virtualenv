@@ -115,14 +115,6 @@ g:virtualenv#statusline_format              *g:virtualenv#statusline_format*
     Example: >
         let g:virtualenv#statusline_format = '[%n]'
 <
-g:virtualenv#force_python_version           *g:virtualenv#force_python_version*
-    This variable forces vim-virtualenv to use the specified version of the
-    |python| command and skip the Python version check for the virtualenv.
-    Accepted values are '2' and '3' for |:python| and |:python3| commands,
-    respectively.
-
-    Undefined by default.
-
 g:virtualenv#debug                          *g:virtualenv#debug*
     This variable controls whether vim-virtualenv should print warning
     messages.
