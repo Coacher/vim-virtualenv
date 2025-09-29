@@ -266,8 +266,7 @@ function! virtualenv#supported_external(target)
         return
     endif
     let [l:vimpython] =
-        \ s:execute_pythonX_command(
-        \  l:python_major_version,
+        \ s:execute_python_command(
         \  'import sys; print(u".".join(str(x) for x in sys.version_info))')
     if (l:vimpython !=# l:extpython)
         call s:Error('Python version mismatch')
@@ -382,15 +381,6 @@ function! s:execute_python_command(command, ...)
     let l:command = a:command.((a:0) ? s:construct_arguments(a:0, a:000) : '')
     redir => l:output
         silent execute 'python3' l:command
-    redir END
-    return split(l:output, '\n')
-endfunction
-
-function! s:execute_pythonX_command(version, command, ...)
-    let l:interpreter = (a:version != 3) ? 'python' : 'python3'
-    let l:command = a:command.((a:0) ? s:construct_arguments(a:0, a:000) : '')
-    redir => l:output
-        silent execute l:interpreter l:command
     redir END
     return split(l:output, '\n')
 endfunction
