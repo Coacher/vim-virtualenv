@@ -94,7 +94,6 @@ function! virtualenv#force_activate(target, ...)
         return 1
     endif
 
-    let s:state['python_version'] = l:pyversion
     let s:state['virtualenv_internal'] = l:internal
     let s:state['virtualenv_directory'] = a:target
     let s:state['virtualenv_return_dir'] = getcwd()
@@ -124,7 +123,6 @@ function! virtualenv#force_activate(target, ...)
         unlet! s:state['virtualenv_return_dir']
         unlet! s:state['virtualenv_directory']
         unlet! s:state['virtualenv_internal']
-        unlet! s:state['python_version']
 
         call s:Error(v:throwpoint)
         call s:Error(v:exception)
@@ -192,7 +190,6 @@ function! virtualenv#force_deactivate()
     unlet! s:state['virtualenv_return_dir']
     unlet! s:state['virtualenv_directory']
     unlet! s:state['virtualenv_internal']
-    unlet! s:state['python_version']
 endfunction
 
 function! virtualenv#cdvirtualenv()
@@ -382,10 +379,9 @@ function! s:execute_system_python_command(command)
 endfunction
 
 function! s:execute_python_command(command, ...)
-    let l:interpreter = (s:state['python_version'] != 3) ? 'python' : 'python3'
     let l:command = a:command.((a:0) ? s:construct_arguments(a:0, a:000) : '')
     redir => l:output
-        silent execute l:interpreter l:command
+        silent execute 'python3' l:command
     redir END
     return split(l:output, '\n')
 endfunction
