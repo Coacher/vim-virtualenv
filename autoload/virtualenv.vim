@@ -73,7 +73,8 @@ function! virtualenv#activate(...)
             return
         else
             " otherwise it is an externally activated virtualenv
-            return virtualenv#force_activate($VIRTUAL_ENV, 'external')
+            return virtualenv#deactivate() ||
+                 \ virtualenv#force_activate($VIRTUAL_ENV, 'external')
         endif
     endif
 endfunction
