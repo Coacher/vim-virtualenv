@@ -166,8 +166,8 @@ virtualenv#origin({target})                 *virtualenv#origin()*
 
 virtualenv#state([{variable}])              *virtualenv#state()*
     Echo the internal plugin state.
-    If the optional {variable} argument is given, then echo the value of
-    {variable} only.
+    If the optional {variable} argument is given, then return the value of
+    {variable} or "" if {variable} is not set.
 
 ==============================================================================
 HOOKS                                       *virtualenv-hooks*

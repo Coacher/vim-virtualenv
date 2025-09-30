@@ -247,7 +247,7 @@ endfunction
 
 function! virtualenv#state(...)
     if (a:0)
-        echo a:1.' = '.get(s:state, a:1, '__undefined__')
+        return get(s:state, a:1, '')
     else
         for [l:key, l:value] in items(s:state)
             echo l:key.' = '.l:value
