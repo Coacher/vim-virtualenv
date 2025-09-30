@@ -2,6 +2,13 @@ function! virtualenv#init()
     let s:state = {}
     let s:custom_project_finder = 'virtualenv#gutentags_project_root_finder'
 
+    try
+        execute 'py3file' fnameescape(g:virtualenv#python_script)
+    catch
+        call s:Error('failed to load Python virtual environment manager')
+        return 1
+    endtry
+
     if (g:virtualenv#directory !=# v:null)
         let g:virtualenv#directory =
             \ s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
@@ -248,12 +255,7 @@ function! virtualenv#supported_internal(target)
         return
     endif
     let l:python = split(fnamemodify(s:normpath(l:python), ':t'), '\.')
-    let l:python_major_version = l:python[0][-1:]
-    if !s:python_available(l:python_major_version)
-        call s:Error(a:target.' requires python'.l:python_major_version)
-        return
-    endif
-    return l:python_major_version
+    return l:python[0][-1:]
 endfunction
 
 function! virtualenv#supported_external(target)
@@ -261,10 +263,6 @@ function! virtualenv#supported_external(target)
         \ s:execute_system_python_command(
         \  'import sys; print(u".".join(str(x) for x in sys.version_info))')
     let l:python_major_version = l:extpython[0]
-    if !s:python_available(l:python_major_version)
-        call s:Error(a:target.' requires python'.l:python_major_version)
-        return
-    endif
     let [l:vimpython] =
         \ s:execute_python_command(
         \  'import sys; print(u".".join(str(x) for x in sys.version_info))')
@@ -360,19 +358,6 @@ function! s:normpath(path)
 endfunction
 
 " python machinery
-function! s:python_available(version)
-    if !has_key(s:state, 'python'.a:version.'_available')
-        try
-            let l:command = (a:version != 3) ? 'pyfile' : 'py3file'
-            execute l:command fnameescape(g:virtualenv#python_script)
-            execute 'let s:state[''python'.a:version.'_available''] = 1'
-        catch
-            execute 'let s:state[''python'.a:version.'_available''] = 0'
-        endtry
-    endif
-    execute 'return s:state[''python'.a:version.'_available'']'
-endfunction
-
 function! s:execute_system_python_command(command)
     return systemlist('python -c '.string(a:command))
 endfunction
