@@ -154,14 +154,6 @@ function! virtualenv#force_activate(target, ...)
     doautocmd <nomodeline> User VirtualEnvActivatePost
 endfunction
 
-function! virtualenv#gutentags_project_root_finder(path)
-    if has_key(s:state, 'virtualenv_directory') &&
-     \ (s:normpath(a:path) =~# '^'.s:state['virtualenv_directory'])
-        return s:state['virtualenv_directory']
-    endif
-    return gutentags#default_get_project_root(a:path)
-endfunction
-
 function! virtualenv#deactivate()
     if !has_key(s:state, 'virtualenv_name')
         return s:Warning('no active virtualenv to deactivate')
@@ -180,7 +172,7 @@ function! virtualenv#force_deactivate()
     delcommand VirtualEnvCD
 
     if g:virtualenv#enable_gutentags_support &&
-     \ g:gutentags_project_root_finder ==# s:custom_project_finder
+     \ (g:gutentags_project_root_finder ==# s:custom_project_finder)
         let g:gutentags_project_root_finder = ''
     endif
 
@@ -250,6 +242,17 @@ function! virtualenv#state(...)
         for [l:key, l:value] in items(s:state)
             echo l:key.' = '.l:value
         endfor
+    endif
+endfunction
+
+" external integration functions
+function! virtualenv#gutentags_project_root_finder(path)
+    let l:virtualenv_directory = virtualenv#state('virtualenv_directory')
+    if !empty(l:virtualenv_directory) &&
+     \ s:is_subdir(a:path, l:virtualenv_directory)
+        return l:virtualenv_directory
+    else
+        return gutentags#default_get_project_root(a:path)
     endif
 endfunction
 
