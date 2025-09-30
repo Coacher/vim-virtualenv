@@ -1,5 +1,9 @@
 function! virtualenv#init()
     let s:state = {}
+
+    let s:vim_major = and(v:python3_version >> 24, 0xff)
+    let s:vim_minor = and(v:python3_version >> 16, 0xff)
+
     let s:custom_project_finder = 'virtualenv#gutentags_project_root_finder'
 
     try
@@ -299,6 +303,15 @@ function! s:is_virtualenv(target)
     return isdirectory(a:target) &&
         \ (filereadable(s:joinpath(a:target, 'pyvenv.cfg')) ||
         \  filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
+endfunction
+
+function! s:is_python_supported(pyversion)
+    let [l:major, l:minor] = a:pyversion
+    if has('python3_stable')
+        return (l:major >= s:vim_major) && (l:minor >= s:vim_minor)
+    else
+        return (l:major == s:vim_major) && (l:minor == s:vim_minor)
+    endif
 endfunction
 
 " debug functions
