@@ -332,12 +332,12 @@ function! s:issubdir(subdirectory, directory)
 endfunction
 
 function! s:joinpath(first, last)
-    if !empty(a:first)
+    if !empty(a:first) && !empty(a:last)
         let l:prefix = substitute(a:first, '[/]\+$', '', '')
         let l:suffix = substitute(a:last, '^[/]\+', '', '')
         return l:prefix.'/'.l:suffix
     else
-        return a:last
+        return empty(a:first) ? a:last : a:first
     endif
 endfunction
 
