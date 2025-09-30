@@ -82,7 +82,7 @@ function! virtualenv#activate(...)
 endfunction
 
 function! virtualenv#force_activate(target, ...)
-    if !s:isvirtualenv(a:target)
+    if !s:is_virtualenv(a:target)
         return s:Error(a:target.' is not a valid virtualenv')
     endif
 
@@ -133,7 +133,7 @@ function! virtualenv#force_activate(target, ...)
     command! -nargs=0 -bar VirtualEnvCD call virtualenv#cdvirtualenv()
 
     if g:virtualenv#cdvirtualenv_on_activate &&
-     \ !s:issubdir(
+     \ !s:is_subdir(
      \  s:state['virtualenv_return_dir'],
      \  s:state['virtualenv_directory'])
         call virtualenv#cdvirtualenv()
@@ -218,7 +218,7 @@ function! virtualenv#find(directory, ...)
     let l:pattern = (a:0) ? a:1 : '*'
     let l:pattern = s:joinpath(l:pattern, '/')
     for l:target in globpath(a:directory, l:pattern, 0, 1)
-        if !s:isvirtualenv(l:target)
+        if !s:is_virtualenv(l:target)
             continue
         endif
         call add(l:virtualenvs, fnamemodify(l:target, ':h'))
@@ -268,7 +268,7 @@ function! virtualenv#supported_external(target)
 endfunction
 
 function! virtualenv#origin(path)
-    if s:issubdir(a:path, g:virtualenv#directory)
+    if s:is_subdir(a:path, g:virtualenv#directory)
         let l:target = g:virtualenv#directory
         let l:tail = substitute(a:path, '^'.g:virtualenv#directory.'/', '', '')
     else
@@ -277,7 +277,7 @@ function! virtualenv#origin(path)
     endif
     for l:part in split(l:tail, '/')
         let l:target = s:joinpath(l:target, l:part)
-        if s:isvirtualenv(l:target)
+        if s:is_virtualenv(l:target)
             return l:target
         endif
     endfor
@@ -295,7 +295,7 @@ function! virtualenv#state(...)
 endfunction
 
 " misc functions
-function! s:isvirtualenv(target)
+function! s:is_virtualenv(target)
     return isdirectory(a:target) &&
         \ (filereadable(s:joinpath(a:target, 'pyvenv.cfg')) ||
         \  filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
@@ -315,7 +315,7 @@ function! s:Warning(message)
 endfunction
 
 " paths machinery
-function! s:issubdir(subdirectory, directory)
+function! s:is_subdir(subdirectory, directory)
     let l:directory = s:normpath(a:subdirectory)
     let l:pattern = '^'.s:normpath(a:directory).'/'
     return (l:directory =~# fnameescape(l:pattern))
