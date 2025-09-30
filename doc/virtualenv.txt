@@ -6,11 +6,10 @@ CONTENTS                                    *virtualenv-contents*
     1. Introduction.........................|virtualenv-introduction|
     2. Commands.............................|virtualenv-commands|
     3. Configuration........................|virtualenv-configuration|
-    4. The 'statusline' flag................|virtualenv-statusline|
-    5. Functions............................|virtualenv-functions|
-    6. Hooks................................|virtualenv-hooks|
-    7. About................................|virtualenv-about|
-    8. License..............................|virtualenv-license|
+    4. Functions............................|virtualenv-functions|
+    5. Hooks................................|virtualenv-hooks|
+    6. About................................|virtualenv-about|
+    7. License..............................|virtualenv-license|
 
 ==============================================================================
 INTRODUCTION                                *virtualenv-introduction*
@@ -105,16 +104,6 @@ g:virtualenv#return_on_deactivate           *g:virtualenv#return_on_deactivate*
 
     Default value is 1.
 
-g:virtualenv#statusline_format              *g:virtualenv#statusline_format*
-    This variable sets the format string for the |virtualenv#statusline()|
-    function output. Any '%n' flag will be replaced with the name of the
-    currently active virtualenv.
-
-    Default value is '%n'.
-
-    Example: >
-        let g:virtualenv#statusline_format = '[%n]'
-<
 g:virtualenv#debug                          *g:virtualenv#debug*
     This variable controls whether vim-virtualenv should print warning
     messages.
@@ -131,13 +120,6 @@ g:virtualenv#enable_gutentags_support
     Note: This feature requires |gutentags| plugin.
 
     Default value is 0.
-
-==============================================================================
-STATUSLINE                                  *virtualenv-statusline*
-
-Name of the currently active virtualenv can be shown in the |'statusline'|, or
-in any other place, by calling the |virtualenv#statusline()| function. The
-output is controlled by the |g:virtualenv#statusline_format| variable.
 
 ==============================================================================
 FUNCTIONS                                   *virtualenv-functions*
@@ -177,10 +159,6 @@ virtualenv#find({target} [, {pattern}])
     If the optional {pattern} argument is given, then only virtualenvs that
     match it are returned. {pattern} can be any pattern acceptable by
     |globpath()|.
-
-virtualenv#statusline()                     *virtualenv#statusline()*
-    Return the currently active virtualenv name or "" if there is none.
-    See also |virtualenv-statusline|.
 
 virtualenv#origin({target})                 *virtualenv#origin()*
     Search from the {target} directory upwards until a virtualenv is found.

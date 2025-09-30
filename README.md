@@ -73,9 +73,6 @@ Deactivate the currently active virtualenv:
 
     :VirtualEnvDeactivate
 
-Name of the currently active virtualenv can be shown in the statusline via
-`virtualenv#statusline()` function.
-
 For a more detailed help see:
 
     :help virtualenv

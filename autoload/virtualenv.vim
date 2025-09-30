@@ -214,14 +214,6 @@ function! virtualenv#list(...)
     endfor
 endfunction
 
-function! virtualenv#statusline()
-    return has_key(s:state, 'virtualenv_name')
-         \ ? substitute(
-         \    g:virtualenv#statusline_format, '\C%n',
-         \    s:state['virtualenv_name'], 'g')
-         \ : ''
-endfunction
-
 " helper functions
 function! virtualenv#find(directory, ...)
     let l:virtualenvs = []

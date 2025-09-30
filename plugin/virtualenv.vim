@@ -25,8 +25,6 @@ let g:virtualenv#cdvirtualenv_on_activate =
     \ get(g:, 'virtualenv#cdvirtualenv_on_activate', 1)
 let g:virtualenv#return_on_deactivate =
     \ get(g:, 'virtualenv#return_on_deactivate', 1)
-let g:virtualenv#statusline_format =
-    \ get(g:, 'virtualenv#statusline_format', '%n')
 let g:virtualenv#debug =
     \ get(g:, 'virtualenv#debug', 0)
 let g:virtualenv#enable_gutentags_support =
