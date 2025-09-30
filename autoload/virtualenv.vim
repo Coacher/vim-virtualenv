@@ -294,10 +294,10 @@ endfunction
 
 function! virtualenv#state(...)
     if (a:0)
-        call s:Query(a:1)
+        echo a:1.' = '.get(s:state, a:1, '__undefined__')
     else
-        for l:key in keys(s:state)
-            call s:Query(l:key)
+        for [l:key, l:value] in items(s:state)
+            echo l:key.' = '.l:value
         endfor
     endif
 endfunction
@@ -307,10 +307,6 @@ function! s:isvirtualenv(target)
     return isdirectory(a:target) &&
         \ (filereadable(s:joinpath(a:target, 'pyvenv.cfg')) ||
         \  filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
-endfunction
-
-function! s:Query(key)
-    echo a:key.' = '.get(s:state, a:key, '__undefined__')
 endfunction
 
 " debug functions
