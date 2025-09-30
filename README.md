@@ -7,13 +7,13 @@ environments created by the [virtualenv](https://github.com/pypa/virtualenv) or
 well as synchronizes the Vim internal Python `sys.path` variable with an
 already active virtual environment.
 
-By default, `:python` and `:python3` commands have access only to the
-system-wide Python environment. vim-virtualenv changes the Vim internal Python
-`sys.path` and environment `$PATH` and `$PYTHONPATH` variables so that they
-refer to the chosen virtual environment, i.e. activates it.
+By default, `:python3` command has access only to the system-wide Python
+environment. vim-virtualenv changes the Vim internal Python `sys.path` and
+environment `$PATH` and `$PYTHONPATH` variables so that they refer to the
+chosen virtual environment, i.e. activates it.
 
-However, `:python` and `:python3` commands will be still tied to, respectively,
-Python 2 and Python 3 versions that Vim was compiled against.
+However, `:python3` command will be still tied to the Python 3 version that Vim
+was compiled against.
 
 **Note.**
 Since the v2.0.0 release there are no new features planned and there are no
