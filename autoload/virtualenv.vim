@@ -91,14 +91,18 @@ function! virtualenv#force_activate(target, ...)
     endif
 
     let l:internal = !(a:0 && (a:1 ==# 'external'))
-    let l:pyversion =
-        \ virtualenv#supported(a:target, l:internal ? '' : 'external')
+    let l:pyversion = s:get_pyversion(a:target, l:internal)
 
-    if !(l:pyversion)
+    if !s:is_python_supported(l:pyversion)
+        let [l:major, l:minor] = l:pyversion
+        call s:Error('Python version mismatch')
+        call s:Error('Environment version: '.l:major.'.'.l:minor)
+        call s:Error('Vim version: '.s:vim_major.'.'.s:vim_minor)
         return s:Error(a:target.' is not supported')
     endif
 
     let s:state['virtualenv_internal'] = l:internal
+    let s:state['virtualenv_python'] = join(l:pyversion, '.')
     let s:state['virtualenv_directory'] = a:target
     let s:state['virtualenv_return_dir'] = getcwd()
     let s:state['virtualenv_name'] = fnamemodify(a:target, ':t')
@@ -126,6 +130,7 @@ function! virtualenv#force_activate(target, ...)
         unlet! s:state['virtualenv_name']
         unlet! s:state['virtualenv_return_dir']
         unlet! s:state['virtualenv_directory']
+        unlet! s:state['virtualenv_python']
         unlet! s:state['virtualenv_internal']
 
         call s:Error(v:throwpoint)
@@ -192,6 +197,7 @@ function! virtualenv#force_deactivate()
     unlet! s:state['virtualenv_name']
     unlet! s:state['virtualenv_return_dir']
     unlet! s:state['virtualenv_directory']
+    unlet! s:state['virtualenv_python']
     unlet! s:state['virtualenv_internal']
 endfunction
 
@@ -230,47 +236,6 @@ function! virtualenv#find(directory, ...)
     return l:virtualenvs
 endfunction
 
-function! virtualenv#supported(target, ...)
-    let l:internal = !(a:0 && (a:1 ==# 'external'))
-    let l:python_major_version =
-        \ l:internal ? virtualenv#supported_internal(a:target)
-        \            : virtualenv#supported_external(a:target)
-    return l:python_major_version
-endfunction
-
-function! virtualenv#supported_internal(target)
-    let l:pythons = globpath(a:target, 'lib/python?.?*/', 0, 1)
-    if !empty(l:pythons)
-        let [l:python; l:rest] = l:pythons
-        if !empty(l:rest)
-            call s:Warning('multiple Python versions were found in '.a:target)
-            call s:Warning('processing '.l:python)
-        endif
-    else
-        call s:Error('no Python installations were found in '.a:target)
-        return
-    endif
-    let l:python = split(fnamemodify(s:normpath(l:python), ':t'), '\.')
-    return l:python[0][-1:]
-endfunction
-
-function! virtualenv#supported_external(target)
-    let [l:extpython] =
-        \ s:execute_system_python_command(
-        \  'import sys; print(u".".join(str(x) for x in sys.version_info))')
-    let l:python_major_version = l:extpython[0]
-    let [l:vimpython] =
-        \ s:execute_python_command(
-        \  'import sys; print(u".".join(str(x) for x in sys.version_info))')
-    if (l:vimpython !=# l:extpython)
-        call s:Error('Python version mismatch')
-        call s:Error(a:target.' version: '.l:extpython)
-        call s:Error('Vim version: '.l:vimpython)
-        return
-    endif
-    return l:python_major_version
-endfunction
-
 function! virtualenv#origin(path)
     if s:is_subdir(a:path, g:virtualenv#directory)
         let l:target = g:virtualenv#directory
@@ -303,6 +268,34 @@ function! s:is_virtualenv(target)
     return isdirectory(a:target) &&
         \ (filereadable(s:joinpath(a:target, 'pyvenv.cfg')) ||
         \  filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
+endfunction
+
+function! s:get_pyversion(target, internal)
+    return a:internal
+         \ ? s:get_pyversion_internal(a:target)
+         \ : s:get_pyversion_external(a:target)
+endfunction
+
+function! s:get_pyversion_internal(target)
+    let l:pythons = globpath(a:target, 'lib/python?.?*/', 0, 1)
+    if !empty(l:pythons)
+        let [l:python; l:rest] = l:pythons
+        if !empty(l:rest)
+            call s:Warning('multiple Python versions were found in '.a:target)
+            call s:Warning('processing '.l:python)
+        endif
+    else
+        call s:Warning('no Python installations were found in '.a:target)
+        return []
+    endif
+    let [l:major, l:minor] =
+        \ split(fnamemodify(s:normpath(l:python), ':t'), '\.')
+    return [l:major[-1:], l:minor]
+endfunction
+
+function! s:get_pyversion_external(...)
+    return s:execute_system_python_command(
+         \  'import sys; print(*sys.version_info[:2], sep="\n")')
 endfunction
 
 function! s:is_python_supported(pyversion)
