@@ -353,26 +353,15 @@ function! s:execute_system_python_command(command)
 endfunction
 
 function! s:execute_python_command(command, ...)
-    let l:command = a:command.((a:0) ? s:construct_arguments(a:0, a:000) : '')
+    let l:command = a:command.((a:0) ? s:build_arguments(a:000) : '')
     return split(execute('python3 '.l:command), '\n')
 endfunction
 
-function! s:construct_arguments(number, list)
+function! s:build_arguments(arguments)
     let l:arguments = '('
-    if (a:number)
-        let l:first_arguments = (a:number > 1) ? a:list[:(a:number - 2)] : []
-        for l:argument in l:first_arguments
-            let l:arguments .= s:process_argument(l:argument).', '
-        endfor
-        let l:last_argument = a:list[(a:number - 1)]
-        if (type(l:last_argument) != type({}))
-            let l:arguments .= s:process_argument(l:last_argument)
-        else
-            for [l:key, l:value] in items(l:last_argument)
-                let l:arguments .= l:key.'='.s:process_argument(l:value).', '
-            endfor
-        endif
-    endif
+    for l:argument in a:arguments
+        let l:arguments .= s:process_argument(l:argument).', '
+    endfor
     let l:arguments .= ')'
     return l:arguments
 endfunction
