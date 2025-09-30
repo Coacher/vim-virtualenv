@@ -367,9 +367,10 @@ function! s:build_arguments(arguments)
 endfunction
 
 function! s:process_argument(argument)
-    if (type(a:argument) == type(0)) || (type(a:argument) == type(0.0))
+    let l:argtype = type(a:argument)
+    if (l:argtype == v:t_number) || (l:argtype == v:t_float)
         return a:argument
-    elseif (type(a:argument) == type(''))
+    elseif (l:argtype == v:t_string)
         return '"""'.a:argument.'"""'
     else
         return string(a:argument)
