@@ -5,8 +5,7 @@ function! virtualenv#init()
     try
         execute 'py3file' fnameescape(g:virtualenv#python_script)
     catch
-        call s:Error('failed to load Python virtual environment manager')
-        return 1
+        return s:Error('failed to load Python virtual environment manager')
     endtry
 
     if (g:virtualenv#directory !=# v:null)
@@ -14,9 +13,8 @@ function! virtualenv#init()
             \ s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
 
         if !isdirectory(g:virtualenv#directory)
-            call s:Error('invalid value for g:virtualenv#directory: '.
-                        \string(g:virtualenv#directory))
-            return 1
+            return s:Error('invalid value for g:virtualenv#directory: '.
+                          \string(g:virtualenv#directory))
         endif
 
         if empty($WORKON_HOME)
@@ -29,8 +27,7 @@ function! virtualenv#activate(...)
     if (a:0)
         let l:name = s:normpath(a:1)
         if empty(l:name)
-            call s:Error('requested virtualenv with an empty name')
-            return 1
+            return s:Error('requested virtualenv with an empty name')
         endif
 
         let l:virtualenv_path = [g:virtualenv#directory, getcwd(), '/']
@@ -66,9 +63,8 @@ function! virtualenv#activate(...)
                 if !empty(l:target)
                     if has_key(s:state, 'virtualenv_directory') &&
                      \ (l:target ==# s:state['virtualenv_directory'])
-                        call s:Warning('virtualenv of the current directory '.
-                                      \'is already active')
-                        return
+                        return s:Warning('virtualenv of the current directory '.
+                                        \'is already active')
                     else
                         return virtualenv#deactivate() ||
                              \ virtualenv#force_activate(l:target)
@@ -76,8 +72,7 @@ function! virtualenv#activate(...)
                 endif
             endfor
 
-            call s:Warning('virtualenv of the current directory was not found')
-            return
+            return s:Warning('virtualenv of the current directory was not found')
         else
             " otherwise it is an externally activated virtualenv
             return virtualenv#deactivate() ||
@@ -88,8 +83,7 @@ endfunction
 
 function! virtualenv#force_activate(target, ...)
     if !s:isvirtualenv(a:target)
-        call s:Error(a:target.' is not a valid virtualenv')
-        return 1
+        return s:Error(a:target.' is not a valid virtualenv')
     endif
 
     let l:internal = !(a:0 && (a:1 ==# 'external'))
@@ -97,8 +91,7 @@ function! virtualenv#force_activate(target, ...)
         \ virtualenv#supported(a:target, l:internal ? '' : 'external')
 
     if !(l:pyversion)
-        call s:Error(a:target.' is not supported')
-        return 1
+        return s:Error(a:target.' is not supported')
     endif
 
     let s:state['virtualenv_internal'] = l:internal
@@ -164,8 +157,7 @@ endfunction
 
 function! virtualenv#deactivate()
     if !has_key(s:state, 'virtualenv_name')
-        call s:Warning('no active virtualenv to deactivate')
-        return
+        return s:Warning('no active virtualenv to deactivate')
     endif
     return virtualenv#force_deactivate()
 endfunction
@@ -312,12 +304,14 @@ endfunction
 " debug functions
 function! s:Error(message)
     echohl ErrorMsg | echomsg 'vim-virtualenv: '.a:message | echohl None
+    return 1
 endfunction
 
 function! s:Warning(message)
     if g:virtualenv#debug
         echohl WarningMsg | echomsg 'vim-virtualenv: '.a:message | echohl None
     endif
+    return 0
 endfunction
 
 " paths machinery
