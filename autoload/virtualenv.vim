@@ -364,10 +364,7 @@ endfunction
 
 function! s:execute_python_command(command, ...)
     let l:command = a:command.((a:0) ? s:construct_arguments(a:0, a:000) : '')
-    redir => l:output
-        silent execute 'python3' l:command
-    redir END
-    return split(l:output, '\n')
+    return split(execute('python3 '.l:command), '\n')
 endfunction
 
 function! s:construct_arguments(number, list)
