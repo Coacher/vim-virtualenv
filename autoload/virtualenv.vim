@@ -118,7 +118,7 @@ function! virtualenv#force_activate(target, ...)
             let [l:sys_path, l:sys_prefix, l:sys_exec_prefix] =
                 \ s:execute_system_python_command(
                 \  'import sys; '.
-                \  'print(sys.path, sys.prefix, sys.exec_prefix, sep=u"\n")')
+                \  'print(sys.path, sys.prefix, sys.exec_prefix, sep="\n")')
             call s:execute_python_command(
                 \ 'VirtualEnvManager.extactivate',
                 \ l:sys_path,
