@@ -14,7 +14,7 @@ function! virtualenv#init()
 
     if (g:virtualenv#directory !=# v:null)
         let g:virtualenv#directory =
-            \ s:normpath(fnamemodify(g:virtualenv#directory, ':p'))
+            \ s:normalize_path(fnamemodify(g:virtualenv#directory, ':p'))
 
         if !isdirectory(g:virtualenv#directory)
             return s:Error('invalid value for g:virtualenv#directory: '.
@@ -29,7 +29,7 @@ endfunction
 
 function! virtualenv#activate(...)
     if (a:0)
-        let l:name = s:normpath(a:1)
+        let l:name = s:normalize_path(a:1)
         if empty(l:name)
             return s:Error('requested virtualenv with an empty name')
         endif
@@ -39,7 +39,7 @@ function! virtualenv#activate(...)
             let l:virtualenvs = virtualenv#find(l:directory, l:name)
             if !empty(l:virtualenvs)
                 let [l:target; l:rest] = l:virtualenvs
-                let l:target = s:normpath(l:target)
+                let l:target = s:normalize_path(l:target)
                 if !empty(l:rest)
                     call s:Warning('multiple virtualenvs under the name '.
                                   \l:name.' were found in '.l:directory)
@@ -207,7 +207,7 @@ endfunction
 function! virtualenv#find(directory, ...)
     let l:virtualenvs = []
     let l:pattern = (a:0) ? a:1 : '*'
-    let l:pattern = s:joinpath(l:pattern, '/')
+    let l:pattern = s:join_path(l:pattern, '/')
     for l:target in globpath(a:directory, l:pattern, 0, 1)
         if !s:is_virtualenv(l:target)
             continue
@@ -218,7 +218,7 @@ function! virtualenv#find(directory, ...)
 endfunction
 
 function! virtualenv#origin(path)
-    let l:path = s:normpath(fnamemodify(a:path, ':p'))
+    let l:path = s:normalize_path(fnamemodify(a:path, ':p'))
     let l:prev = ''
     while (l:path !=# l:prev)
         if s:is_virtualenv(l:path)
@@ -254,8 +254,8 @@ endfunction
 " misc functions
 function! s:is_virtualenv(target)
     return isdirectory(a:target) &&
-        \ (filereadable(s:joinpath(a:target, 'pyvenv.cfg')) ||
-        \  filereadable(s:joinpath(a:target, 'bin/activate_this.py')))
+        \ (filereadable(s:join_path(a:target, 'pyvenv.cfg')) ||
+        \  filereadable(s:join_path(a:target, 'bin/activate_this.py')))
 endfunction
 
 function! s:get_pyversion(target, internal)
@@ -277,7 +277,7 @@ function! s:get_pyversion_internal(target)
         return []
     endif
     let [l:major, l:minor] =
-        \ split(fnamemodify(s:normpath(l:python), ':t'), '\.')
+        \ split(fnamemodify(s:normalize_path(l:python), ':t'), '\.')
     return [l:major[-1:], l:minor]
 endfunction
 
@@ -310,12 +310,12 @@ endfunction
 
 " paths machinery
 function! s:is_subdir(subdirectory, directory)
-    let l:directory = s:normpath(a:subdirectory)
-    let l:pattern = '^'.s:normpath(a:directory).'/'
+    let l:directory = s:normalize_path(a:subdirectory)
+    let l:pattern = '^'.s:normalize_path(a:directory).'/'
     return (l:directory =~# fnameescape(l:pattern))
 endfunction
 
-function! s:joinpath(first, last)
+function! s:join_path(first, last)
     if !empty(a:first) && !empty(a:last)
         let l:prefix = substitute(a:first, '[/]\+$', '', '')
         let l:suffix = substitute(a:last, '^[/]\+', '', '')
@@ -325,7 +325,7 @@ function! s:joinpath(first, last)
     endif
 endfunction
 
-function! s:normpath(path)
+function! s:normalize_path(path)
     let l:path = a:path
     if !empty(l:path)
         if (l:path =~# '^\~')
