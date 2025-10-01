@@ -103,10 +103,9 @@ function! virtualenv#force_activate(target, ...)
     doautocmd <nomodeline> User VirtualEnvActivatePre
 
     try
-        if s:state['virtualenv_internal']
+        if l:internal
             call s:execute_python_command(
-                \ 'VirtualEnvManager.activate',
-                \ s:state['virtualenv_directory'])
+                \ 'VirtualEnvManager.activate', a:target)
         else
             let [l:sys_path, l:sys_prefix, l:sys_exec_prefix] =
                 \ s:execute_system_python_command(
@@ -134,9 +133,7 @@ function! virtualenv#force_activate(target, ...)
     command! -nargs=0 -bar VirtualEnvCD call virtualenv#cdvirtualenv()
 
     if g:virtualenv#cdvirtualenv_on_activate &&
-     \ !s:is_subdir(
-     \  s:state['virtualenv_return_dir'],
-     \  s:state['virtualenv_directory'])
+     \ !s:is_subdir(getcwd(), a:target)
         call virtualenv#cdvirtualenv()
     endif
 
