@@ -40,8 +40,8 @@ Key features
 
 * This plugin is not a replacement for
   [virtualenv](https://github.com/pypa/virtualenv) or
-  [virtualenvwrapper](https://bitbucket.org/dhellmann/virtualenvwrapper) tools
-  nor it aims to be one.
+  [virtualenvwrapper](https://github.com/python-virtualenvwrapper/virtualenvwrapper)
+  tools nor it aims to be one.
 
 Usage examples
 ==============
