@@ -20,10 +20,6 @@ function! virtualenv#init()
             return s:Error('invalid value for g:virtualenv#directory: '.
                           \string(g:virtualenv#directory))
         endif
-
-        if empty($WORKON_HOME)
-            let $WORKON_HOME = g:virtualenv#directory
-        endif
     endif
 endfunction
 
