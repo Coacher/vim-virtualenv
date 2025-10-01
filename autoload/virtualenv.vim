@@ -9,7 +9,7 @@ function! virtualenv#init()
     try
         execute 'py3file' fnameescape(g:virtualenv#python_script)
     catch
-        return s:Error('failed to load Python virtual environment manager')
+        return s:error('failed to load Python virtual environment manager')
     endtry
 
     if (g:virtualenv#directory !=# v:null)
@@ -17,7 +17,7 @@ function! virtualenv#init()
             \ s:normalize_path(fnamemodify(g:virtualenv#directory, ':p'))
 
         if !isdirectory(g:virtualenv#directory)
-            return s:Error('invalid value for g:virtualenv#directory: '.
+            return s:error('invalid value for g:virtualenv#directory: '.
                           \string(g:virtualenv#directory))
         endif
     endif
@@ -27,7 +27,7 @@ function! virtualenv#activate(...)
     if (a:0)
         let l:name = s:normalize_path(a:1)
         if empty(l:name)
-            return s:Error('requested virtualenv with an empty name')
+            return s:error('requested virtualenv with an empty name')
         endif
 
         let l:virtualenv_path = [g:virtualenv#directory, getcwd(), '/']
@@ -37,16 +37,16 @@ function! virtualenv#activate(...)
                 let [l:target; l:rest] = l:virtualenvs
                 let l:target = s:normalize_path(l:target)
                 if !empty(l:rest)
-                    call s:Warning('multiple virtualenvs under the name '.
+                    call s:warning('multiple virtualenvs under the name '.
                                   \l:name.' were found in '.l:directory)
-                    call s:Warning('processing '.l:target)
+                    call s:warning('processing '.l:target)
                 endif
                 return virtualenv#deactivate() ||
                      \ virtualenv#force_activate(l:target)
             endif
         endfor
 
-        call s:Warning('requested virtualenv '.l:name.
+        call s:warning('requested virtualenv '.l:name.
                       \' was not found in '.string(l:virtualenv_path))
         return 1
     else
@@ -61,7 +61,7 @@ function! virtualenv#activate(...)
                 let l:target = virtualenv#origin(l:directory)
                 if !empty(l:target)
                     if (l:target ==# virtualenv#state('virtualenv_directory'))
-                        return s:Warning('virtualenv of the current directory '.
+                        return s:warning('virtualenv of the current directory '.
                                         \'is already active')
                     else
                         return virtualenv#deactivate() ||
@@ -70,7 +70,7 @@ function! virtualenv#activate(...)
                 endif
             endfor
 
-            return s:Warning('virtualenv of the current directory was not found')
+            return s:warning('virtualenv of the current directory was not found')
         else
             " otherwise it is an externally activated virtualenv
             return virtualenv#deactivate() ||
@@ -81,7 +81,7 @@ endfunction
 
 function! virtualenv#force_activate(target, ...)
     if !s:is_virtualenv(a:target)
-        return s:Error(a:target.' is not a valid virtualenv')
+        return s:error(a:target.' is not a valid virtualenv')
     endif
 
     let l:internal = !(a:0 && (a:1 ==# 'external'))
@@ -89,10 +89,10 @@ function! virtualenv#force_activate(target, ...)
 
     if !s:is_python_supported(l:pyversion)
         let [l:major, l:minor] = l:pyversion
-        call s:Error('Python version mismatch')
-        call s:Error('Environment version: '.l:major.'.'.l:minor)
-        call s:Error('Vim version: '.s:vim_major.'.'.s:vim_minor)
-        return s:Error(a:target.' is not supported')
+        call s:error('Python version mismatch')
+        call s:error('Environment version: '.l:major.'.'.l:minor)
+        call s:error('Vim version: '.s:vim_major.'.'.s:vim_minor)
+        return s:error(a:target.' is not supported')
     endif
 
     let s:state['virtualenv_internal'] = l:internal
@@ -126,8 +126,8 @@ function! virtualenv#force_activate(target, ...)
         unlet! s:state['virtualenv_python']
         unlet! s:state['virtualenv_internal']
 
-        call s:Error(v:throwpoint)
-        call s:Error(v:exception)
+        call s:error(v:throwpoint)
+        call s:error(v:exception)
 
         return 1
     endtry
@@ -151,7 +151,7 @@ endfunction
 
 function! virtualenv#deactivate()
     if !has_key(s:state, 'virtualenv_name')
-        return s:Warning('no active virtualenv to deactivate')
+        return s:warning('no active virtualenv to deactivate')
     endif
     return virtualenv#force_deactivate()
 endfunction
@@ -265,11 +265,11 @@ function! s:get_pyversion_internal(target)
     if !empty(l:pythons)
         let [l:python; l:rest] = l:pythons
         if !empty(l:rest)
-            call s:Warning('multiple Python versions were found in '.a:target)
-            call s:Warning('processing '.l:python)
+            call s:warning('multiple Python versions were found in '.a:target)
+            call s:warning('processing '.l:python)
         endif
     else
-        call s:Warning('no Python installations were found in '.a:target)
+        call s:warning('no Python installations were found in '.a:target)
         return []
     endif
     let [l:major, l:minor] =
@@ -292,12 +292,12 @@ function! s:is_python_supported(pyversion)
 endfunction
 
 " debug functions
-function! s:Error(message)
+function! s:error(message)
     echohl ErrorMsg | echomsg 'vim-virtualenv: '.a:message | echohl None
     return 1
 endfunction
 
-function! s:Warning(message)
+function! s:warning(message)
     if g:virtualenv#debug
         echohl WarningMsg | echomsg 'vim-virtualenv: '.a:message | echohl None
     endif
