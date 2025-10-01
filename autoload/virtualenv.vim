@@ -326,10 +326,14 @@ function! s:join_path(first, last)
 endfunction
 
 function! s:normalize_path(path)
+    " Normalize path:
+    " - expand user directories,
+    " - simplify as much as possible,
+    " - keep a single leading slash,
+    " - remove any trailing slashes.
     let l:path = a:path
     if !empty(l:path)
         if (l:path =~# '^\~')
-            " Expand user directories, but otherwise keep the path relative.
             let l:user = matchstr(l:path, '^\~[^/]*')
             let l:home_directory = fnamemodify(l:user, ':p:h')
             let l:path = substitute(l:path, '^\'.l:user, l:home_directory, '')
