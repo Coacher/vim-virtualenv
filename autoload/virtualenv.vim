@@ -58,7 +58,7 @@ function! virtualenv#activate(...)
          \ ($VIRTUAL_ENV ==# virtualenv#state('virtualenv_directory'))
             " if either $VIRTUAL_ENV is not set, or it is set and
             " equals to the value of s:state['virtualenv_directory'],
-            " then use the topmost virtualenv of the current directory
+            " then use the innermost virtualenv of the current directory
 
             let l:virtualenv_path = [expand('%:p:h'), getcwd()]
             for l:directory in l:virtualenv_path
@@ -219,19 +219,15 @@ function! virtualenv#find(directory, ...)
 endfunction
 
 function! virtualenv#origin(path)
-    if s:is_subdir(a:path, g:virtualenv#directory)
-        let l:target = g:virtualenv#directory
-        let l:tail = substitute(a:path, '^'.g:virtualenv#directory.'/', '', '')
-    else
-        let l:target = '/'
-        let l:tail = fnamemodify(a:path, ':p')
-    endif
-    for l:part in split(l:tail, '/')
-        let l:target = s:joinpath(l:target, l:part)
-        if s:is_virtualenv(l:target)
-            return l:target
+    let l:path = s:normpath(fnamemodify(a:path, ':p'))
+    let l:prev = ''
+    while (l:path !=# l:prev)
+        if s:is_virtualenv(l:path)
+            return l:path
         endif
-    endfor
+        let l:prev = l:path
+        let l:path = fnamemodify(l:path, ':h')
+    endwhile
     return ''
 endfunction
 
