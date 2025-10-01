@@ -19,8 +19,6 @@ let g:virtualenv#auto_activate =
     \ get(g:, 'virtualenv#auto_activate', 1)
 let g:virtualenv#auto_activate_everywhere =
     \ get(g:, 'virtualenv#auto_activate_everywhere', 0)
-let g:virtualenv#update_pythonpath =
-    \ get(g:, 'virtualenv#update_pythonpath', 1)
 let g:virtualenv#cdvirtualenv_on_activate =
     \ get(g:, 'virtualenv#cdvirtualenv_on_activate', 1)
 let g:virtualenv#return_on_deactivate =

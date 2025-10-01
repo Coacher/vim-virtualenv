@@ -111,8 +111,7 @@ function! virtualenv#force_activate(target, ...)
         if s:state['virtualenv_internal']
             call s:execute_python_command(
                 \ 'VirtualEnvManager.activate',
-                \ s:state['virtualenv_directory'],
-                \ g:virtualenv#update_pythonpath)
+                \ s:state['virtualenv_directory'])
         else
             let [l:sys_path, l:sys_prefix, l:sys_exec_prefix] =
                 \ s:execute_system_python_command(

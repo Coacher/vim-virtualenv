@@ -24,7 +24,7 @@ class VirtualEnvManager:
         self.prev_os_path = None
         self.prev_py_path = None
 
-    def activate(self, path: str, *, update_pythonpath: bool = True) -> None:
+    def activate(self, path: str) -> None:
         """Activate the virtual environment located at the given path.
 
         Activation works as follows:
@@ -69,7 +69,7 @@ class VirtualEnvManager:
         sys.exec_prefix = path
 
         sys_path_diff = set(sys.path) - set(self.prev_sys_path)
-        if sys_path_diff and update_pythonpath:
+        if sys_path_diff:
             os.environ["PYTHONPATH"] = os.pathsep.join(
                 list(sys_path_diff) + self.prev_py_path.split(os.pathsep)
             )

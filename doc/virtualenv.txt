@@ -84,13 +84,6 @@ g:virtualenv#auto_activate_everywhere
 
     Default value is 0.
 
-g:virtualenv#update_pythonpath              *g:virtualenv#update_pythonpath*
-    This variable controls whether vim-virtualenv should update $PYTHONPATH
-    environment variable on virtualenv activation. The original $PYTHONPATH
-    value is restored on deactivation.
-
-    Default value is 1.
-
                                         *g:virtualenv#cdvirtualenv_on_activate*
 g:virtualenv#cdvirtualenv_on_activate
     This variable controls whether vim-virtualenv should change the current
