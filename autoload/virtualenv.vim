@@ -55,8 +55,7 @@ function! virtualenv#activate(...)
         return 1
     else
         if empty($VIRTUAL_ENV) ||
-         \ (has_key(s:state, 'virtualenv_directory') &&
-         \  ($VIRTUAL_ENV ==# s:state['virtualenv_directory']))
+         \ ($VIRTUAL_ENV ==# virtualenv#state('virtualenv_directory'))
             " if either $VIRTUAL_ENV is not set, or it is set and
             " equals to the value of s:state['virtualenv_directory'],
             " then use the topmost virtualenv of the current directory
@@ -65,8 +64,7 @@ function! virtualenv#activate(...)
             for l:directory in l:virtualenv_path
                 let l:target = virtualenv#origin(l:directory)
                 if !empty(l:target)
-                    if has_key(s:state, 'virtualenv_directory') &&
-                     \ (l:target ==# s:state['virtualenv_directory'])
+                    if (l:target ==# virtualenv#state('virtualenv_directory'))
                         return s:Warning('virtualenv of the current directory '.
                                         \'is already active')
                     else
