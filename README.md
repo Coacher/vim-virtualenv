@@ -15,11 +15,6 @@ chosen virtual environment, i.e. activates it.
 However, `:python3` command will be still tied to the Python 3 version that Vim
 was compiled against.
 
-**Note.**
-Since the v2.0.0 release there are no new features planned and there are no
-known issues. Nevertheless this plugin is still maintained so feel free to file
-a bug report or a feature request.
-
 Key features
 ============
 
