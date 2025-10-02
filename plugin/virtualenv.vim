@@ -31,7 +31,7 @@ let g:virtualenv#python_script =
     \ get(g:, 'virtualenv#python_script',
     \     expand('<sfile>:p:h:h').'/autoload/virtualenv/virtualenv.py')
 
-augroup vim-virtualenv-internal
+augroup vim_virtualenv_internal
 autocmd! User VirtualEnv* :
 augroup END
 
