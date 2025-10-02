@@ -38,7 +38,7 @@ augroup END
 augroup VirtualEnvAutoActivate
 if g:virtualenv#auto_activate_everywhere
     autocmd! BufEnter,BufFilePost * call virtualenv#activate()
-elseif g:virtualenv#auto_activate && (g:virtualenv#directory !=# v:null)
+elseif g:virtualenv#auto_activate && !empty(g:virtualenv#directory)
     execute 'autocmd! BufEnter,BufFilePost '.
             \g:virtualenv#directory.'/* call virtualenv#activate()'
 endif

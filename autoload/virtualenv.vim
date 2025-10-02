@@ -12,7 +12,7 @@ function! virtualenv#init()
         return s:error('failed to load Python virtual environment manager')
     endtry
 
-    if (g:virtualenv#directory !=# v:null)
+    if !empty(g:virtualenv#directory)
         let g:virtualenv#directory =
             \ s:normalize_path(fnamemodify(g:virtualenv#directory, ':p'))
 
