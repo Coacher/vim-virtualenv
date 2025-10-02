@@ -79,33 +79,35 @@ function! virtualenv#activate(...)
 endfunction
 
 function! virtualenv#force_activate(target, ...)
-    if !s:is_virtualenv(a:target)
-        return s:error(a:target.' is not a valid virtualenv')
+    let l:target = s:normalize_path(a:target)
+
+    if !s:is_virtualenv(l:target)
+        return s:error(l:target.' is not a valid virtualenv')
     endif
 
     let l:internal = !(a:0 && (a:1 ==# 'external'))
-    let l:pyversion = s:get_pyversion(a:target, l:internal)
+    let l:pyversion = s:get_pyversion(l:target, l:internal)
 
     if !s:is_python_supported(l:pyversion)
         let [l:major, l:minor] = l:pyversion
         call s:error('Python version mismatch')
         call s:error('Environment version: '.l:major.'.'.l:minor)
         call s:error('Vim version: '.s:vim_major.'.'.s:vim_minor)
-        return s:error(a:target.' is not supported')
+        return s:error(l:target.' is not supported')
     endif
 
     let s:state['virtualenv_internal'] = l:internal
     let s:state['virtualenv_python'] = join(l:pyversion, '.')
-    let s:state['virtualenv_directory'] = a:target
+    let s:state['virtualenv_directory'] = l:target
     let s:state['virtualenv_return_dir'] = getcwd()
-    let s:state['virtualenv_name'] = fnamemodify(a:target, ':t')
+    let s:state['virtualenv_name'] = fnamemodify(l:target, ':t')
 
     doautocmd <nomodeline> User VirtualEnvActivatePre
 
     try
         if l:internal
             call s:execute_python_command(
-                \ 'VirtualEnvManager.activate', a:target)
+                \ 'VirtualEnvManager.activate', l:target)
         else
             let [l:sys_path, l:sys_prefix, l:sys_exec_prefix] =
                 \ s:execute_system_python_command(
@@ -133,7 +135,7 @@ function! virtualenv#force_activate(target, ...)
     command! -nargs=0 -bar VirtualEnvCD call virtualenv#cdvirtualenv()
 
     if g:virtualenv#cdvirtualenv_on_activate &&
-     \ !s:is_subdir(getcwd(), a:target)
+     \ !s:is_subdir(getcwd(), l:target)
         call virtualenv#cdvirtualenv()
     endif
 
