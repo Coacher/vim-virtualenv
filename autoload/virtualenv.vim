@@ -249,6 +249,7 @@ endfunction
 function! s:is_virtualenv(target)
     return isdirectory(a:target) &&
         \ (filereadable(s:join_path(a:target, 'pyvenv.cfg')) ||
+        \  filereadable(s:join_path(a:target, '.venv/pyvenv.cfg')) ||
         \  filereadable(s:join_path(a:target, 'bin/activate_this.py')))
 endfunction
 
