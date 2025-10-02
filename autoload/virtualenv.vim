@@ -46,9 +46,8 @@ function! virtualenv#activate(...)
             endif
         endfor
 
-        call s:warning('requested virtualenv '.l:name.
+        return s:error('requested virtualenv '.l:name.
                       \' was not found in '.string(l:virtualenv_path))
-        return 1
     else
         if empty($VIRTUAL_ENV) ||
          \ ($VIRTUAL_ENV ==# virtualenv#state('virtualenv_directory'))
