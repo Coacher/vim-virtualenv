@@ -81,7 +81,8 @@ endfunction
 function! virtualenv#force_activate(target, ...)
     let l:target = s:normalize_path(a:target)
 
-    if !s:is_virtualenv(l:target)
+    let l:env_type = s:get_env_type(l:target)
+    if empty(l:env_type)
         return s:error(l:target.' is not a valid virtualenv')
     endif
 
@@ -96,6 +97,7 @@ function! virtualenv#force_activate(target, ...)
         return s:error(l:target.' is not supported')
     endif
 
+    let s:state['virtualenv_type'] = l:env_type
     let s:state['virtualenv_internal'] = l:internal
     let s:state['virtualenv_python'] = join(l:pyversion, '.')
     let s:state['virtualenv_directory'] = l:target
@@ -125,6 +127,7 @@ function! virtualenv#force_activate(target, ...)
         unlet! s:state['virtualenv_directory']
         unlet! s:state['virtualenv_python']
         unlet! s:state['virtualenv_internal']
+        unlet! s:state['virtualenv_type']
 
         call s:error(v:throwpoint)
         call s:error(v:exception)
@@ -182,6 +185,7 @@ function! virtualenv#force_deactivate()
     unlet! s:state['virtualenv_directory']
     unlet! s:state['virtualenv_python']
     unlet! s:state['virtualenv_internal']
+    unlet! s:state['virtualenv_type']
 endfunction
 
 function! virtualenv#cdvirtualenv()
@@ -203,7 +207,7 @@ function! virtualenv#find(directory, ...)
     let l:pattern = (a:0) ? a:1 : '*'
     let l:pattern = s:join_path(l:pattern, '/')
     for l:target in globpath(a:directory, l:pattern, 0, 1)
-        if !s:is_virtualenv(l:target)
+        if empty(s:get_env_type(l:target))
             continue
         endif
         call add(l:virtualenvs, fnamemodify(l:target, ':h'))
@@ -215,7 +219,7 @@ function! virtualenv#origin(path)
     let l:path = s:normalize_path(fnamemodify(a:path, ':p'))
     let l:prev = ''
     while (l:path !=# l:prev)
-        if s:is_virtualenv(l:path)
+        if !empty(s:get_env_type(l:path))
             return l:path
         endif
         let l:prev = l:path
@@ -246,11 +250,17 @@ function! virtualenv#gutentags_project_root_finder(path)
 endfunction
 
 " misc functions
-function! s:is_virtualenv(target)
-    return isdirectory(a:target) &&
-        \ (filereadable(s:join_path(a:target, 'pyvenv.cfg')) ||
-        \  filereadable(s:join_path(a:target, '.venv/pyvenv.cfg')) ||
-        \  filereadable(s:join_path(a:target, 'bin/activate_this.py')))
+function! s:get_env_type(target)
+    if !isdirectory(a:target)
+        return ''
+    elseif filereadable(s:join_path(a:target, 'bin/activate_this.py'))
+        return 'virtualenv'
+    elseif filereadable(s:join_path(a:target, '.venv/pyvenv.cfg'))
+        return 'uv'
+    elseif filereadable(s:join_path(a:target, 'pyvenv.cfg'))
+        return 'venv'
+    endif
+    return ''
 endfunction
 
 function! s:get_pyversion(target, internal)
