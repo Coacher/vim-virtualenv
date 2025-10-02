@@ -86,6 +86,11 @@ function! virtualenv#force_activate(target, ...)
         return s:error(l:target.' is not a valid virtualenv')
     endif
 
+    if (l:env_type ==# 'uv')
+        let l:project = l:target
+        let l:target .= '/.venv'
+    endif
+
     let l:internal = !(a:0 && (a:1 ==# 'external'))
     let l:pyversion = s:get_pyversion(l:target, l:internal)
 
@@ -102,7 +107,12 @@ function! virtualenv#force_activate(target, ...)
     let s:state['virtualenv_python'] = join(l:pyversion, '.')
     let s:state['virtualenv_directory'] = l:target
     let s:state['virtualenv_return_dir'] = getcwd()
-    let s:state['virtualenv_name'] = fnamemodify(l:target, ':t')
+    let s:state['virtualenv_name'] =
+        \ fnamemodify((l:env_type !=# 'uv') ? l:target : l:project, ':t')
+
+    if exists('l:project')
+        let s:state['virtualenv_project_dir'] = l:project
+    endif
 
     doautocmd <nomodeline> User VirtualEnvActivatePre
 
@@ -122,6 +132,7 @@ function! virtualenv#force_activate(target, ...)
                 \ l:sys_exec_prefix)
         endif
     catch
+        unlet! s:state['virtualenv_project_dir']
         unlet! s:state['virtualenv_name']
         unlet! s:state['virtualenv_return_dir']
         unlet! s:state['virtualenv_directory']
@@ -180,6 +191,7 @@ function! virtualenv#force_deactivate()
 
     doautocmd <nomodeline> User VirtualEnvDeactivatePost
 
+    unlet! s:state['virtualenv_project_dir']
     unlet! s:state['virtualenv_name']
     unlet! s:state['virtualenv_return_dir']
     unlet! s:state['virtualenv_directory']
