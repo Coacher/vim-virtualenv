@@ -86,7 +86,12 @@ function! virtualenv#force_activate(target, ...)
         return s:error(l:target.' is not a valid virtualenv')
     endif
 
-    if (l:env_type ==# 'uv')
+    if (l:env_type ==# 'virtualenv')
+        let l:project_link = l:target.'/.project'
+        if filereadable(l:project_link)
+            let [l:project] = readfile(l:project_link, '', 1)
+        endif
+    elseif (l:env_type ==# 'uv')
         let l:project = l:target
         let l:target .= '/.venv'
     endif
