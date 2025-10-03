@@ -373,7 +373,7 @@ endfunction
 
 " python machinery
 function! s:execute_system_python_command(command)
-    return systemlist('python -c '.string(a:command))
+    return systemlist('python -B -c '.string(a:command))
 endfunction
 
 function! s:execute_python_command(command, ...)
