@@ -1,8 +1,13 @@
 function! virtualenv#init()
     let s:state = {}
 
-    let s:vim_major = and(v:python3_version >> 24, 0xff)
-    let s:vim_minor = and(v:python3_version >> 16, 0xff)
+    if has('python3_stable')
+        let s:vim_major = and(v:python3_version >> 24, 0xff)
+        let s:vim_minor = and(v:python3_version >> 16, 0xff)
+    else
+        let s:vim_major = py3eval('sys.version_info.major')
+        let s:vim_minor = py3eval('sys.version_info.minor')
+    endif
 
     let s:custom_project_finder = 'virtualenv#gutentags_project_root_finder'
 
