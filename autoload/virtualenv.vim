@@ -133,7 +133,6 @@ function! virtualenv#force_activate(target, ...)
         else
             let [l:sys_path, l:sys_prefix, l:sys_exec_prefix] =
                 \ s:execute_system_python_command(
-                \  'import sys; '.
                 \  'print(sys.path, sys.prefix, sys.exec_prefix, sep="\n")')
             call s:execute_python_command(
                 \ 'VirtualEnvManager.extactivate',
@@ -309,7 +308,7 @@ endfunction
 
 function! s:get_pyversion_external(...)
     return s:execute_system_python_command(
-         \  'import sys; print(*sys.version_info[:2], sep="\n")')
+         \  'print(*sys.version_info[:2], sep="\n")')
 endfunction
 
 function! s:is_python_supported(pyversion)
@@ -373,7 +372,7 @@ endfunction
 
 " python machinery
 function! s:execute_system_python_command(command)
-    return systemlist('python -B -c '.string(a:command))
+    return systemlist("python -B -c 'import sys; ".a:command."'")
 endfunction
 
 function! s:execute_python_command(command, ...)
