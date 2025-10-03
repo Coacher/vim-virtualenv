@@ -308,7 +308,7 @@ endfunction
 
 function! s:get_pyversion_external(...)
     return s:execute_system_python_command(
-         \  'print(*sys.version_info[:2], sep="\n")')
+         \  'print(sys.version_info.major, sys.version_info.minor, sep="\n")')
 endfunction
 
 function! s:is_python_supported(pyversion)
