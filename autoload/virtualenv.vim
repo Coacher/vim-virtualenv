@@ -261,6 +261,8 @@ endfunction
 function! s:get_env_type(target)
     if !isdirectory(a:target)
         return ''
+    elseif filereadable(s:join_path(a:target, '.tox-info.json'))
+        return 'tox'
     elseif filereadable(s:join_path(a:target, 'bin/activate_this.py'))
         return 'virtualenv'
     elseif filereadable(s:join_path(a:target, '.venv/pyvenv.cfg'))
