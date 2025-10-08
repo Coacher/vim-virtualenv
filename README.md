@@ -76,3 +76,31 @@ Deactivate the currently active virtualenv:
 For a more detailed help see:
 
     :help virtualenv
+
+Feature support
+===============
+
+This table shows the availability of features relevant to vim-virtualenv in
+popular tools:
+
+| **Tool**              | **Central location of environments** | **Project support** | **Manage environments separately from projects** | **Environments nested in projects** |
+|-----------------------|--------------------------------------|---------------------|--------------------------------------------------|-------------------------------------|
+| **venv**              | NO                                   | NO                  | N/A                                              | N/A                                 |
+| **virtualenv**        | NO                                   | NO                  | N/A                                              | N/A                                 |
+| **virtualenvwrapper** | YES                                  | YES                 | YES                                              | NO                                  |
+| **pipenv**            | OPTIONAL                             | YES                 | NO                                               | OPTIONAL                            |
+| **poetry**            | OPTIONAL                             | YES                 | NO                                               | OPTIONAL                            |
+| **tox**               | NO                                   | YES                 | NO                                               | YES                                 |
+| **uv**                | NO                                   | YES                 | NO                                               | YES                                 |
+
+This table shows the supported features of popular tools in vim-virtualenv:
+
+| **Tool**              | **Environment detection** | **Tool detection** | **Central location of environments** | **Project detection** |
+|-----------------------|---------------------------|--------------------|--------------------------------------|-----------------------|
+| **venv**              | YES                       | YES                | N/A                                  | N/A                   |
+| **virtualenv**        | YES                       | YES                | N/A                                  | N/A                   |
+| **virtualenvwrapper** | YES                       | NO                 | YES                                  | YES                   |
+| **pipenv**            | YES                       | NO                 | YES                                  | YES                   |
+| **poetry**            | YES                       | NO                 | YES                                  | NESTED ONLY           |
+| **tox**               | YES                       | YES                | N/A                                  | YES                   |
+| **uv**                | YES                       | NO                 | N/A                                  | YES                   |
