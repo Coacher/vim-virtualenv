@@ -141,13 +141,13 @@ function! virtualenv#force_activate(target, ...)
                 \ l:sys_exec_prefix)
         endif
     catch
-        unlet! s:state['virtualenv_project_dir']
-        unlet! s:state['virtualenv_name']
-        unlet! s:state['virtualenv_return_dir']
-        unlet! s:state['virtualenv_directory']
-        unlet! s:state['virtualenv_python']
-        unlet! s:state['virtualenv_internal']
-        unlet! s:state['virtualenv_type']
+        silent! unlet s:state['virtualenv_project_dir']
+        silent! unlet s:state['virtualenv_name']
+        silent! unlet s:state['virtualenv_return_dir']
+        silent! unlet s:state['virtualenv_directory']
+        silent! unlet s:state['virtualenv_python']
+        silent! unlet s:state['virtualenv_internal']
+        silent! unlet s:state['virtualenv_type']
 
         call s:error(v:throwpoint)
         call s:error(v:exception)
@@ -200,13 +200,13 @@ function! virtualenv#force_deactivate()
 
     doautocmd <nomodeline> User VirtualEnvDeactivatePost
 
-    unlet! s:state['virtualenv_project_dir']
-    unlet! s:state['virtualenv_name']
-    unlet! s:state['virtualenv_return_dir']
-    unlet! s:state['virtualenv_directory']
-    unlet! s:state['virtualenv_python']
-    unlet! s:state['virtualenv_internal']
-    unlet! s:state['virtualenv_type']
+    silent! unlet s:state['virtualenv_project_dir']
+    silent! unlet s:state['virtualenv_name']
+    silent! unlet s:state['virtualenv_return_dir']
+    silent! unlet s:state['virtualenv_directory']
+    silent! unlet s:state['virtualenv_python']
+    silent! unlet s:state['virtualenv_internal']
+    silent! unlet s:state['virtualenv_type']
 endfunction
 
 function! virtualenv#cdvirtualenv()
