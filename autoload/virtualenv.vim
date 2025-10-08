@@ -91,14 +91,26 @@ function! virtualenv#force_activate(target, ...)
         return s:error(l:target.' is not a valid virtualenv')
     endif
 
-    if (l:env_type ==# 'virtualenv')
-        let l:project_link = l:target.'/.project'
-        if filereadable(l:project_link)
-            let [l:project] = readfile(l:project_link, '', 1)
-        endif
-    elseif (l:env_type ==# 'uv')
+    if (l:env_type ==# '.venv')
         let l:project = l:target
         let l:target .= '/.venv'
+    elseif (l:env_type ==# '.tox')
+        let l:project = l:target
+        let l:target .= '/venv'
+    elseif (l:env_type ==# 'tox')
+        let l:env_type = '.'.l:env_type
+        let l:project = fnamemodify(l:target, ':h')
+    elseif (l:env_type ==# 'virtualenv')
+        let l:link = l:target.'/.project'
+        if filereadable(l:link)
+            let [l:project] = readfile(l:link, '', 1)
+        endif
+    endif
+
+    if (l:env_type[0] !=# '.') && (fnamemodify(l:target, ':t') ==# '.venv')
+        let l:env_type = '.'.l:env_type
+        let l:project =
+            \ exists('l:project') ? l:project : fnamemodify(l:target, ':h')
     endif
 
     let l:internal = !(a:0 && (a:1 ==# 'external'))
@@ -118,7 +130,7 @@ function! virtualenv#force_activate(target, ...)
     let s:state['virtualenv_directory'] = l:target
     let s:state['virtualenv_return_dir'] = getcwd()
     let s:state['virtualenv_name'] =
-        \ fnamemodify((l:env_type !=# 'uv') ? l:target : l:project, ':t')
+        \ fnamemodify((l:env_type[0] !=# '.') ? l:target : l:project, ':t')
 
     if exists('l:project')
         let s:state['virtualenv_project_dir'] = l:project
@@ -261,12 +273,14 @@ endfunction
 function! s:get_env_type(target)
     if !isdirectory(a:target)
         return ''
+    elseif filereadable(s:join_path(a:target, '.venv/pyvenv.cfg'))
+        return '.venv'
+    elseif filereadable(s:join_path(a:target, 'venv/.tox-info.json'))
+        return '.tox'
     elseif filereadable(s:join_path(a:target, '.tox-info.json'))
         return 'tox'
     elseif filereadable(s:join_path(a:target, 'bin/activate_this.py'))
         return 'virtualenv'
-    elseif filereadable(s:join_path(a:target, '.venv/pyvenv.cfg'))
-        return 'uv'
     elseif filereadable(s:join_path(a:target, 'pyvenv.cfg'))
         return 'venv'
     endif
