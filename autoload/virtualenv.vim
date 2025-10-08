@@ -141,13 +141,7 @@ function! virtualenv#force_activate(target, ...)
                 \ l:sys_exec_prefix)
         endif
     catch
-        silent! unlet s:state['virtualenv_project_dir']
-        silent! unlet s:state['virtualenv_name']
-        silent! unlet s:state['virtualenv_return_dir']
-        silent! unlet s:state['virtualenv_directory']
-        silent! unlet s:state['virtualenv_python']
-        silent! unlet s:state['virtualenv_internal']
-        silent! unlet s:state['virtualenv_type']
+        call s:clear_state()
 
         call s:error(v:throwpoint)
         call s:error(v:exception)
@@ -200,13 +194,7 @@ function! virtualenv#force_deactivate()
 
     doautocmd <nomodeline> User VirtualEnvDeactivatePost
 
-    silent! unlet s:state['virtualenv_project_dir']
-    silent! unlet s:state['virtualenv_name']
-    silent! unlet s:state['virtualenv_return_dir']
-    silent! unlet s:state['virtualenv_directory']
-    silent! unlet s:state['virtualenv_python']
-    silent! unlet s:state['virtualenv_internal']
-    silent! unlet s:state['virtualenv_type']
+    call s:clear_state()
 endfunction
 
 function! virtualenv#cdvirtualenv()
@@ -318,6 +306,16 @@ function! s:is_python_supported(pyversion)
     else
         return (l:major == s:vim_major) && (l:minor == s:vim_minor)
     endif
+endfunction
+
+function! s:clear_state()
+    silent! unlet s:state['virtualenv_project_dir']
+    silent! unlet s:state['virtualenv_name']
+    silent! unlet s:state['virtualenv_return_dir']
+    silent! unlet s:state['virtualenv_directory']
+    silent! unlet s:state['virtualenv_python']
+    silent! unlet s:state['virtualenv_internal']
+    silent! unlet s:state['virtualenv_type']
 endfunction
 
 " debug functions
