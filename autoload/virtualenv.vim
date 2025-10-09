@@ -260,13 +260,14 @@ endfunction
 
 " external integration functions
 function! virtualenv#gutentags_project_root_finder(path)
-    let l:virtualenv_directory = virtualenv#state('virtualenv_directory')
-    if !empty(l:virtualenv_directory) &&
-     \ s:is_subdir(a:path, l:virtualenv_directory)
-        return l:virtualenv_directory
-    else
-        return gutentags#default_get_project_root(a:path)
-    endif
+    for l:root in [
+      \ virtualenv#state('virtualenv_project_dir'),
+      \ virtualenv#state('virtualenv_directory')]
+        if !empty(l:root) && s:is_subdir(a:path, l:root)
+            return l:root
+        endif
+    endfor
+    return gutentags#default_get_project_root(a:path)
 endfunction
 
 " misc functions
