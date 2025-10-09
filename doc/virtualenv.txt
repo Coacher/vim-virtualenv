@@ -17,9 +17,9 @@ INTRODUCTION                                *virtualenv-introduction*
 *vim-virtualenv* plugin provides a simple way to activate and deactivate
 Python virtual environments created by the "virtualenv"
 (https://github.com/pypa/virtualenv) or "venv"
-(https://docs.python.org/3/library/venv.html) tools from a Vim session as well
-as synchronizes the Vim internal Python "sys.path" variable with an already
-active virtual environment. It requires |if_pyth|.
+(https://docs.python.org/3/library/venv.html) or similar tools from a Vim
+session as well as synchronizes the Vim internal Python "sys.path" variable
+with an already active virtual environment. It requires |if_pyth|.
 
 This plugin distinguishes between internal and external virtualenvs. The
 internal one is a virtual environment that was not activated prior to the Vim
@@ -60,8 +60,8 @@ CONFIGURATION                               *virtualenv-configuration*
 g:virtualenv#directory                      *g:virtualenv#directory*
     This variable references the directory that holds virtualenvs.
 
-    If $WORKON_HOME environment variable is set, it is used as default value.
-    Otherwise, default value is |v:null|.
+    The default value can be automatically detected for virtualenvwrapper,
+    pipenv, and poetry. Otherwise, the default value is |v:null|.
 
     Example: >
         let g:virtualenv#directory = '/path/to/virtualenvs'
