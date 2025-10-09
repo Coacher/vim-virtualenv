@@ -3,9 +3,9 @@ vim-virtualenv
 
 This Vim plugin provides a simple way to activate and deactivate Python virtual
 environments created by the [virtualenv](https://github.com/pypa/virtualenv) or
-[venv](https://docs.python.org/3/library/venv.html) tools from a Vim session as
-well as synchronizes the Vim internal Python `sys.path` variable with an
-already active virtual environment.
+[venv](https://docs.python.org/3/library/venv.html) or similar tools from a Vim
+session as well as synchronizes the Vim internal Python `sys.path` variable
+with an already active virtual environment.
 
 By default, `:python3` command has access only to the system-wide Python
 environment. vim-virtualenv changes the Vim internal Python `sys.path` and
@@ -39,9 +39,7 @@ Key features
   deactivation.
 
 * This plugin is not a replacement for
-  [virtualenv](https://github.com/pypa/virtualenv) or
-  [virtualenvwrapper](https://github.com/python-virtualenvwrapper/virtualenvwrapper)
-  tools nor it aims to be one.
+  [virtualenv](https://github.com/pypa/virtualenv) tool nor it aims to be one.
 
 Usage examples
 ==============
