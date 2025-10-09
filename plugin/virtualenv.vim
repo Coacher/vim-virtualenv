@@ -12,9 +12,24 @@ let g:loaded_virtualenv = 1
 let s:save_cpo = &cpoptions
 set cpoptions&vim
 
-let g:virtualenv#directory =
-    \ get(g:, 'virtualenv#directory',
-    \     !isdirectory($WORKON_HOME) ? v:null : $WORKON_HOME)
+if exists('g:virtualenv#directory')
+    execute('')
+elseif isdirectory($WORKON_HOME)
+    " virtualenvwrapper, pipenv
+    let g:virtualenv#directory = $WORKON_HOME
+elseif isdirectory(expand('~/.local/share/virtualenvs'))
+    " pipenv defaults
+    let g:virtualenv#directory = expand('~/.local/share/virtualenvs')
+elseif isdirectory($POETRY_CACHE_DIR.'/virtualenvs')
+    " poetry
+    let g:virtualenv#directory = $POETRY_CACHE_DIR.'/virtualenvs'
+elseif isdirectory(expand('~/.cache/pypoetry/virtualenvs'))
+    " poetry defaults
+    let g:virtualenv#directory = expand('~/.cache/pypoetry/virtualenvs')
+else
+    let g:virtualenv#directory = v:null
+endif
+
 let g:virtualenv#auto_activate =
     \ get(g:, 'virtualenv#auto_activate', 1)
 let g:virtualenv#auto_activate_everywhere =
