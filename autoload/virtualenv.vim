@@ -60,7 +60,7 @@ function! virtualenv#activate(...)
             " equals to the value of s:state['virtualenv_directory'],
             " then use the innermost virtualenv of the current directory
 
-            let l:virtualenv_path = [expand('%:p:h'), getcwd()]
+            let l:virtualenv_path = [expand('%:p'), getcwd()]
             for l:directory in l:virtualenv_path
                 let l:target = virtualenv#origin(l:directory)
                 if !empty(l:target)
@@ -154,7 +154,6 @@ function! virtualenv#force_activate(target, ...)
         endif
     catch
         call s:clear_state()
-
         call s:error(v:throwpoint)
         call s:error(v:exception)
 
