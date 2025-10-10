@@ -17,6 +17,9 @@ if exists('g:virtualenv#directory')
 elseif isdirectory($WORKON_HOME)
     " virtualenvwrapper, pipenv
     let g:virtualenv#directory = $WORKON_HOME
+elseif isdirectory(expand('~/.virtualenvs'))
+    " virtualenvwrapper defaults
+    let g:virtualenv#directory = expand('~/.virtualenvs')
 elseif isdirectory(expand('~/.local/share/virtualenvs'))
     " pipenv defaults
     let g:virtualenv#directory = expand('~/.local/share/virtualenvs')
