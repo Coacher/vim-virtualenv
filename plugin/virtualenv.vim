@@ -29,6 +29,12 @@ elseif isdirectory($POETRY_CACHE_DIR.'/virtualenvs')
 elseif isdirectory(expand('~/.cache/pypoetry/virtualenvs'))
     " poetry defaults
     let g:virtualenv#directory = expand('~/.cache/pypoetry/virtualenvs')
+elseif isdirectory($PYENV_ROOT.'/plugins/pyenv-virtualenv')
+    " pyenv-virtualenv
+    let g:virtualenv#directory = $PYENV_ROOT.'/versions'
+elseif isdirectory(expand('~/.pyenv/plugins/pyenv-virtualenv'))
+    " pyenv-virtualenv defaults
+    let g:virtualenv#directory = expand('~/.pyenv/versions')
 else
     let g:virtualenv#directory = v:null
 endif

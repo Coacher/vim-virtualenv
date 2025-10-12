@@ -100,6 +100,10 @@ function! virtualenv#force_activate(target, ...)
     elseif (l:env_type ==# 'tox')
         let l:env_type = '.'.l:env_type
         let l:project = fnamemodify(l:target, ':h')
+    elseif (l:env_type ==# 'pyenv')
+        let l:project = l:target
+        let [l:target] = readfile(l:target.'/.python-version', '', 1)
+        let l:target = g:virtualenv#directory.'/'.l:target
     elseif (l:env_type ==# 'virtualenv')
         let l:link = l:target.'/.project'
         if filereadable(l:link)
@@ -279,6 +283,8 @@ function! s:get_env_type(target)
         return '.tox'
     elseif filereadable(s:join_path(a:target, '.tox-info.json'))
         return 'tox'
+    elseif filereadable(s:join_path(a:target, '.python-version'))
+        return 'pyenv'
     elseif filereadable(s:join_path(a:target, 'bin/activate_this.py'))
         return 'virtualenv'
     elseif filereadable(s:join_path(a:target, 'pyvenv.cfg'))
