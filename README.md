@@ -88,6 +88,7 @@ popular tools:
 | **virtualenvwrapper** | YES                                  | YES                 | YES                                              | NO                                  |
 | **pipenv**            | OPTIONAL                             | YES                 | NO                                               | OPTIONAL                            |
 | **poetry**            | OPTIONAL                             | YES                 | NO                                               | OPTIONAL                            |
+| **pyenv-virtualenv**  | YES                                  | YES                 | YES                                              | NO                                  |
 | **tox**               | NO                                   | YES                 | NO                                               | YES                                 |
 | **uv**                | NO                                   | YES                 | NO                                               | YES                                 |
 
@@ -100,5 +101,6 @@ This table shows the supported features of popular tools in vim-virtualenv:
 | **virtualenvwrapper** | YES                       | NO                 | YES                                  | YES                   |
 | **pipenv**            | YES                       | NO                 | YES                                  | YES                   |
 | **poetry**            | YES                       | NO                 | YES                                  | NESTED ONLY           |
+| **pyenv-virtualenv**  | YES                       | IN PROJECT ONLY    | YES                                  | YES                   |
 | **tox**               | YES                       | YES                | N/A                                  | YES                   |
 | **uv**                | YES                       | NO                 | N/A                                  | YES                   |
