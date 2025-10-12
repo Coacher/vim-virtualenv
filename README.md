@@ -104,3 +104,17 @@ This table shows the supported features of popular tools in vim-virtualenv:
 | **pyenv-virtualenv**  | YES                       | IN PROJECT ONLY    | YES                                  | YES                   |
 | **tox**               | YES                       | YES                | N/A                                  | YES                   |
 | **uv**                | YES                       | NO                 | N/A                                  | YES                   |
+
+Support notes
+-------------
+
+- All of the listed tools utilize or mimic venv or virtualenv environments and
+  mostly cannot be properly distinguished from venv or virtualenv.
+
+- virtualenvwrapper and pipenv are the only listed tools that provide a clean
+  way to establish a connection from a virtualenv to a project. poetry requires
+  hashing names and whatnot. Several tools rely solely on nested virtualenvs.
+
+- pyenv-virtualenv itself does not have a project concept, but `pyenv local`
+  can be used to bind a directory to a specific virtual environment via a file
+  marker. vim-virtualenv treats such directory as a pyenv project.
