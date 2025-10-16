@@ -113,8 +113,9 @@ function! virtualenv#force_activate(target, ...)
 
     if (l:env_type[0] !=# '.') && (fnamemodify(l:target, ':t') ==# '.venv')
         let l:env_type = '.'.l:env_type
-        let l:project =
-            \ exists('l:project') ? l:project : fnamemodify(l:target, ':h')
+        if !exists('l:project')
+            let l:project = fnamemodify(l:target, ':h')
+        endif
     endif
 
     let l:internal = !(a:0 && (a:1 ==# 'external'))
