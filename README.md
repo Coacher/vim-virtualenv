@@ -101,7 +101,7 @@ This table shows the supported features of popular tools in vim-virtualenv:
 | **virtualenvwrapper** | YES                       | NO                 | YES                                  | YES                   |
 | **pipenv**            | YES                       | NO                 | YES                                  | YES                   |
 | **poetry**            | YES                       | NO                 | YES                                  | NESTED ONLY           |
-| **pyenv-virtualenv**  | YES                       | IN PROJECT ONLY    | YES                                  | YES                   |
+| **pyenv-virtualenv**  | YES                       | IN PROJECT ONLY    | YES                                  | IN PROJECT ONLY       |
 | **tox**               | YES                       | YES                | N/A                                  | YES                   |
 | **uv**                | YES                       | IN PROJECT ONLY    | N/A                                  | YES                   |
 
