@@ -279,7 +279,7 @@ function! s:get_env_type(target)
     if !isdirectory(a:target)
         return ''
     elseif filereadable(s:join_path(a:target, '.venv/pyvenv.cfg'))
-        return '.venv'
+        return filereadable(s:join_path(a:target, 'uv.lock')) ? 'uv' : '.venv'
     elseif filereadable(s:join_path(a:target, 'venv/.tox-info.json'))
         return '.tox'
     elseif filereadable(s:join_path(a:target, '.tox-info.json'))

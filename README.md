@@ -103,7 +103,7 @@ This table shows the supported features of popular tools in vim-virtualenv:
 | **poetry**            | YES                       | NO                 | YES                                  | NESTED ONLY           |
 | **pyenv-virtualenv**  | YES                       | IN PROJECT ONLY    | YES                                  | YES                   |
 | **tox**               | YES                       | YES                | N/A                                  | YES                   |
-| **uv**                | YES                       | NO                 | N/A                                  | YES                   |
+| **uv**                | YES                       | IN PROJECT ONLY    | N/A                                  | YES                   |
 
 Support notes
 -------------
