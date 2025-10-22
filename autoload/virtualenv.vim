@@ -91,7 +91,7 @@ function! virtualenv#force_activate(target, ...)
         return s:error(l:target.' is not a valid virtualenv')
     endif
 
-    if (l:env_type ==# '.venv')
+    if (l:env_type ==# '.venv') || (l.env_type ==# 'uv')
         let l:project = l:target
         let l:target .= '/.venv'
     elseif (l:env_type ==# '.tox')
