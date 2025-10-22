@@ -282,14 +282,14 @@ function! s:get_env_type(target)
         return filereadable(s:join_path(a:target, 'uv.lock')) ? 'uv' : '.venv'
     elseif filereadable(s:join_path(a:target, 'venv/.tox-info.json'))
         return '.tox'
-    elseif filereadable(s:join_path(a:target, '.tox-info.json'))
-        return 'tox'
     elseif filereadable(s:join_path(a:target, '.python-version'))
         return 'pyenv'
     elseif filereadable(s:join_path(a:target, 'bin/activate_this.py'))
         return 'virtualenv'
     elseif filereadable(s:join_path(a:target, 'pyvenv.cfg'))
-        return 'venv'
+        return filereadable(s:join_path(a:target, '.tox-info.json'))
+             \ ? 'tox'
+             \ : 'venv'
     endif
     return ''
 endfunction
