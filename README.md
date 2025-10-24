@@ -98,7 +98,7 @@ This table shows the supported features of popular tools in vim-virtualenv:
 |-----------------------|---------------------------|--------------------|--------------------------------------|-----------------------|
 | **venv**              | YES                       | YES                | N/A                                  | N/A                   |
 | **virtualenv**        | YES                       | YES                | N/A                                  | N/A                   |
-| **virtualenvwrapper** | YES                       | NO                 | YES                                  | YES                   |
+| **virtualenvwrapper** | YES                       | YES                | YES                                  | YES                   |
 | **pipenv**            | YES                       | NO                 | YES                                  | YES                   |
 | **poetry**            | YES                       | NO                 | YES                                  | NESTED ONLY           |
 | **pyenv-virtualenv**  | YES                       | IN PROJECT ONLY    | YES                                  | IN PROJECT ONLY       |

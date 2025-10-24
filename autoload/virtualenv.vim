@@ -104,7 +104,7 @@ function! virtualenv#force_activate(target, ...)
         let l:project = l:target
         let [l:target] = readfile(l:target.'/.python-version', '', 1)
         let l:target = g:virtualenv#directory.'/'.l:target
-    elseif (l:env_type ==# 'virtualenv')
+    elseif (l:env_type =~# '^virtualenv')
         let l:link = l:target.'/.project'
         if filereadable(l:link)
             let [l:project] = readfile(l:link, '', 1)
@@ -285,7 +285,9 @@ function! s:get_env_type(target)
     elseif filereadable(s:join_path(a:target, '.python-version'))
         return 'pyenv'
     elseif filereadable(s:join_path(a:target, 'bin/activate_this.py'))
-        return 'virtualenv'
+        return filereadable(s:join_path(a:target, 'bin/get_env_details'))
+             \ ? 'virtualenvwrapper'
+             \ : 'virtualenv'
     elseif filereadable(s:join_path(a:target, 'pyvenv.cfg'))
         return filereadable(s:join_path(a:target, '.tox-info.json'))
              \ ? 'tox'
