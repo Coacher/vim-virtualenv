@@ -78,43 +78,4 @@ For a more detailed help see:
 Feature support
 ===============
 
-This table shows the availability of features relevant to vim-virtualenv in
-popular tools:
-
-| **Tool**              | **Central location of environments** | **Project support** | **Manage environments separately from projects** | **Environments nested in projects** |
-|-----------------------|--------------------------------------|---------------------|--------------------------------------------------|-------------------------------------|
-| **venv**              | NO                                   | NO                  | N/A                                              | N/A                                 |
-| **virtualenv**        | NO                                   | NO                  | N/A                                              | N/A                                 |
-| **virtualenvwrapper** | YES                                  | YES                 | YES                                              | NO                                  |
-| **pipenv**            | OPTIONAL                             | YES                 | NO                                               | OPTIONAL                            |
-| **poetry**            | OPTIONAL                             | YES                 | NO                                               | OPTIONAL                            |
-| **pyenv-virtualenv**  | YES                                  | YES                 | YES                                              | NO                                  |
-| **tox**               | NO                                   | YES                 | NO                                               | YES                                 |
-| **uv**                | NO                                   | YES                 | NO                                               | YES                                 |
-
-This table shows the supported features of popular tools in vim-virtualenv:
-
-| **Tool**              | **Environment detection** | **Tool detection** | **Central location of environments** | **Project detection** |
-|-----------------------|---------------------------|--------------------|--------------------------------------|-----------------------|
-| **venv**              | YES                       | YES                | N/A                                  | N/A                   |
-| **virtualenv**        | YES                       | YES                | N/A                                  | N/A                   |
-| **virtualenvwrapper** | YES                       | YES                | YES                                  | YES                   |
-| **pipenv**            | YES                       | NO                 | YES                                  | YES                   |
-| **poetry**            | YES                       | NO                 | YES                                  | NESTED ONLY           |
-| **pyenv-virtualenv**  | YES                       | IN PROJECT ONLY    | YES                                  | IN PROJECT ONLY       |
-| **tox**               | YES                       | YES                | N/A                                  | YES                   |
-| **uv**                | YES                       | IN PROJECT ONLY    | N/A                                  | YES                   |
-
-Support notes
--------------
-
-- All of the listed tools utilize or mimic venv or virtualenv environments and
-  mostly cannot be properly distinguished from venv or virtualenv.
-
-- virtualenvwrapper and pipenv are the only listed tools that provide a clean
-  way to establish a connection from a virtualenv to a project. poetry requires
-  hashing names and whatnot. Several tools rely solely on nested virtualenvs.
-
-- pyenv-virtualenv itself does not have a project concept, but `pyenv local`
-  can be used to bind a directory to a specific virtual environment via a file
-  marker. vim-virtualenv treats such directory as a pyenv project.
+[Check out the feature support matrix on wiki.](https://github.com/Coacher/vim-virtualenv/wiki/Feature-support)
