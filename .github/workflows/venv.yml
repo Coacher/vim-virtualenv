@@ -24,10 +24,11 @@ jobs:
 
       - name: Set up Vim
         run: |
-          apt-get update
-          apt-get install --yes vim
+          sudo apt-get update
+          sudo apt-get install --yes vim
 
       - name: Look around
         run: |
+          env
           ls -laR
 
