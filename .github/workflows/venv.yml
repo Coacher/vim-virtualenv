@@ -29,5 +29,5 @@ jobs:
 
       - name: Set up virtual environment
         run: |
-          export VIM_VIRTUALENV_TARGET=$(mktemp --directory)
+          export VIM_VIRTUALENV_TARGET="$(mktemp --directory)"
           python -m venv "${VIM_VIRTUALENV_TARGET}"
