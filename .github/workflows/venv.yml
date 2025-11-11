@@ -27,8 +27,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes vim
 
-      - name: Look around
+      - name: Set up virtual environment
         run: |
-          env
-          ls -laR
-
+          export VIM_VIRTUALENV_TARGET=$(mktemp --directory)
+          python -m venv "${VIM_VIRTUALENV_TARGET}"
