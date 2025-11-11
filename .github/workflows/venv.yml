@@ -33,3 +33,4 @@ jobs:
           echo "${VIM_VIRTUALENV_TARGET}"
           python -m venv "${VIM_VIRTUALENV_TARGET}"
           ls -la "${VIM_VIRTUALENV_TARGET}"
+          env
