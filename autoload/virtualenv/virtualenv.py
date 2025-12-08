@@ -75,7 +75,10 @@ class VirtualEnvManager:
             )
 
     def extactivate(
-        self, sys_path: str, sys_prefix: str, sys_exec_prefix: str,
+        self,
+        sys_path: str,
+        sys_prefix: str,
+        sys_exec_prefix: str,
     ) -> None:
         """Sync Vim Python interface with the active virtual environment."""
         import sys
@@ -88,8 +91,13 @@ class VirtualEnvManager:
 
         new_sys_path = literal_eval(sys_path)
 
-        # pylint: disable-next=undefined-variable
-        vim_path = vim.VIM_SPECIAL_PATH  # See `:help python-special-path`
+        vim_path = (
+            # pylint: disable=undefined-variable
+            vim.VIM_SPECIAL_PATH  # See `:help python-special-path`
+            if not vim.eval("has('nvim')")
+            else "_vim_path_"
+        )
+
         if vim_path not in new_sys_path:
             new_sys_path.append(vim_path)
 
