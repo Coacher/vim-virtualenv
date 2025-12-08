@@ -81,17 +81,17 @@ class VirtualEnvManager:
         import sys
         from ast import literal_eval
 
-        # pylint: disable-next=import-error
-        from vim import VIM_SPECIAL_PATH  # See `:help python-special-path`
-
         self.internal = False
         self.prev_sys_path = sys.path.copy()
         self.prev_sys_prefix = sys.prefix
         self.prev_sys_exec_prefix = sys.exec_prefix
 
         new_sys_path = literal_eval(sys_path)
-        if VIM_SPECIAL_PATH not in new_sys_path:
-            new_sys_path.append(VIM_SPECIAL_PATH)
+
+        # pylint: disable-next=undefined-variable
+        vim_path = vim.VIM_SPECIAL_PATH  # See `:help python-special-path`
+        if vim_path not in new_sys_path:
+            new_sys_path.append(vim_path)
 
         sys.path[:] = new_sys_path
 
