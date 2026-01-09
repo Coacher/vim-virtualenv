@@ -2,7 +2,7 @@ name: Test virtual environment activation
 
 on:
   push:
-    branches: [ master ]
+    branches: [ "master" ]
   pull_request:
 
 jobs:
@@ -14,6 +14,7 @@ jobs:
       matrix:
         tool: [ "venv", "virtualenv" ]
         kind: [ "internal", "external" ]
+        editor: [ "vim", "neovim" ]
 
     steps:
       - name: Checkout the repository
@@ -28,10 +29,14 @@ jobs:
         run: |
           python -m pip install --upgrade virtualenv
 
-      - name: Set up Vim
+      - name: Set up editor
         run: |
           sudo apt-get update
-          sudo apt-get install --yes vim
+          sudo apt-get install --yes ${{ matrix.editor }}
+          if [[ "${{ matrix.editor }}" == "neovim" ]]; then
+            # Make pynvim available to Python from setup-python
+            python -m pip install --upgrade pynvim
+          fi
 
       - name: Create virtual environment
         run: |
@@ -39,14 +44,24 @@ jobs:
           python -m ${{ matrix.tool }} "${VIM_VIRTUALENV_TARGET}"
           echo "VIM_VIRTUALENV_TARGET=${VIM_VIRTUALENV_TARGET}" >> "${GITHUB_ENV}"
 
+      - name: Set up virtual environment
+        run: |
+          if [[ "${{ matrix.editor }}" == "neovim" ]]; then
+            # Make pynvim available to Python from virtualenv
+            source "${VIM_VIRTUALENV_TARGET}/bin/activate"
+            python -m pip install --upgrade pynvim
+            deactivate
+          fi
+
       - name: Activate virtual environment
         run: |
-          if [[ "${{ matrix.kind }}" -eq "internal" ]];
-            then cd "${VIM_VIRTUALENV_TARGET}"; \
-            else source "${VIM_VIRTUALENV_TARGET}/bin/activate"; \
+          if [[ "${{ matrix.kind }}" == "internal" ]];
+            then cd "${VIM_VIRTUALENV_TARGET}"
+            else source "${VIM_VIRTUALENV_TARGET}/bin/activate"
           fi
-          MATRIX_KIND_CODE=$([[ "${{ matrix.kind }}" -eq "internal" ]] && echo 1 || echo 0)
-          vim --not-a-term -u "${GITHUB_WORKSPACE}/.github/workflows/vimrc.github" \
+          MATRIX_KIND_CODE=$([[ "${{ matrix.kind }}" == "internal" ]] && echo 1 || echo 0)
+          MATRIX_EDITOR_CMD=$([[ "${{ matrix.editor }}" == "vim" ]] && echo "vim --not-a-term" || echo "nvim --headless")
+          ${MATRIX_EDITOR_CMD} --clean -u "${GITHUB_WORKSPACE}/.github/workflows/vimrc.github" \
             -c "call assert_equal('${{ matrix.tool }}', virtualenv#state('virtualenv_type'))" \
             -c "call assert_equal(${MATRIX_KIND_CODE}, virtualenv#state('virtualenv_internal'))" \
             -c "call assert_equal('${VIM_VIRTUALENV_TARGET}', virtualenv#state('virtualenv_directory'))" \
