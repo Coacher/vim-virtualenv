@@ -4,10 +4,12 @@ on:
   push:
     branches: [ "master" ]
   pull_request:
+    branches: [ "master" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     strategy:
       fail-fast: false
@@ -17,7 +19,7 @@ jobs:
         editor: [ "vim", "neovim" ]
 
     steps:
-      - name: Checkout the repository
+      - name: Checkout repository
         uses: actions/checkout@v6
 
       - name: Set up Python
@@ -44,14 +46,13 @@ jobs:
           python -m ${{ matrix.tool }} "${VIM_VIRTUALENV_TARGET}"
           echo "VIM_VIRTUALENV_TARGET=${VIM_VIRTUALENV_TARGET}" >> "${GITHUB_ENV}"
 
-      - name: Set up virtual environment
+      - name: Set up virtual environment for Neovim
+        if: matrix.editor == 'neovim'
         run: |
-          if [[ "${{ matrix.editor }}" == "neovim" ]]; then
-            # Make pynvim available to Python from virtualenv
-            source "${VIM_VIRTUALENV_TARGET}/bin/activate"
-            python -m pip install --upgrade pynvim
-            deactivate
-          fi
+          # Make pynvim available to Python from virtualenv
+          source "${VIM_VIRTUALENV_TARGET}/bin/activate"
+          python -m pip install --upgrade pynvim
+          deactivate
 
       - name: Activate virtual environment
         run: |
@@ -61,7 +62,7 @@ jobs:
           fi
           MATRIX_KIND_CODE=$([[ "${{ matrix.kind }}" == "internal" ]] && echo 1 || echo 0)
           MATRIX_EDITOR_CMD=$([[ "${{ matrix.editor }}" == "vim" ]] && echo "vim --not-a-term" || echo "nvim --headless")
-          ${MATRIX_EDITOR_CMD} --clean -u "${GITHUB_WORKSPACE}/.github/workflows/vimrc.github" \
+          ${MATRIX_EDITOR_CMD} --clean -u "${GITHUB_WORKSPACE}/.github/workflows/minimal.vim" \
             -c "call assert_equal('${{ matrix.tool }}', virtualenv#state('virtualenv_type'))" \
             -c "call assert_equal(${MATRIX_KIND_CODE}, virtualenv#state('virtualenv_internal'))" \
             -c "call assert_equal('${VIM_VIRTUALENV_TARGET}', virtualenv#state('virtualenv_directory'))" \
