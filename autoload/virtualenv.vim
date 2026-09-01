@@ -282,7 +282,7 @@ function! s:get_env_type(target)
         return filereadable(s:join_path(a:target, 'uv.lock')) ? 'uv' : '.venv'
     elseif filereadable(s:join_path(a:target, 'venv/.tox-info.json'))
         return '.tox'
-    elseif filereadable(s:join_path(a:target, '.python-version'))
+    elseif filereadable(s:join_path(a:target, '.python-version')) && exists('$PYENV_ROOT')
         return 'pyenv'
     elseif filereadable(s:join_path(a:target, 'bin/activate_this.py'))
         return filereadable(s:join_path(a:target, 'bin/get_env_details'))
