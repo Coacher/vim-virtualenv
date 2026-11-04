@@ -25,7 +25,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12" # Vim on Ubuntu supports only 3.12
+          python-version: "3.14" # Vim on Ubuntu supports only 3.14
 
       - name: Set up tools
         run: |
@@ -66,4 +66,5 @@ jobs:
             -c "call assert_equal('${{ matrix.tool }}', virtualenv#state('virtualenv_type'))" \
             -c "call assert_equal(${MATRIX_KIND_CODE}, virtualenv#state('virtualenv_internal'))" \
             -c "call assert_equal('${VIM_VIRTUALENV_TARGET}', virtualenv#state('virtualenv_directory'))" \
+            -c "call assert_equal('${VIM_VIRTUALENV_TARGET}', py3eval('sys.prefix'))" \
             -c "call g:ExitTest()"
