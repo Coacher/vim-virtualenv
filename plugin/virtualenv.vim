@@ -2,7 +2,7 @@ if exists('g:loaded_virtualenv')
     finish
 endif
 
-if !has('python3')
+if !has('python3_compiled') && !has('python3')
     echoerr 'vim-virtualenv requires python3 feature to be enabled'
     finish
 endif
