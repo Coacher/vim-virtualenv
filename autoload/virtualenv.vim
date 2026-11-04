@@ -115,6 +115,12 @@ function! virtualenv#force_activate(target, ...)
         return s:error(l:target.' is not supported')
     endif
 
+    if exists('+pythonthreedll')
+        let [&pythonthreedll] = s:execute_system_python_command(
+            \ 'import sysconfig; print(sysconfig.get_config_var("INSTSONAME"))',
+            \ l:target)
+    endif
+
     let s:state['virtualenv_type'] = l:env_type
     let s:state['virtualenv_internal'] = l:internal
     let s:state['virtualenv_python'] = join(l:pyversion, '.')
@@ -395,8 +401,9 @@ function! s:normalize_path(path)
 endfunction
 
 " python machinery
-function! s:execute_system_python_command(command)
-    return systemlist("python -B -c 'import sys; ".a:command."'")
+function! s:execute_system_python_command(command, root=v:null)
+    let l:prefix = a:root is v:null ? '' : s:join_path(a:root, 'bin/')
+    return systemlist(l:prefix."python -B -c 'import sys; ".a:command."'")
 endfunction
 
 function! s:execute_python_command(command, ...)
