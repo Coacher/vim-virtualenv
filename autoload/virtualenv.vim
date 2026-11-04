@@ -1,21 +1,7 @@
 function! virtualenv#init()
     let s:state = {}
 
-    if has('python3_stable')
-        let s:vim_major = and(v:python3_version >> 24, 0xff)
-        let s:vim_minor = and(v:python3_version >> 16, 0xff)
-    else
-        let s:vim_major = py3eval('sys.version_info.major')
-        let s:vim_minor = py3eval('sys.version_info.minor')
-    endif
-
     let s:custom_project_finder = 'virtualenv#gutentags_project_root_finder'
-
-    try
-        execute 'py3file' fnameescape(g:virtualenv#python_script)
-    catch
-        return s:error('failed to load Python virtual environment manager')
-    endtry
 
     if !empty(g:virtualenv#directory)
         let g:virtualenv#directory =
@@ -125,7 +111,7 @@ function! virtualenv#force_activate(target, ...)
         let [l:major, l:minor] = l:pyversion
         call s:error('Python version mismatch')
         call s:error('Environment version: '.l:major.'.'.l:minor)
-        call s:error('Vim version: '.s:vim_major.'.'.s:vim_minor)
+        call s:error('Vim version: '.s:python.major.'.'.s:python.minor)
         return s:error(l:target.' is not supported')
     endif
 
@@ -326,11 +312,25 @@ function! s:get_pyversion_external(...)
 endfunction
 
 function! s:is_python_supported(pyversion)
+    if !exists('s:python')
+        if has('python3_stable')
+            let s:python = {
+                \ 'major': and(v:python3_version >> 24, 0xff),
+                \ 'minor': and(v:python3_version >> 16, 0xff),
+                \ }
+        else
+            let s:python = {
+                \ 'major': py3eval('sys.version_info.major'),
+                \ 'minor': py3eval('sys.version_info.minor'),
+                \ }
+        endif
+    endif
+
     let [l:major, l:minor] = a:pyversion
     if has('python3_stable')
-        return (l:major >= s:vim_major) && (l:minor >= s:vim_minor)
+        return (l:major >= s:python.major) && (l:minor >= s:python.minor)
     else
-        return (l:major == s:vim_major) && (l:minor == s:vim_minor)
+        return (l:major == s:python.major) && (l:minor == s:python.minor)
     endif
 endfunction
 
@@ -400,6 +400,16 @@ function! s:execute_system_python_command(command)
 endfunction
 
 function! s:execute_python_command(command, ...)
+    if !exists('s:python_loaded')
+        try
+            execute 'py3file' fnameescape(g:virtualenv#python_script)
+        catch
+            throw 'failed to load Python virtual environment manager: '.
+                \ v:exception
+        endtry
+        let s:python_loaded = 1
+    endif
+
     let l:command = a:command.((a:0) ? s:build_arguments(a:000) : '')
     return split(execute('python3 '.l:command), '\n')
 endfunction
